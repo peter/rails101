@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Active Support</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Introduction</h1>
+
+
+<center>
+  <div style="margin: 40px; color: #993333;">
+  Active Support is a set of libraries that is used by all Rails components. It extends several core Ruby classes in useful ways.
+  </div>
+</center>
+
+</div>
+<div class="slide">
+
+	<h1>blank? and present?</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+puts [ ].blank? #=&gt; true
+puts { 1 =&gt; 2}.blank? #=&gt; false
+puts " cat ".blank? #=&gt; false
+puts "".blank? #=&gt; true
+puts " ".blank? #=&gt; true
+puts nil.blank? #=&gt; true
+
+# present? is the opposite of blank?
+puts nil.present? #=&gt; false
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>to_xml, to_yaml, and to_json</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = User.find(1)
+# Those methods are also available on Struct objects
+puts user.to_xml
+puts user.to_yaml
+puts user.to_json # Creates a JavaScript hash
+
+Hash.from_xml(xml_string) # =&gt; a Hash object
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Enumerations</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+groups = posts.group_by {|post| post.author_id} #=&gt; Hash with author ids as keys
+
+us_states = State.find(:all) 
+state_lookup = us_states.index_by {|state| state.short_name} #=&gt; Hash with short name as keys
+
+total_orders = Order.find(:all).sum {|order| order.value } 
+
+total_orders = Order.find(:all).sum(&#38;:value)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Strings</h1>
+
+
+<div class="code-tiny">
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+string = "Ruby on Rails" 
+puts string.at(2) #=&gt; 'b'
+pust string.from(5) #=&gt; 'on Rails'
+puts string.to(3) #=&gt; 'Ruby'
+puts string.first(4) #=&gt; 'Ruby'
+puts string.last(4) #=&gt; 'ails'
+puts string.starts_with?("R") #=&gt; true
+puts string.ends_with?("Perl") #=&gt; false
+
+count = Hash.new(0) 
+string.each_char {|ch| count[ch] += 1} 
+
+"person".pluralize #=&gt; people
+"people".singularize #=&gt; person
+"first_name".humanize #=&gt; First Name
+"ruby on rails".titleize #=&gt; Ruby On Rails
+</pre></div>
+
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>Numbers</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+20.bytes #=&gt; 20
+20.megabytes #=&gt; 20971520
+
+20.seconds
+20.hours
+20.months
+20.years
+
+20.minutes.ago
+20.weeks.from_now
+20.minutes.until("2007-12-01 12:00".to_time)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Time and Date</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+time = Time.parse("2007-01-01 13:00")
+time.at_beginning_of_day
+time.at_beginning_of_week
+time.at_beginning_of_month
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Hashes</h1>
+
+
+	<ul>
+	<li>reverse_merge</li>
+		<li>deep_merge</li>
+		<li>diff</li>
+		<li>except</li>
+		<li>slice</li>
+		<li>stringify_keys</li>
+		<li>symbolize_keys</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">UTF8</span></h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+"והצ".size #=&gt; 6
+
+"והצ".chars.size #=&gt; 3
+
+"והצ".upcase #=&gt; "והצ" 
+
+"והצ".chars.upcase.inspect #=&gt; &lt;ActiveSupport::Multibyte::Chars:0x33589c0 @string="ִֵײ"&gt;
+
+"והצ".chars.upcase.to_s #=&gt; "ִֵײ" 
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

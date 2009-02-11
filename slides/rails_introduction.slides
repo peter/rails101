@@ -3,16 +3,21 @@ h1. Rails Introduction
 h1. Kung-Fu
 
 <center>
-  <div style="margin: 40px">
+  <div style="margin: 40px; color: #993333;">
+    <p>
     ??"Ruby on Rails is astounding. Using it is like watching a kung-fu movie, where a dozen bad-ass frameworks prepare to beat up the little newcomer only to be handed their asses in a variety of imaginative ways."??
+    </p>
+  
+    <p>
+    -Nathan Torkington, O'Reilly Program Chair for OSCON
+    </p>
   </div>
--Nathan Torkington, O'Reilly Program Chair for OSCON
 </center>
 
 h1. Installation
 
-* Windows - "InstantRails":http://instantrails.rubyforge.org/wiki/wiki.pl offers a one-click installer
-* Mac - Ruby 1.8.6 is pre-installed on Mac as of 10.4.6 (Tiger)
+* Windows - "InstantRails":http://instantrails.rubyforge.org/wiki/wiki.pl one-click installer
+* Mac - Ruby 1.8.6 is pre-installed on Mac as of 10.4.6 (Tiger). Rails 1.2.6 is pre-installed on Mac 10.5.
 * Linux - there are packages for most distributions
 * Editors: TextMate (OS X), E Text Editor (Windows), jEdit, SciTE, RadRails, NetBeans, 3rdRail, IntelliJ IDEA, vim, Emacs
 
@@ -46,28 +51,20 @@ h1. MVC Request Cycle
   <img height="250" src="../lib/images/mvc.jpg"/>
 </center>
 
-h1. MVC Request Cycle
-
-# A request is made from the browser to the URL
-    http://localhost:3000/users/show/1. 
-
-# A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the URI /users/show/1. The default route ':controller/:action/:id' matches the URI and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.
-
-# The show method in the users controller fetches the user model object from the database with id equal to 1.
-
-# The show method renders its view (the file show.rhtml) which generates an HTML page with the user info from the user model object.
-
-# Rails sends the generated HTML from the view back to the browser.
-
 h1. Building a Demo Application
 
-* Installing plugins with script/plugin install
-* Code generation with script/generate model|scaffold
+* Generating an application with the rails command
+* Hello world
+* Rails actions and templates
+* The MVC request cycle and routing: :controller/:action/:id
+* Database configuration in config/database.yml
+* Code generation with script/generate scaffold
 * Migrations
-* The MVC request cycle
-* Rails command line - script/console
-* Testing with rake
-* Routes - :controller/:action/:id
+* Naming conventions
+* The Rails command line - script/console
+* Rails environments
+* Configuration
+* The error log
 
 h1. Directory Structure
 
@@ -94,6 +91,19 @@ vendor
   gems
   rails
 </pre>
+
+h1. MVC Request Cycle in Detail
+
+# A request is made from the browser to the URL
+    http://localhost:3000/users/show/1. 
+
+# A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the URI /users/show/1. The default route ':controller/:action/:id' matches the URI and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.
+
+# The show method in the users controller fetches the user model object from the database with id equal to 1.
+
+# The show method renders its view (the file show.rhtml) which generates an HTML page with the user info from the user model object.
+
+# Rails sends the generated HTML from the view back to the browser.
 
 h1. Rake
 

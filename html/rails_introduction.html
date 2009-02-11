@@ -56,10 +56,15 @@
 
 
 <center>
-  <div style="margin: 40px">
+  <div style="margin: 40px; color: #993333;">
+    <p>
     <cite>&#8220;Ruby on Rails is astounding. Using it is like watching a kung-fu movie, where a dozen bad-ass frameworks prepare to beat up the little newcomer only to be handed their asses in a variety of imaginative ways.&#8221;</cite>
+    </p>
+
+    <p>
+    -Nathan Torkington, O&#8217;Reilly Program Chair for <span class="caps">OSCON</span>
+    </p>
   </div>
--Nathan Torkington, O&#8217;Reilly Program Chair for <span class="caps">OSCON</span>
 </center>
 
 </div>
@@ -69,8 +74,8 @@
 
 
 	<ul>
-	<li>Windows &#8211; <a href="http://instantrails.rubyforge.org/wiki/wiki.pl">InstantRails</a> offers a one-click installer</li>
-		<li>Mac &#8211; Ruby 1.8.6 is pre-installed on Mac as of 10.4.6 (Tiger)</li>
+	<li>Windows &#8211; <a href="http://instantrails.rubyforge.org/wiki/wiki.pl">InstantRails</a> one-click installer</li>
+		<li>Mac &#8211; Ruby 1.8.6 is pre-installed on Mac as of 10.4.6 (Tiger). Rails 1.2.6 is pre-installed on Mac 10.5.</li>
 		<li>Linux &#8211; there are packages for most distributions</li>
 		<li>Editors: TextMate (OS X), E Text Editor (Windows), jEdit, SciTE, RadRails, NetBeans, 3rdRail, IntelliJ <span class="caps">IDEA</span>, vim, Emacs</li>
 	</ul>
@@ -131,49 +136,22 @@ Ruby on Rails is an open-source web framework that&#8217;s optimized for program
 </div>
 <div class="slide">
 
-	<h1><span class="caps">MVC</span> Request Cycle</h1>
-
-
-	<ol>
-	<li>A request is made from the browser to the <span class="caps">URL</span>
-    http://localhost:3000/users/show/1.</li>
-	</ol>
-
-
-	<ol>
-	<li>A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the <span class="caps">URI</span> /users/show/1. The default route &#8217;:controller/:action/:id&#8217; matches the <span class="caps">URI</span> and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.</li>
-	</ol>
-
-
-	<ol>
-	<li>The show method in the users controller fetches the user model object from the database with id equal to 1.</li>
-	</ol>
-
-
-	<ol>
-	<li>The show method renders its view (the file show.rhtml) which generates an <span class="caps">HTML</span> page with the user info from the user model object.</li>
-	</ol>
-
-
-	<ol>
-	<li>Rails sends the generated <span class="caps">HTML</span> from the view back to the browser.</li>
-	</ol>
-
-
-</div>
-<div class="slide">
-
 	<h1>Building a Demo Application</h1>
 
 
 	<ul>
-	<li>Installing plugins with script/plugin install</li>
-		<li>Code generation with script/generate model|scaffold</li>
+	<li>Generating an application with the rails command</li>
+		<li>Hello world</li>
+		<li>Rails actions and templates</li>
+		<li>The <span class="caps">MVC</span> request cycle and routing: :controller/:action/:id</li>
+		<li>Database configuration in config/database.yml</li>
+		<li>Code generation with script/generate scaffold</li>
 		<li>Migrations</li>
-		<li>The <span class="caps">MVC</span> request cycle</li>
-		<li>Rails command line &#8211; script/console</li>
-		<li>Testing with rake</li>
-		<li>Routes &#8211; :controller/:action/:id</li>
+		<li>Naming conventions</li>
+		<li>The Rails command line &#8211; script/console</li>
+		<li>Rails environments</li>
+		<li>Configuration</li>
+		<li>The error log</li>
 	</ul>
 
 
@@ -206,6 +184,38 @@ vendor
   gems
   rails
 </pre>
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">MVC</span> Request Cycle in Detail</h1>
+
+
+	<ol>
+	<li>A request is made from the browser to the <span class="caps">URL</span>
+    http://localhost:3000/users/show/1.</li>
+	</ol>
+
+
+	<ol>
+	<li>A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the <span class="caps">URI</span> /users/show/1. The default route &#8217;:controller/:action/:id&#8217; matches the <span class="caps">URI</span> and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.</li>
+	</ol>
+
+
+	<ol>
+	<li>The show method in the users controller fetches the user model object from the database with id equal to 1.</li>
+	</ol>
+
+
+	<ol>
+	<li>The show method renders its view (the file show.rhtml) which generates an <span class="caps">HTML</span> page with the user info from the user model object.</li>
+	</ol>
+
+
+	<ol>
+	<li>Rails sends the generated <span class="caps">HTML</span> from the view back to the browser.</li>
+	</ol>
+
 
 </div>
 <div class="slide">

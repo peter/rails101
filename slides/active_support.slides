@@ -1,0 +1,120 @@
+h1. Active Support
+
+h1. Introduction
+
+<center>
+  <div style="margin: 40px; color: #993333;">
+  Active Support is a set of libraries that is used by all Rails components. It extends several core Ruby classes in useful ways.
+  </div>
+</center>
+
+h1. blank? and present?
+
+:inlinecode
+puts [ ].blank? #=> true
+puts { 1 => 2}.blank? #=> false
+puts " cat ".blank? #=> false
+puts "".blank? #=> true
+puts " ".blank? #=> true
+puts nil.blank? #=> true
+
+# present? is the opposite of blank?
+puts nil.present? #=> false
+:endinlinecode
+
+h1. to_xml, to_yaml, and to_json
+
+:inlinecode
+user = User.find(1)
+# Those methods are also available on Struct objects
+puts user.to_xml
+puts user.to_yaml
+puts user.to_json # Creates a JavaScript hash
+
+Hash.from_xml(xml_string) # => a Hash object
+:endinlinecode
+
+h1. Enumerations
+
+:inlinecode
+groups = posts.group_by {|post| post.author_id} #=> Hash with author ids as keys
+
+us_states = State.find(:all) 
+state_lookup = us_states.index_by {|state| state.short_name} #=> Hash with short name as keys
+
+total_orders = Order.find(:all).sum {|order| order.value } 
+
+total_orders = Order.find(:all).sum(&:value)
+:endinlinecode
+
+h1. Strings
+
+<div class="code-tiny">
+:inlinecode
+string = "Ruby on Rails"
+puts string.at(2) #=> 'b'
+pust string.from(5) #=> 'on Rails'
+puts string.to(3) #=> 'Ruby'
+puts string.first(4) #=> 'Ruby'
+puts string.last(4) #=> 'ails'
+puts string.starts_with?("R") #=> true
+puts string.ends_with?("Perl") #=> false
+
+count = Hash.new(0) 
+string.each_char {|ch| count[ch] += 1} 
+
+"person".pluralize #=> people
+"people".singularize #=> person
+"first_name".humanize #=> First Name
+"ruby on rails".titleize #=> Ruby On Rails
+:endinlinecode
+</div>
+
+h1. Numbers
+
+:inlinecode
+20.bytes #=> 20
+20.megabytes #=> 20971520
+
+20.seconds
+20.hours
+20.months
+20.years
+
+20.minutes.ago
+20.weeks.from_now
+20.minutes.until("2007-12-01 12:00".to_time)
+:endinlinecode
+
+h1. Time and Date
+
+:inlinecode
+time = Time.parse("2007-01-01 13:00")
+time.at_beginning_of_day
+time.at_beginning_of_week
+time.at_beginning_of_month
+:endinlinecode
+
+h1. Hashes
+
+* reverse_merge
+* deep_merge
+* diff
+* except
+* slice
+* stringify_keys
+* symbolize_keys
+
+h1. UTF8
+
+:inlinecode
+"והצ".size #=> 6
+
+"והצ".chars.size #=> 3
+
+"והצ".upcase #=> "והצ"
+
+"והצ".chars.upcase.inspect #=> <ActiveSupport::Multibyte::Chars:0x33589c0 @string="ִֵײ">
+
+"והצ".chars.upcase.to_s #=> "ִֵײ"
+:endinlinecode
