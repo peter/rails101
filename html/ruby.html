@@ -1,0 +1,1169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Ruby</h1>
+
+
+<center>
+  <div style="margin: 40px">
+    <cite>&#8220;I always thought Smalltalk would beat Java. I just didn&#8217;t know it would be called &#8216;Ruby&#8217; when it did&#8221;</cite>
+  </div>
+- Kent Beck
+</center>
+
+</div>
+<div class="slide">
+
+	<h1>The Ruby Language</h1>
+
+
+	<ul>
+	<li>Generic, interpreted, <a href="http://en.wikipedia.org/wiki/Reflection_(computer_science)" title="reflection is the process by which a computer program can observe and modify its own structure" target="_reflective">reflective</a>, with garbage collection</li>
+		<li>Optimized for people rather than computers</li>
+		<li>More powerful than Perl, more object oriented than Python</li>
+		<li>Everything is an object. There are no primitive types.</li>
+		<li>Strong dymaic typing</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Everything in Ruby is</h1>
+
+
+	<ul>
+	<li>Assignment &#8211; binding names to objects</li>
+		<li>Control structures &#8211; if/else, while, case</li>
+		<li>Sending messages to objects &#8211; methods</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Ruby is Line Oriented</h1>
+
+
+	<ul>
+	<li>Statements are separated by line breaks</li>
+		<li>You can put several statements on one line if you separate them by semicolon</li>
+		<li>For long statements you can escape the line break with backslash</li>
+		<li>After an operator, comma, or the dot in a method invocation you can have a line break and Ruby will know that the statement continues on the next line</li>
+		<li>You can have line breaks in strings</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Defining a Class and Instantiating an Object</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Person
+  def initialize(name)
+    @name = name
+  end
+
+  def say_hi
+    puts "#{@name} says hi" 
+  end
+end
+
+andreas = Person.new("Andreas")
+andreas.say_hi
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/person.rb">code/ruby/person.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Class Inheritance</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">require 'person'
+
+class Programmer &lt; Person
+  def initialize(name, favorite_ide)
+    super(name)
+    @favorite_ide = favorite_ide
+  end
+
+  # We are overriding say_hi in Person
+  def say_hi
+    super
+    puts "Favorite IDE is #{@favorite_ide}" 
+  end
+end
+
+peter = Programmer.new("Peter", "TextMate")
+peter.say_hi
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/programmer.rb">code/ruby/programmer.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Getter and Setter Methods</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Person
+  def initialize(name)
+    self.name = name
+  end
+    
+  def name
+    @name
+  end
+    
+  def name=(name)
+    @name = name
+  end
+end
+
+person = Person.new("Andreas")
+puts person.name
+person.name = "David" 
+puts person.name
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/getter_setter.rb">code/ruby/getter_setter.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>attr_accessor</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Person
+  attr_accessor :name
+  
+  def initialize(name)
+    self.name = name
+  end
+end
+
+person = Person.new("Andreas")
+puts person.name
+person.name = "David" 
+puts person.name
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/attr_accessor.rb">code/ruby/attr_accessor.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Variable/Method Ambiguity Gotcha</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Person
+  attr_accessor :paid
+  
+  def initialize
+    @paid = false
+  end
+  
+  def make_payment
+    puts "making payment..." 
+    paid = true
+  end
+end
+
+person = Person.new
+person.make_payment
+puts "paid=#{person.paid}" 
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/variable_method.rb">code/ruby/variable_method.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Methods</h1>
+
+
+	<ul>
+	<li>When invoking a method argument parenthesis are optional</li>
+		<li>Methods always have a receiver. The implicit receiver is self.</li>
+		<li>Methods are identified by their name only. No overloading on argument signatures.</li>
+		<li>There are class methods and instance methods</li>
+		<li>Methods can be public, protected, or private</li>
+		<li>The last evaluated expression in a method is the return value</li>
+		<li>Arguments can have default values: def my_method(a, b = {})</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Class Methods</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Person
+  def self.class_method
+    puts "class method invoked" 
+  end
+
+  class &lt;&lt; self
+    def class_method2; puts "class_method2"; end
+    def class_method3; puts "class_method3"; end
+  end
+end
+
+class &lt;&lt; Person
+  def class_method4; puts "class_method4"; end
+end
+
+# Invocation of class method
+Person.class_method
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/class_methods.rb">code/ruby/class_methods.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Singleton Classes and Methods</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">require 'person'
+
+# Every object has two classes: the class of which it is an instance, and a singleton class. Methods
+# of the singleton class are called singleton methods and can only be invoked on that particular object.
+andreas = Person.new("Andreas")
+def andreas.andreas_says_hi
+  "Andreas says hi" 
+end
+andreas.andreas_says_hi
+
+# Class methods are singleton methods on the class
+# object and can be defined like this:
+def Person.count
+  @@count ||= 0
+end
+puts Person.count
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/singleton.rb">code/ruby/singleton.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Naming Conventions</h1>
+
+
+	<ul>
+	<li>MyClass</li>
+		<li>method_name, destructive_method!, question_method?, setter_method=</li>
+		<li>MY_CONSTANT = 3.14</li>
+		<li>local_variable = 3.14</li>
+		<li>@instance_variable</li>
+		<li>@@class_variable</li>
+		<li>$global_variable</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Boolean Expressions</h1>
+
+
+	<ul>
+	<li>All objects evaluate to true except false and nil</li>
+		<li>false and true are the only instances of FalseClass and TrueClass</li>
+		<li>Boolean expressions return the last evaluated object</li>
+		<li>a and b or c &lt;=&gt; (a and b) or c</li>
+		<li>a = b and c &lt;=&gt; (a = b) and c</li>
+		<li>a = b &#38;&#38; c &lt;=&gt; a = (b &#38;&#38; c)</li>
+		<li>puts a if a = b # Using assignments in boolean expressions</li>
+		<li>a = true; b = false; a and b and c() # =&gt; c() is never invoked</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Assignment</h1>
+
+
+	<ul>
+	<li>a, b = b, a # swapping values</li>
+		<li>a = 1; b = 1</li>
+		<li>a = b = 1</li>
+		<li>a += 1 # a = a + 1</li>
+		<li>a, b = [1, 2]</li>
+		<li>a = b || c</li>
+		<li>a ||= b</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Idiom: Assignment with Boolean Expression</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">comment = Object.new
+def comment.user
+  Object.new
+end
+
+# Overly verbose:
+user_id = nil
+if comment
+  if comment.user
+    user_id = comment.user.object_id
+  end
+end
+
+# Idiomatic:
+user_id = comment &#38;&#38; comment.user &#38;&#38; comment.user.object_id
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/assignment.rb">code/ruby/assignment.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Modules</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">require 'person_class'
+module HasAge
+  attr_accessor :age
+end
+class Person
+  include HasAge
+end
+peter = Person.new("Peter"); peter.age = 33; puts peter.age
+
+module MyApp
+  class Person
+    attr_accessor :hometown
+    def initialize(hometown)
+      self.hometown = hometown
+    end
+  end
+end
+peter = MyApp::Person.new("Stockholm"); puts peter.hometown
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/modules.rb">code/ruby/modules.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Modules vs Classes</h1>
+
+
+	<ul>
+	<li>Modules model characteristics or properties of entities or things. Modules can’t be instantiated. Module names tend to be adjectives (Comparable, Enumerable etc.). A class can mix in several modules.</li>
+	</ul>
+
+
+	<ul>
+	<li>Classes model entities or things. Class names tend to be nouns. A class can only have one super class (Enumeration, Item etc.).</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Everything is an Object</h1>
+
+
+	<ul>
+	<li>2 + 2 is equivalent to 2+(2) and 2.send(:+, 2)</li>
+		<li>2.hours.ago</li>
+		<li>2.class # =&gt; Fixnum</li>
+		<li>2.class.instance_methods &#8211; Object.instance_methods</li>
+		<li>&#8220;andreas&#8221;.capitalize</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Constants</h1>
+
+
+	<ul>
+	<li>Constants defined in a class/module are available within that class/module and outside the class with the scope operator ::</li>
+		<li>Constants defined outside any class/module can be accessed anywhere</li>
+		<li>Constants cannot be defined in methods</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Introspection</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+andreas = Person.new("Andreas")
+andreas.inspect # =&gt; #&lt;Person:0x1cf34 @name="Andreas"&gt;
+
+andreas.class # =&gt; Person
+andreas.class.superclass # =&gt; Object
+andreas.class.superclass.superclass # =&gt; nil
+
+andreas.class.ancestors.join(", ") # Person, Object, Kernel
+
+Person.instance_methods(false) # =&gt; say_hi
+Kernel.methods.sort.join("\n") # =&gt; All methods in Kernel module
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Arithmetic and Conversions</h1>
+
+
+<div class="code-tiny">
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+2.class == Fixnum
+Fixnum.superclass == Integer
+Integer.superclass == Numeric
+
+3.0.class == Float
+Float.superclass == Numeric
+
+2/3 == 0
+2/3.0 # =&gt; 0.6666667
+2 + 3.0 == 5.0
+"2".to_i + "3.0".to_f == 5.0
+
+10000000000.class == Bignum
+Bignum.superclass == Integer
+
+2 + "3" # =&gt; TypeError: String can’t be coerced into Fixnum
+</pre></div>
+
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>String Class</h1>
+
+
+<div class="code-tiny">
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+"ruby".upcase + " " + "rails".capitalize # =&gt; RUBY Rails
+
+"time is: #{Time.now}\n second line" 
+
+'no interpolation "here" #{Time.now}' # =&gt; no interpolation "here" #{Time.now}
+
+"I" &lt;&lt; "Go" &lt;&lt; "Ruby" # =&gt; IGoRuby
+
+%Q{"C" and "Java"} # =&gt; "C" and "Java" 
+
+%q{single 'quoted'} # =&gt; single 'quoted'
+
+&lt;&lt;-END
+    A here
+    document at #{Time.now}
+END
+</pre></div>
+
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>Array Class</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">a = ["Ruby", 99, 3.14]
+a[1] == 99
+a &lt;&lt; "Rails" 
+['C', 'Java', 'Ruby'] == %w{C Java Ruby}
+[1, 2, 3].map { |x| x**2 }.join(", ")
+[1, 2, 3].select { |x| x % 2 == 0 }
+[1, 2, 3].reject { |x| x &lt; 3 }
+[1, 2, 3].inject { |sum, i| sum + i }
+
+[1, [2, 3]].flatten! # =&gt; [1, 2, 3]
+
+%w{C Java Ruby}.include?("C") # =&gt; true
+
+fruits = ['apple', 'banana']
+fruits += ['apple'] unless fruits.include?('apple')
+fruits | ['apple', 'banana', 'pear'] # =&gt; ['apple', 'banana', 'pear']
+fruits &#38; ['apple', 'banana', 'pear'] # =&gt; ['apple', 'banana']
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/array.rb">code/ruby/array.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Hash Class</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols">h = {:lang =&gt; 'Ruby', :framework =&gt; 'Rails'}
+h[:lang] == 'Ruby'
+h[:perl] == nil
+puts h.inspect
+env = {"USER" =&gt; "peter", "SHELL" =&gt; "/bin/bash"}
+env.each {|k, v| puts "#{k}=#{v}" }
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/hash.rb">code/ruby/hash.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Symbols</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols"># Symbols start with a colon
+:action.class == Symbol
+:action.to_s == "action" 
+:action == "action".to_sym
+
+# There is only one instance of every symbol
+:action.equal?(:action) # =&gt; true
+'action'.equal?('action') # =&gt; false
+
+# Symbols are typically used as keys in hashes
+my_hash = {:controller =&gt; "home", :action =&gt; "index"}
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/symbol.rb">code/ruby/symbol.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>More About Methods</h1>
+
+
+	<ul>
+	<li>Arbitrary number of arguments: def my_methods(<strong>args)</li>
+		<li>Converting Array to arguments: my_method([a, b]</strong>)</li>
+		<li>Dynamic method invocation: object.send(:method_name)</li>
+		<li>Duck typing: object.respond_to?(:method_name)</li>
+		<li>If the last argument is a Hash, the braces can be omitted: link_to(&#8220;Home&#8221;, :controller =&gt; &#8220;home&#8221;)</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Range Class</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols"># Two dots is inclusive, i.e. 1 to 5
+(1..5).each { |x| puts x**2 } 
+
+# Three dots excludes the last item, i.e. 1 to 4
+(1...5).each { |x| puts x }
+
+(1..3).to_a == [1, 2, 3]
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/range.rb">code/ruby/range.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Structs</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols">Rating = Struct.new(:name, :ratings) 
+rating = Rating.new("Rails", [ 10, 10, 9.5, 10 ]) 
+
+puts rating.name
+puts rating.ratings
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/struct.rb">code/ruby/struct.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Exceptions</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols">begin 
+  raise(ArgumentError, "No file_name provided") if !file_name
+  content = load_blog_data(file_name)
+  raise "Content is nil" if !content 
+rescue BlogDataNotFound 
+  STDERR.puts "File #{file_name} not found" 
+rescue BlogDataConnectError
+  @connect_tries ||= 1
+  @connect_tries += 1
+  retry if @connect_tries &lt; 3 
+  STDERR.puts "Invalid blog data in #{file_name}" 
+rescue Exception =&gt; exc 
+  STDERR.puts "Error loading #{file_name}: #{exc.message}" 
+  raise
+end
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/exceptions.rb">code/ruby/exceptions.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>if, unless, and the ? Operator</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols">message = if count &gt; 10
+            "Try again" 
+          elsif tries == 3
+            "You lose" 
+          else
+            "Enter command" 
+          end
+
+raise "Unauthorized" if !current_user.admin?
+raise "Unauthorized" unless current_user.admin?
+
+status = input &gt; 10 ? "Number too big" : "ok" 
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/if_and_unless.rb">code/ruby/if_and_unless.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Iterators: while, until, for, break, and next</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">while count &lt; 100
+  puts count
+  count += 1
+end
+
+payment.make_request while (payment.failure? and payment.tries &lt; 3)
+
+for user in @users
+  next if user.admin?
+  if user.paid?
+    break
+  end
+end
+
+until count &gt; 5
+  puts count
+  count += 1
+end
+
+puts(count += 1) until count &gt; 5
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/iterators.rb">code/ruby/iterators.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Case</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">x = 11
+case x
+when 0
+when 1, 2..5
+  puts "Second branch" 
+when 6..10
+  puts "Third branch" 
+when *[11, 12]
+  puts "Fourth branch" 
+when String: puts "Fifth branch" 
+when /\d+\.\d+/
+  puts "Sixth branch" 
+when x.to_s.downcase == "peter" 
+  puts "Seventh branch" 
+else
+  puts "Eight branch" 
+end</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/case.rb">code/ruby/case.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Blocks &#8211; Usage Examples</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols"># Iteration
+[1, 2, 3].each { |item| puts item }
+
+# Resource Management
+File.open("file.txt", "w") do |file|
+  file.puts "foobar" 
+end
+
+# Callbacks
+widget.on_button_press do
+  puts "Got button press" 
+end
+
+# Convention: one-line blocks use {...} and multiline
+# blocks use do...end
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/blocks.rb">code/ruby/blocks.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Common String Operations</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">"  ".empty? == true
+IO.read(__FILE__).each_with_index { |line, i| puts "#{i}: #{line}" }
+"abc".scan(/./).each { |char| char.upcase }
+"we split words".split.join(", ")
+"    strip space   ".strip
+sprintf("value of %s is %.2f", "PI", 3.1416)
+"I Go Ruby"[2, 2] == "I Go Ruby"[2..3] # =&gt; "Go" 
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/common_string.rb">code/ruby/common_string.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>The dup Method and Method Arguments</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols"># Methods that change their receiver end with an exclamation mark by convention.
+# If you need to invoke an exclamation mark method on a method argument and you want
+# to avoid the object from being changed, you can duplicate the object first
+# with the Object#dup method. Core classes such as String, Hash, and Array all have
+# meaningful implementations of the dup method. Here is an example from Rails:
+
+class ActiveRecord::Base
+  def attributes=(new_attributes)
+    return if new_attributes.nil?
+    attributes = new_attributes.dup # duplicate argument to avoid changing it
+    attributes.stringify_keys! # modify the duplicated object
+    # ... method continues here
+  end
+end</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/dup.rb">code/ruby/dup.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Regular Expressions</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">"Ruby" =~ /^(ruby|python)$/i
+"Go\nRuby" =~ /Go\s+(\w+)/m; $1 == "Ruby" 
+"I Go Ruby" =~ /go/i; $&#38; == "Go"; $` == "I "; $' == " Ruby" 
+pattern = "."; Regexp.new(Regexp.escape(pattern))
+"I Go Ruby"[/(go)/i, 1] == "Go" 
+puts "I Go Ruby".gsub(%r{Ruby}, '\0 or I go bananas')
+"I Go Ruby".gsub(/ruby/i) { |lang| lang.upcase }
+line = "I Go Ruby" 
+m, who, verb, what = *line.match(/^(\w+)\s+(\w+)\s+(\w+)$/)
+# \s, \d, [0-9], \w - space, digit, and word character classes
+# ?, *, +, {m, n}, {m,}, {m} - repetition
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/regexp.rb">code/ruby/regexp.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Invoking External Programs</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">system("ls -l")
+puts $?.exitstatus if !$?.success?
+puts `ls -l`
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/external.rb">code/ruby/external.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>RDoc and Option Parsing</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">#!/usr/bin/env ruby
+# == Synopsis
+# This script takes photographs living locally on my desktop or laptop
+# and publishes them to my homepage at http://marklunds.com.
+#
+# == Usage
+#
+# Copy config file publish-photos.yml.template to publish-photos.yml
+# and edit as appropriate.
+#
+# ruby publish-photos [ -h | --help ] &lt;photo_dir1&gt; ... &lt;photo_dirN&gt;
+
+# Load the Rails environment
+require File.dirname(__FILE__) + '/../config/environment'
+require 'optparse'
+require 'rdoc/usage'
+
+opts = OptionParser.new
+opts.on("-h", "--help") { RDoc::usage('usage') }
+opts.on("-q", "--quiet") { Log::Logger.verbose = false }
+opts.parse!(ARGV) rescue RDoc::usage('usage')
+
+Photos::Publisher(ARGV)
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/rdoc_options.rb">code/ruby/rdoc_options.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Ruby on the Command Line</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Query and replace
+ruby -pi.bak -e "gsub(/Perl/, 'Ruby')" *.txt
+
+# Grep
+ruby -n -e "print if /Ruby/" *.txt
+ruby -e "puts ARGF.grep(/Ruby/)" *.txt
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Open Class Definitions and Method Aliasing</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Peter
+  def say_hi
+    puts "Hi" 
+  end
+end
+
+class Peter
+  alias_method :say_hi_orig, :say_hi
+  def say_hi
+    puts "Before say hi" 
+    say_hi_orig
+    puts "After say hi" 
+  end
+end
+
+Peter.new.say_hi
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/open_classes.rb">code/ruby/open_classes.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Core Classes are Also Open</h1>
+
+
+<div class="code-small">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Integer
+  def even?
+    (self % 2) == 0
+  end
+end
+
+p (1..10).select { |n| n.even? } # =&gt; [2, 4, 6, 8, 10]
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/open_core.rb">code/ruby/open_core.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>method_missing: <span class="caps">A VCR</span></h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class VCR
+  def initialize
+    @messages = []
+  end
+
+  def method_missing(method, *args, &#38;block)
+    @messages &lt;&lt; [method, args, block]
+  end
+
+  def play_back_to(obj)
+    @messages.each do |method, args, block|
+      obj.send(method, *args, &#38;block)
+    end
+  end
+end
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/vcr.rb">code/ruby/vcr.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Using the <span class="caps">VCR</span></h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">require 'vcr'
+
+vcr = VCR.new
+vcr.gsub! /Ruby/, "Crazy" 
+vcr.upcase!
+object = "I Go Ruby" 
+vcr.play_back_to(object)
+puts object
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/vcr_usage.rb">code/ruby/vcr_usage.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>const_missing &#8211; for Auto Loading Classes</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">def Object.const_missing(name) 
+  @looked_for ||= {} 
+  str_name = name.to_s 
+  raise "Class not found: #{name}" if @looked_for[str_name] 
+  @looked_for[str_name] = 1 
+  file = str_name.downcase 
+  require file 
+  klass = const_get(name) 
+  return klass if klass 
+  raise "Class not found: #{name}" 
+end
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/const_missing.rb">code/ruby/const_missing.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>eval and binding</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">def evaluate_code(code, binding)
+  a = 2
+  eval code, binding
+end
+
+a = 1
+evaluate_code("puts a", binding) # =&gt; 1
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/eval.rb">code/ruby/eval.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>instance_eval</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">require 'person_class'
+andreas = Person.new("Andreas")
+puts andreas.instance_eval { @name } # =&gt; Andreas
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/instance_eval.rb">code/ruby/instance_eval.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>class_eval and module_eval</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Person
+  def self.add_method(method)
+    class_eval %Q{
+      def #{method}
+        puts "method #{method} invoked" 
+      end
+    }
+  end    
+
+  add_method(:say_hi)
+end
+
+Person.new.say_hi
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/class_eval.rb">code/ruby/class_eval.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>define_method</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class Array
+  {:second =&gt; 1, :third =&gt; 2}.each do |method,element|
+    define_method(method) do
+      self[element]
+    end
+  end
+end
+
+array = %w(A B C)
+puts array.first # =&gt; A
+puts array.second # =&gt; B
+puts array.third # =&gt; C
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/define_method.rb">code/ruby/define_method.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Object Space</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">ObjectSpace.each_object(Numeric) { |n| puts n }
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/object_space.rb">code/ruby/object_space.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Class Reflection</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols"># Using Class#superclass
+klass = Fixnum
+begin
+  print klass
+  klass = klass.superclass
+  print " &lt; " if klass
+end while klass
+# =&gt; Fixnum &lt; Integer &lt; Numeric &lt; Object
+
+# Using Class#ancestors
+Fixnum.ancestors
+# =&gt; Fixnum, Integer, Precision, Numeric, Comparable, Object, Kernel
+
+# Inspecting methods and variables
+Fixnum.public_instance_methods(false)
+Fixnum.class_variables
+Fixnum.constants
+1.instance_variables
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/class_reflection.rb">code/ruby/class_reflection.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>System Hooks: Class#inherited</h1>
+
+
+<div class="code-tiny">
+
+<pre name="code" class="ruby:nogutter:nocontrols">class A
+  @@subclasses = {}  
+  # Invoked when a new class is created that extends this class
+  def self.inherited(child)
+    puts "inherited" 
+    @@subclasses[self] ||= []
+    @@subclasses[self] &lt;&lt; child
+  end
+  
+  def self.subclasses
+    @@subclasses[self]
+  end
+end
+
+class B &lt; A
+end
+
+puts A.subclasses
+</pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/inherited.rb">code/ruby/inherited.rb</a></div>
+
+</div>
+<div class="slide">
+
+	<h1>Ruby Load Path and Auto Loading in Rails</h1>
+
+
+	<ul>
+	<li>The Ruby load path is stored in $: and is used when you require code</li>
+		<li>Models, views, controllers, and helpers under the app dir are loaded automatically</li>
+		<li>Classes under lib are also loaded automatically</li>
+		<li>You can add load paths in config/environment.rb</li>
+		<li>Class and module names must correspond to the file path where they are defined for auto loading to work</div></li>
+	</ul>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

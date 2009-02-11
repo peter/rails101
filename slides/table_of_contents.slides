@@ -1,0 +1,103 @@
+h1. Ruby on Rails 101
+
+<center>
+  <div style="margin: 40px; color: #993333; font-weight: bold; font-style: italic; font-size: 120%">
+    <p>
+      Presentation slides for a five day introductory course
+    </p>
+
+    <p>
+      by Peter Marklund
+    </p>
+  </div>
+</center>
+
+h1. Agenda
+
+<table id="agenda" border="1" style="font-size: 80%;">
+  <tr>
+    <th>
+      Monday
+    </th>
+    <th>
+      Tuesday
+    </th>
+    <th>
+      Wednesday
+    </th>
+    <th>
+      Thursday
+    </th>
+    <th>
+      Friday
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>Rails Introduction</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>Migrations</li>
+        <li>ActiveRecord, ActionController, and ActionView Basics</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+      <li>ActiveRecord Associations, Validations, and Callbacks</li>
+      <li>Forms</li>
+      <li>Filters</li>
+      <li>Caching</li>
+      </ul>
+    </td>
+    <td><ul>
+      <li>Routing</li>
+      <li>REST</li>
+      <li>ActionMailer</li>
+      <li>Plugins</li>
+      <li>ActiveSupport</li>
+    </ul></td>
+    <td><ul>
+      <li>Exercises</li>
+      <li>Building your own app</li>
+    </ul></td>
+  </tr>
+  <tr>
+    <td><ul>
+      <li>Ruby</li>
+    </ul></td>
+    <td><ul>
+      <li>Testing</li>
+    </ul></td>
+    <td><ul>
+      <li>AJAX</li>
+    </ul></td>
+    <td><ul>
+      <li>Deployment</li>
+      <li>Security</li>
+      <li>Performance</li>
+    </ul></td>
+    <td><ul>
+      <li>Exercises</li>
+      <li>Building your own app</li>
+    </ul></td>
+  </tr>
+</table>
+
+h1. Table of Contents
+
+"Rails Introduction":rails_introduction.html
+
+"Ruby":ruby.html
+
+"Migrations":migrations.html
+
+"I18n"
+
+h1. License
+
+This work is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/us" target="commons">Creative Commons Attribution 3.0 United States License</a>.
+
+The material was originally developed by Peter Marklund for a five day Ruby on Rails course in June 2007 in Sweden. It was converted from Keynote to s5/codex format and updated for Rails 2.3 in February 2009. Please direct any feedback to the author at <a href="mailto:peter@marklunds.com">peter@marklunds.com</a> or via <a href="http://marklunds.com">http://marklunds.com</a>.

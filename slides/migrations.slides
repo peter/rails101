@@ -1,0 +1,43 @@
+h1. Migrations
+
+h1. Overview
+
+* A way to evolve your database schema over time
+* Migrations use a database independent Ruby API
+* script/generate migration (creates migration file)
+* Each migration file is prefixed by a unique time stamp
+* Migration classes extend ActiveRecord::Migration and have an up and a down method
+* Rails keeps track of which migrations have been run in the schema_migrations table
+* rake db:migrate (runs new migrations)
+
+h1. Managing Tables and Columns
+
+* create_table, add_column, change_column, rename_column, rename_table, add_index
+* Column types: binary, boolean, date, datetime, decimal, float, integer, string, text, time, timestamp
+* Column options: :null, :limit, :default
+* Table options: :primary_key, :id, :force, :options
+* Execute custom SQL with execute("any SQL you like here")
+
+h1. Things to be Aware of
+
+* You can use ActiveRecord classes in migrations, but this is fragile as the class definitions might change over time
+* Foreign keys you have to create yourself. You can use a helper module or a <a href="http://github.com/harukizaemon/foreign_key_migrations/tree/master" target="foreign">plugin</a> for this.
+* Good practice is to backup your production data before you run a migration
+* You can see the schema definition in db/schema.rb or db/development_structure.rb if config.active_record.schema_format = :sql
+
+h1. Two Special Columns
+
+<div style="border: 40px; font-size: 120%">
+*created_at* and *updated_at* are maintained automatically by Rails and keep track of when a record was created and last updated
+</div>
+
+h1. Migration Example
+
+:inlinecode
+create_table "users", :force => true do |t|
+  t.string :login, :email, :remember_token
+  t.string :salt, :crypted_password, :limit => 40
+  t.datetime :remember_token_expires_at
+  t.timestamps # created_at and updated_at
+end
+:endinlinecode

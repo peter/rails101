@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Rails Introduction</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Kung-Fu</h1>
+
+
+<center>
+  <div style="margin: 40px">
+    <cite>&#8220;Ruby on Rails is astounding. Using it is like watching a kung-fu movie, where a dozen bad-ass frameworks prepare to beat up the little newcomer only to be handed their asses in a variety of imaginative ways.&#8221;</cite>
+  </div>
+-Nathan Torkington, O&#8217;Reilly Program Chair for <span class="caps">OSCON</span>
+</center>
+
+</div>
+<div class="slide">
+
+	<h1>Installation</h1>
+
+
+	<ul>
+	<li>Windows &#8211; <a href="http://instantrails.rubyforge.org/wiki/wiki.pl">InstantRails</a> offers a one-click installer</li>
+		<li>Mac &#8211; Ruby 1.8.6 is pre-installed on Mac as of 10.4.6 (Tiger)</li>
+		<li>Linux &#8211; there are packages for most distributions</li>
+		<li>Editors: TextMate (OS X), E Text Editor (Windows), jEdit, SciTE, RadRails, NetBeans, 3rdRail, IntelliJ <span class="caps">IDEA</span>, vim, Emacs</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Rails Background</h1>
+
+
+	<ul>
+	<li>Jason Fried + David Heinemeier Hanson =&gt; BaseCamp, Ruby on Rails</li>
+		<li>Java, <span class="caps">PHP</span> =&gt; Ruby</li>
+		<li>Hottest Hacker on the Earth, Best Hacker of the year 2005, Jolt Awards 2006</li>
+		<li><a href="https://gettingreal.37signals.com">Getting Real</a> &#8211; Less is More</li>
+		<li>Dave Thomas and the <a href="http://www.pragprog.com">Pragmatic Programmers</a></li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Rails Elevator Pitch</h1>
+
+
+<div style="margin: 40px; color: #993333; font-weight: bold; font-style: italic; font-size: 120%; text-align: center">
+Ruby on Rails is an open-source web framework that&#8217;s optimized for programmer happiness and sustainable productivity. It let&#8217;s you write beautiful code by favoring convention over configuration.
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>Rails Philosophy and Strengths</h1>
+
+
+	<ul>
+	<li>Ruby &#8211; less and more readable code, shorter development times, simple but powerful, no compilation cycle</li>
+		<li>Convention over configuration =&gt; almost no config files, predefined directory structure, naming conventions =&gt; less code, easier maintenance</li>
+		<li>Best practices: <span class="caps">MVC</span>, DRY, Testing</li>
+		<li>Almost everything in Rails is Ruby code (SQL and JavaScript are abstracted)</li>
+		<li>Integrated <span class="caps">AJAX</span> support. Web services with <span class="caps">REST</span>.</li>
+		<li>Good community, tools, and documentation</li>
+		<li>Extracted from a real application</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">MVC</span> Request Cycle</h1>
+
+
+<center>
+  <img height="250" src="../lib/images/mvc.jpg"/>
+</center>
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">MVC</span> Request Cycle</h1>
+
+
+	<ol>
+	<li>A request is made from the browser to the <span class="caps">URL</span>
+    http://localhost:3000/users/show/1.</li>
+	</ol>
+
+
+	<ol>
+	<li>A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the <span class="caps">URI</span> /users/show/1. The default route &#8217;:controller/:action/:id&#8217; matches the <span class="caps">URI</span> and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.</li>
+	</ol>
+
+
+	<ol>
+	<li>The show method in the users controller fetches the user model object from the database with id equal to 1.</li>
+	</ol>
+
+
+	<ol>
+	<li>The show method renders its view (the file show.rhtml) which generates an <span class="caps">HTML</span> page with the user info from the user model object.</li>
+	</ol>
+
+
+	<ol>
+	<li>Rails sends the generated <span class="caps">HTML</span> from the view back to the browser.</li>
+	</ol>
+
+
+</div>
+<div class="slide">
+
+	<h1>Building a Demo Application</h1>
+
+
+	<ul>
+	<li>Installing plugins with script/plugin install</li>
+		<li>Code generation with script/generate model|scaffold</li>
+		<li>Migrations</li>
+		<li>The <span class="caps">MVC</span> request cycle</li>
+		<li>Rails command line &#8211; script/console</li>
+		<li>Testing with rake</li>
+		<li>Routes &#8211; :controller/:action/:id</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Directory Structure</h1>
+
+
+<pre style="font-size: 70%; margin-left: 50px">
+app
+      controllers
+      helpers
+      models
+      views
+        layouts
+config
+      environment.rb
+      routes.rb
+db
+      database.yml
+      migrations
+lib
+log
+public  
+script
+test
+vendor
+  plugins
+  gems
+  rails
+</pre>
+
+</div>
+<div class="slide">
+
+	<h1>Rake</h1>
+
+
+	<ul>
+	<li>Rake lets you define a dependency tree of tasks to be executed.</li>
+		<li>Rake tasks are loaded from the file Rakefile</li>
+		<li>Rails rake tasks are under railties/lib/tasks</li>
+		<li>You can put your own tasks under lib/tasks</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Useful Rake Tasks</h1>
+
+
+	<ul>
+	<li>db:migrate</li>
+		<li>db:sessions:create</li>
+		<li>doc:app</li>
+		<li>doc:rails</li>
+		<li>log:clear</li>
+		<li>rails:freeze:gems</li>
+		<li>rails:freeze:edge</li>
+		<li>test (default task)</li>
+		<li>stats</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>script/*</h1>
+
+
+	<ul>
+	<li>about</li>
+		<li>console</li>
+		<li>dbconsole</li>
+		<li>generate/destroy</li>
+		<li>plugin</li>
+		<li>runner</li>
+		<li>server</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Environments</h1>
+
+
+	<ul>
+	<li>Rails ships with three environments: development, test, and production</li>
+		<li>Every environment has a database connection in config/database.yml and a configuration file under config/environments.</li>
+		<li>It&#8217;s easy to add custom environments, i.e. for a staging server</li>
+		<li>Rails always runs in only one environment, dictated by <span class="caps">ENV</span>[&#8216;RAILS_ENV&#8217;] (same as <span class="caps">RAILS</span>_ENV and Rails.env)</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>config/environment.rb and config/initializers</h1>
+
+
+	<ul>
+	<li>log level</li>
+		<li>how sessions are stored</li>
+		<li>schema format</li>
+		<li>gem dependencies</li>
+		<li>pluralization rules</li>
+		<li>Add your own initializers as needed</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Debugging</h1>
+
+
+	<ul>
+	<li>raise @object.inspect</li>
+		<li>raise User.instance_methods(false).sort.join(&#8221;, &#8220;)</li>
+		<li>&lt;%= debug @object %&gt;</li>
+		<li>script/console</li>
+		<li>The error log (at log/development.log)</div></li>
+	</ul>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

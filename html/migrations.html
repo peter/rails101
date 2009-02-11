@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Migrations</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Overview</h1>
+
+
+	<ul>
+	<li>A way to evolve your database schema over time</li>
+		<li>Migrations use a database independent Ruby <span class="caps">API</span></li>
+		<li>script/generate migration (creates migration file)</li>
+		<li>Each migration file is prefixed by a unique time stamp</li>
+		<li>Migration classes extend ActiveRecord::Migration and have an up and a down method</li>
+		<li>Rails keeps track of which migrations have been run in the schema_migrations table</li>
+		<li>rake db:migrate (runs new migrations)</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Managing Tables and Columns</h1>
+
+
+	<ul>
+	<li>create_table, add_column, change_column, rename_column, rename_table, add_index</li>
+		<li>Column types: binary, boolean, date, datetime, decimal, float, integer, string, text, time, timestamp</li>
+		<li>Column options: :null, :limit, :default</li>
+		<li>Table options: :primary_key, :id, :force, :options</li>
+		<li>Execute custom <span class="caps">SQL</span> with execute(&#8220;any <span class="caps">SQL</span> you like here&#8221;)</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Things to be Aware of</h1>
+
+
+	<ul>
+	<li>You can use ActiveRecord classes in migrations, but this is fragile as the class definitions might change over time</li>
+		<li>Foreign keys you have to create yourself. You can use a helper module or a <a href="http://github.com/harukizaemon/foreign_key_migrations/tree/master" target="foreign">plugin</a> for this.</li>
+		<li>Good practice is to backup your production data before you run a migration</li>
+		<li>You can see the schema definition in db/schema.rb or db/development_structure.rb if config.active_record.schema_format = :sql</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Two Special Columns</h1>
+
+
+<div style="border: 40px; font-size: 120%">
+<strong>created_at</strong> and <strong>updated_at</strong> are maintained automatically by Rails and keep track of when a record was created and last updated
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>Migration Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+create_table "users", :force =&gt; true do |t|
+  t.string :login, :email, :remember_token
+  t.string :salt, :crypted_password, :limit =&gt; 40
+  t.datetime :remember_token_expires_at
+  t.timestamps # created_at and updated_at
+end
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

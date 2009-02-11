@@ -1,0 +1,150 @@
+h1. Rails Introduction
+
+h1. Kung-Fu
+
+<center>
+  <div style="margin: 40px">
+    ??"Ruby on Rails is astounding. Using it is like watching a kung-fu movie, where a dozen bad-ass frameworks prepare to beat up the little newcomer only to be handed their asses in a variety of imaginative ways."??
+  </div>
+-Nathan Torkington, O'Reilly Program Chair for OSCON
+</center>
+
+h1. Installation
+
+* Windows - "InstantRails":http://instantrails.rubyforge.org/wiki/wiki.pl offers a one-click installer
+* Mac - Ruby 1.8.6 is pre-installed on Mac as of 10.4.6 (Tiger)
+* Linux - there are packages for most distributions
+* Editors: TextMate (OS X), E Text Editor (Windows), jEdit, SciTE, RadRails, NetBeans, 3rdRail, IntelliJ IDEA, vim, Emacs
+
+h1. Rails Background
+
+* Jason Fried + David Heinemeier Hanson => BaseCamp, Ruby on Rails
+* Java, PHP => Ruby
+* Hottest Hacker on the Earth, Best Hacker of the year 2005, Jolt Awards 2006
+* "Getting Real":https://gettingreal.37signals.com - Less is More
+* Dave Thomas and the "Pragmatic Programmers":http://www.pragprog.com
+
+h1. Rails Elevator Pitch
+
+<div style="margin: 40px; color: #993333; font-weight: bold; font-style: italic; font-size: 120%; text-align: center">
+Ruby on Rails is an open-source web framework that's optimized for programmer happiness and sustainable productivity. It let's you write beautiful code by favoring convention over configuration.
+</div>
+
+h1. Rails Philosophy and Strengths
+
+* Ruby - less and more readable code, shorter development times, simple but powerful, no compilation cycle
+* Convention over configuration => almost no config files, predefined directory structure, naming conventions => less code, easier maintenance
+* Best practices: MVC, DRY, Testing
+* Almost everything in Rails is Ruby code (SQL and JavaScript are abstracted)
+* Integrated AJAX support. Web services with REST.
+* Good community, tools, and documentation
+* Extracted from a real application
+
+h1. MVC Request Cycle
+
+<center>
+  <img height="250" src="../lib/images/mvc.jpg"/>
+</center>
+
+h1. MVC Request Cycle
+
+# A request is made from the browser to the URL
+    http://localhost:3000/users/show/1. 
+
+# A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the URI /users/show/1. The default route ':controller/:action/:id' matches the URI and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.
+
+# The show method in the users controller fetches the user model object from the database with id equal to 1.
+
+# The show method renders its view (the file show.rhtml) which generates an HTML page with the user info from the user model object.
+
+# Rails sends the generated HTML from the view back to the browser.
+
+h1. Building a Demo Application
+
+* Installing plugins with script/plugin install
+* Code generation with script/generate model|scaffold
+* Migrations
+* The MVC request cycle
+* Rails command line - script/console
+* Testing with rake
+* Routes - :controller/:action/:id
+
+h1. Directory Structure
+
+<pre style="font-size: 70%; margin-left: 50px">
+app
+      controllers
+      helpers
+      models
+      views
+        layouts
+config
+      environment.rb
+      routes.rb
+db
+      database.yml
+      migrations
+lib
+log
+public  
+script
+test
+vendor
+  plugins
+  gems
+  rails
+</pre>
+
+h1. Rake
+
+* Rake lets you define a dependency tree of tasks to be executed.
+* Rake tasks are loaded from the file Rakefile
+* Rails rake tasks are under railties/lib/tasks
+* You can put your own tasks under lib/tasks
+
+h1. Useful Rake Tasks
+
+* db:migrate
+* db:sessions:create
+* doc:app
+* doc:rails
+* log:clear
+* rails:freeze:gems
+* rails:freeze:edge
+* test (default task)
+* stats
+
+h1. script/*
+
+* about
+* console
+* dbconsole
+* generate/destroy
+* plugin
+* runner
+* server
+
+h1. Environments
+
+* Rails ships with three environments: development, test, and production
+* Every environment has a database connection in config/database.yml and a configuration file under config/environments.
+* It's easy to add custom environments, i.e. for a staging server
+* Rails always runs in only one environment, dictated by ENV['RAILS_ENV'] (same as RAILS_ENV and Rails.env)
+
+h1. config/environment.rb and config/initializers
+
+* log level
+* how sessions are stored
+* schema format
+* gem dependencies
+* pluralization rules
+* Add your own initializers as needed
+
+h1. Debugging
+
+* raise @object.inspect
+* raise User.instance_methods(false).sort.join(", ")
+* <%= debug @object %>
+* script/console
+* The error log (at log/development.log)
+

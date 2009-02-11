@@ -1,0 +1,324 @@
+h1. Ruby
+
+<center>
+  <div style="margin: 40px">
+    ??"I always thought Smalltalk would beat Java. I just didn't know it would be called 'Ruby' when it did"??
+  </div>
+- Kent Beck
+</center>
+
+h1. The Ruby Language
+
+* Generic, interpreted, <a href="http://en.wikipedia.org/wiki/Reflection_(computer_science)" title="reflection is the process by which a computer program can observe and modify its own structure" target="_reflective">reflective</a>, with garbage collection
+* Optimized for people rather than computers
+* More powerful than Perl, more object oriented than Python
+* Everything is an object. There are no primitive types.
+* Strong dymaic typing
+
+h1. Everything in Ruby is
+
+* Assignment - binding names to objects
+* Control structures - if/else, while, case
+* Sending messages to objects - methods
+
+h1. Ruby is Line Oriented
+
+* Statements are separated by line breaks
+* You can put several statements on one line if you separate them by semicolon
+* For long statements you can escape the line break with backslash
+* After an operator, comma, or the dot in a method invocation you can have a line break and Ruby will know that the statement continues on the next line
+* You can have line breaks in strings
+
+h1. Defining a Class and Instantiating an Object
+
+:code code/ruby/person.rb[class=code-small]
+
+h1. Class Inheritance
+
+:code code/ruby/programmer.rb[class=code-tiny]
+
+h1. Getter and Setter Methods
+
+:code code/ruby/getter_setter.rb[class=code-tiny]
+
+h1. attr_accessor
+
+:code code/ruby/attr_accessor.rb[class=code-tiny]
+
+h1. Variable/Method Ambiguity Gotcha
+
+:code code/ruby/variable_method.rb[class=code-tiny]
+
+h1. Methods
+
+* When invoking a method argument parenthesis are optional
+* Methods always have a receiver. The implicit receiver is self.
+* Methods are identified by their name only. No overloading on argument signatures.
+* There are class methods and instance methods
+* Methods can be public, protected, or private
+* The last evaluated expression in a method is the return value
+* Arguments can have default values: def my_method(a, b = {})
+
+h1. Class Methods
+
+:code code/ruby/class_methods.rb[class=code-tiny]
+
+h1. Singleton Classes and Methods
+
+:code code/ruby/singleton.rb[class=code-tiny]
+
+h1. Naming Conventions
+
+* MyClass
+* method_name, destructive_method!, question_method?, setter_method=
+* MY_CONSTANT = 3.14
+* local_variable = 3.14
+* @instance_variable
+* @@class_variable
+* $global_variable
+
+h1. Boolean Expressions
+
+* All objects evaluate to true except false and nil
+* false and true are the only instances of FalseClass and TrueClass
+* Boolean expressions return the last evaluated object
+* a and b or c <=> (a and b) or c
+* a = b and c <=> (a = b) and c
+* a = b && c <=> a = (b && c)
+* puts a if a = b # Using assignments in boolean expressions
+* a = true; b = false; a and b and c() # => c() is never invoked
+
+h1. Assignment
+
+* a, b = b, a # swapping values
+* a = 1; b = 1
+* a = b = 1
+* a += 1 # a = a + 1
+* a, b = [1, 2]
+* a = b || c
+* a ||= b
+
+h1. Idiom: Assignment with Boolean Expression
+
+:code code/ruby/assignment.rb[class=code-tiny]
+
+h1. Modules
+
+:code code/ruby/modules.rb[class=code-tiny]
+
+h1. Modules vs Classes
+
+* Modules model characteristics or properties of entities or things. Modules can’t be instantiated. Module names tend to be adjectives (Comparable, Enumerable etc.). A class can mix in several modules.
+
+* Classes model entities or things. Class names tend to be nouns. A class can only have one super class (Enumeration, Item etc.).
+
+h1. Everything is an Object
+
+* 2 + 2 is equivalent to 2+(2) and 2.send(:+, 2)
+* 2.hours.ago
+* 2.class # => Fixnum
+* 2.class.instance_methods - Object.instance_methods
+* "andreas".capitalize
+
+h1. Constants
+
+* Constants defined in a class/module are available within that class/module and outside the class with the scope operator ::
+* Constants defined outside any class/module can be accessed anywhere
+* Constants cannot be defined in methods
+
+h1. Introspection
+
+:inlinecode
+andreas = Person.new("Andreas")
+andreas.inspect # => #<Person:0x1cf34 @name="Andreas">
+
+andreas.class # => Person
+andreas.class.superclass # => Object
+andreas.class.superclass.superclass # => nil
+
+andreas.class.ancestors.join(", ") # Person, Object, Kernel
+
+Person.instance_methods(false) # => say_hi
+Kernel.methods.sort.join("\n") # => All methods in Kernel module
+:endinlinecode
+
+h1. Arithmetic and Conversions
+
+<div class="code-tiny">
+:inlinecode
+2.class == Fixnum
+Fixnum.superclass == Integer
+Integer.superclass == Numeric
+
+3.0.class == Float
+Float.superclass == Numeric
+
+2/3 == 0
+2/3.0 # => 0.6666667
+2 + 3.0 == 5.0
+"2".to_i + "3.0".to_f == 5.0
+
+10000000000.class == Bignum
+Bignum.superclass == Integer
+
+2 + "3" # => TypeError: String can’t be coerced into Fixnum
+:endinlinecode
+</div>
+
+h1. String Class
+
+<div class="code-tiny">
+:inlinecode
+"ruby".upcase + " " + "rails".capitalize # => RUBY Rails
+
+"time is: #{Time.now}\n second line"
+
+'no interpolation "here" #{Time.now}' # => no interpolation "here" #{Time.now}
+
+"I" << "Go" << "Ruby" # => IGoRuby
+
+%Q{"C" and "Java"} # => "C" and "Java"
+
+%q{single 'quoted'} # => single 'quoted'
+
+<<-END
+    A here
+    document at #{Time.now}
+END
+:endinlinecode
+</div>
+
+h1. Array Class
+
+:code code/ruby/array.rb[class=code-tiny]
+
+h1. Hash Class
+
+:code code/ruby/hash.rb[class=code-small]
+
+h1. Symbols
+
+:code code/ruby/symbol.rb[class=code-small]
+
+h1. More About Methods
+
+* Arbitrary number of arguments: def my_methods(*args)
+* Converting Array to arguments: my_method([a, b]*)
+* Dynamic method invocation: object.send(:method_name)
+* Duck typing: object.respond_to?(:method_name)
+* If the last argument is a Hash, the braces can be omitted: link_to("Home", :controller => "home")
+
+h1. Range Class
+
+:code code/ruby/range.rb[class=code-small]
+
+h1. Structs
+
+:code code/ruby/struct.rb[class=code-small]
+
+h1. Exceptions
+
+:code code/ruby/exceptions.rb[class=code-small]
+
+h1. if, unless, and the ? Operator
+
+:code code/ruby/if_and_unless.rb[class=code-small]
+
+h1. Iterators: while, until, for, break, and next
+
+:code code/ruby/iterators.rb[class=code-tiny]
+
+h1. Case
+
+:code code/ruby/case.rb[class=code-tiny]
+
+h1. Blocks - Usage Examples
+
+:code code/ruby/blocks.rb[class=code-small]
+
+h1. Common String Operations
+
+:code code/ruby/common_string.rb[class=code-tiny]
+
+h1. The dup Method and Method Arguments
+
+:code code/ruby/dup.rb[class=code-tiny]
+
+h1. Regular Expressions
+
+:code code/ruby/regexp.rb[class=code-tiny]
+
+h1. Invoking External Programs
+
+:code code/ruby/external.rb[class=code-tiny]
+
+h1. RDoc and Option Parsing
+
+:code code/ruby/rdoc_options.rb[class=code-tiny]
+
+h1. Ruby on the Command Line
+
+:inlinecode
+# Query and replace
+ruby -pi.bak -e "gsub(/Perl/, 'Ruby')" *.txt
+
+# Grep
+ruby -n -e "print if /Ruby/" *.txt
+ruby -e "puts ARGF.grep(/Ruby/)" *.txt
+:endinlinecode
+
+h1. Open Class Definitions and Method Aliasing
+
+:code code/ruby/open_classes.rb[class=code-tiny]
+
+h1. Core Classes are Also Open
+
+:code code/ruby/open_core.rb[class=code-small]
+
+h1. method_missing: A VCR
+
+:code code/ruby/vcr.rb[class=code-tiny]
+
+h1. Using the VCR
+
+:code code/ruby/vcr_usage.rb[class=code-tiny]
+
+h1. const_missing - for Auto Loading Classes
+
+:code code/ruby/const_missing.rb[class=code-tiny]
+
+h1. eval and binding
+
+:code code/ruby/eval.rb[class=code-tiny]
+
+h1. instance_eval
+
+:code code/ruby/instance_eval.rb[class=code-tiny]
+
+h1. class_eval and module_eval
+
+:code code/ruby/class_eval.rb[class=code-tiny]
+
+h1. define_method
+
+:code code/ruby/define_method.rb[class=code-tiny]
+
+h1. Object Space
+
+:code code/ruby/object_space.rb[class=code-tiny]
+
+h1. Class Reflection
+
+:code code/ruby/class_reflection.rb[class=code-tiny]
+
+h1. System Hooks: Class#inherited
+
+:code code/ruby/inherited.rb[class=code-tiny]
+
+h1. Ruby Load Path and Auto Loading in Rails
+
+* The Ruby load path is stored in $: and is used when you require code
+* Models, views, controllers, and helpers under the app dir are loaded automatically
+* Classes under lib are also loaded automatically
+* You can add load paths in config/environment.rb
+* Class and module names must correspond to the file path where they are defined for auto loading to work
