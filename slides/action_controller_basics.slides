@@ -1,3 +1,113 @@
 h1. Action Controller Basics
 
-h1. Controllers
+h1. Controllers and Actions
+
+* Controllers are Ruby classes that live under app/controllers
+* Controller classes extend the ActionController::Base class
+* An action is a public method in the controller
+* An action typically reads from the database and renders a view template or writes to the database and issues a redirect
+* An action is invoked by a request to a certain URL. The mapping of URLs to actions is called routing.
+
+h1. Controller Environment
+
+:inlinecode
+cookies[:login] = { :value => "peter", :expires => 1.hour.from_now }
+headers['Content-Type'] = 'application/pdf; charset=utf-8'
+params
+request: env, request_uri, get?, post?, xhr?, remote_ip
+response
+session[:user_id] = @user.id
+logger.warn("Something pretty bad happened")
+:endinlinecode
+
+h1. request.env
+
+:inlinecode
+HTTP_ACCEPT_ENCODING = gzip,deflate
+HTTP_USER_AGENT = Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3)
+SERVER_PROTOCOL = HTTP/1.1
+HTTP_CACHE_CONTROL = no-cache
+HTTP_ACCEPT_LANGUAGE = en-us,en;q=0.5
+HTTP_HOST = localhost:3000
+REMOTE_ADDR = 127.0.0.1
+REQUEST_PATH = /
+REQUEST_URI = /
+SERVER_PORT = 3000
+HTTP_ACCEPT = text/xml,application/xml,application/xhtml+xml,text/html
+HTTP_CONNECTION = keep-alive
+:endinlinecode
+
+h1. Rendering a Response
+
+* All actions must render a response or issue a redirect
+* A response is rendered with the render command
+* An action can only render a response or redirect once
+* Rails invokes render automatically if you don’t
+* Redirects are made with the redirect_to command
+* You may need to make sure you return from an action after an invocation of render or redirect_to
+
+h1. Render Examples
+
+:inlinecode
+render :text => "Hello World"
+render :action => "some_other_action", :layout => false
+render :template => "weblog/show"
+render :partial => "top_menu"
+render :xml => {:name => "David"}.to_xml # Renders '<name>David</name>'
+render :file => "/path/to/some/template.erb", :layout => true, :status => 404
+:endinlinecode
+
+h1. Redirect Examples
+
+:inlinecode
+redirect_to :back
+redirect_to("/help/order_entry.html")
+redirect_to :controller => 'blog', :action => 'list'
+redirect_to @article #=> redirects to url_for(@article)
+:endinlinecode
+
+h1. Cookies
+
+* A hash stored by the browser
+* cookies[:preference] = {
+  :value => 'ice cream',
+  :expires => 10.days.from_now,
+  :path => '/store'
+}
+* Valid options: :domain, :expires, :path, :secure, :value
+
+h1. Sessions
+
+* A hash that can be stored in a cookie (default), a database table, in the file system etc.
+* The session is keyed by the cookie _app_name_session
+* Avoid storing complex Ruby objects, instead put id:s in the session and keep data in the database, i.e. use session[:user_id] rather than session[:user]
+
+h1. Session Configuration
+
+:inlinecode
+# In config/initializers/session_store.rb
+ActionController::Base.session = {
+  :key         => '_demo_session',
+  :secret      => '62af9cd9dd2ac22e3e49a3254d2a27c75c67f46d489f7526cf5531dd46e81503a78cb16750ba90b8591c626ab817404f97c3039298f9e195b3a90c701f4d0b80'
+}
+
+# Use the database for sessions instead of the cookie-based default,
+# which shouldn't be used to store highly confidential information
+# (create the session table with "rake db:sessions:create")
+# ActionController::Base.session_store = :active_record_store
+:endinlinecode
+
+h1. Flash Messages
+
+:inlinecode
+* The flash is a way to set a text message to the user in one request and then display it in the next (typically after a redirect)
+* The flash is stored in the session
+* flash[:notice], flash[:error]
+* flash.now[:notice] = "Welcome" unless flash[:notice]
+* flash.keep(:notice)
+:endinlinecode
+
+h1. Best Practice
+
+* <b>Don't put SQL and too much code in your controllers/views - it's a code smell, and maybe the most common design mistake Rails developers make. Actions should be 3-4 lines that script business objects. The goal is to have fat models and skinny controllers.</b>
+* <b>Always access data via the logged in user object (i.e. prefer current_user.articles.find(params[:id]) over Article.find(params[:id])).</b>
