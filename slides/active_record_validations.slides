@@ -1,0 +1,8 @@
+h1. Active Record Validations
+
+h1. Saving without validation
+
+person = Person.find(5)
+person.age = -5
+person.save(false) # saves without validation
+person.update_attribute(:age, -5) # saves without validation

@@ -1,0 +1,520 @@
+h1. Active Record Basics
+
+h1. Fundamentals
+
+* One database table maps to one Ruby class
+* Ruby classes live under app/models and extend ActiveRecord::Base
+* Table names are plural and class names are singular
+* Database columns map to attributes, i.e. get and set methods, in the model class
+* All tables have an integer primary key, by convention called id
+* Database tables are created with migrations
+
+h1. Overriding Naming Conventions
+
+:inlinecode
+class MyModel < ActiveRecord::Base
+  self.table_name = 'my_legacy_table'
+  self.primary_key = 'my_id'
+  self.pluralize_table_names = false
+  self.table_name_prefix = 'my_app'
+end
+:endinlinecode
+
+h1. CRUD
+
+<table>
+  <tr>
+    <th>Operation</th>
+    <th>Method</th>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>create, new</td>
+  </tr>
+  <tr>
+    <td>Read</td>
+    <td>find, find_by_&lt;attr&gt;</td>
+  </tr>
+  <tr>
+    <td>Update</td>
+    <td>save, update_attributes</td>
+  </tr>
+  <tr>
+    <td>Delete</td>
+    <td>destroy</td>
+  </tr>
+</table>
+
+h1. create = new + save
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+user = User.new
+user.first_name = "Dave"
+user.last_name = "Thomas"
+user.save
+:endinlinecode
+    </td>
+    <td style="text-align: center">
+      &lt;=&gt;
+    </td>
+    <td>
+:inlinecode
+user = User.new(
+  :first_name => "Dave",
+  :last_name => "Thomas"
+)
+user.save
+:endinlinecode  
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+:inlinecode
+user.create(
+  :first_name => "Dave",
+  :last_name => "Thomas"
+)
+:endinlinecode     
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+
+h1. save!
+
+<table>
+  <tr>
+    <td colspan="2">
+:inlinecode
+user = User.new(
+  :first_name => "Dave",
+  :last_name => "Thomas"
+)
+:endinlinecode
+    </td>
+  </tr>
+  <tr>
+    <td>
+:inlinecode
+if user.save
+  # All is ok
+else
+  # Could not save user
+end
+:endinlinecode      
+    </td>
+    <td>
+:inlinecode
+begin
+  user.save!
+rescue ActiveRecord::RecordInvalid => e
+  # Could not save user
+end
+:endinlinecode            
+    </td>    
+  </tr>
+</table>
+
+h1. Column/Attribute Data Types
+
+<table>
+  <tr>
+    <th>MySQL</th>
+    <th>Ruby Class</th>
+  </tr>
+  <tr>
+    <td>integer</td>
+    <td>Fixnum</td>
+  </tr>
+  <tr>
+    <td>clob, blob, text</td>
+    <td>String</td>
+  </tr>
+  <tr>
+    <td>float, double</td>
+    <td>Float</td>
+  </tr>
+  <tr>
+    <td>char, varchar</td>
+    <td>String</td>
+  </tr>
+  <tr>
+    <td>datetime, time</td>
+    <td>Time</td>
+  </tr>
+</table>
+
+h1. Custom Attribute Accessors
+
+:inlinecode
+ class Song < ActiveRecord::Base
+  def length=(minutes)
+    # self[:length] = minutes*60
+    write_attribute(:length, minutes * 60)
+  end
+ 
+  def length
+    # self[:length] / 60
+    read_attribute(:length) / 60
+  end
+end
+:endinlinecode
+
+h1. Default Attribute Values
+
+:inlinecode
+class User < ActiveRecord::Base
+  def language
+    read_attribute(:language) || "sv"
+  end
+end
+:endinlinecode
+
+h1. Boolean Attributes
+
+* Everything except nil and false is true in Ruby
+* In MySQL boolean columns are char(1) with values 0 or 1, both of which are true in Ruby.
+* Instead of using user.admin use user.admin?
+* When you add the question mark, false is returned for all of the following: the number 0, one of the strings '0', 'f', 'false', '', or the constant false
+
+h1. find
+
+:inlinecode
+  User.find(:first) # => First user object
+  User.first # short hand for find(:first)
+  User.find(:last) # => Last user object
+  User.last # short hand for find(:last)
+  User.find(:all) # => Array with all User objects
+  User.all # short hand for find(:all)
+  User.find(3) # => User object with id 3
+:endinlinecode
+
+h1. find with :conditions
+
+:inlinecode
+User.find(:all, 
+  :conditions =>
+    ["first_name = ? and created_at > ?", "David", 1.year.ago])
+
+User.find(:all, 
+  :conditions => 
+    ["first_name = :first_name, last_name = :last_name",
+    {:first_name => "David", :last_name => "Letterman"}])
+  
+User.find(:all, 
+  :conditions => {:first_name => "Jamis", :last_name => "Buck"})
+
+User.find(:all, :conditions => [ "category IN (?)", categories])
+:endinlinecode
+
+h1. Everything is a find :all
+
+:inlinecode
+# select * from users limit 1
+User.find(:first) <=> User.find(:all, :limit => 1).first
+
+# select * from users where id = 1
+User.find(1) <=> User.find(:all, :conditions => "users.id = 1").first
+:endinlinecode
+
+h1. Like Clauses
+
+:inlinecode
+# This works
+User.find(:all,
+  :conditions => ["name like ?", "%" + params[:name] + "%")
+
+# This doesn't work
+User.find(:all,
+  :conditions => ["name like ‘%?%’", params[:name])
+:endinlinecode
+
+h1. Dynamic Finders
+
+:inlinecode
+User.find_by_first_name "Peter"
+User.find_all_by_last_name "Hanson"
+User.find_by_age "20"
+User.find_by_last_name("Buck",
+  :conditions => {:country = "Sweden", :age => 20..30})
+User.find_by_first_name_and_last_name "Andreas", "Kviby"
+:endinlinecode
+
+h1. RecordNotFound Exception
+
+:inlinecode
+User.exists?(999) # => false
+User.find(999) # => raises ActiveRecord::RecordNotFound
+User.find_by_id(999) # => nil
+User.find(:first, :conditions => {:id => 999}) # => nil
+:endinlinecode
+
+h1. Find or Create
+
+:inlinecode
+# No 'Summer' tag exists
+Tag.find_or_create_by_name("Summer") # equal to Tag.create(:name => "Summer")
+    
+# Now the 'Summer' tag does exist
+Tag.find_or_create_by_name("Summer") # equal to Tag.find_by_name("Summer")
+
+# No 'Winter' tag exists
+winter = Tag.find_or_initialize_by_name("Winter")
+winter.new_record? # true
+winter.save
+:endinlinecode
+
+h1. Update
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+order = Order.find(12)
+order.name = "Bill Gates"
+order.charge = 10000
+order.save!
+:endinlinecode
+    </td>
+    <td>
+      &lt;=&gt;
+    </td>
+    <td>
+:inlinecode
+order = Order.find(13)
+order.update_attributes!(
+  :name => "Bill Gates",
+  :charge => 10000
+)
+:endinlinecode      
+    </td>    
+  </tr>
+</table>
+
+h1. update_attributes is Syntactic Sugar
+
+:inlinecode
+def update_attributes(attributes)
+  self.attributes = attributes
+  save
+end
+      
+def update_attributes!(attributes)
+  self.attributes = attributes
+  save!
+end
+:endinlinecode
+
+h1. Locking
+
+:inlinecode
+# SELECT * FROM accounts WHERE (account.`id` = 1) FOR UPDATE
+account = Account.find(id, :lock => true)
+account.status = 'disabled'
+account.save!
+
+# Optimistic locking with integer column lock_version in the accounts table:
+account1 = Account.find(4)
+account2 = Account.find(4)
+account1.update_attributes(:status => 'disabled')
+account2.update_attributes(:status => 'enabled') # => Raises ActiveRecord::StaleObjectError
+:endinlinecode
+
+h1. destroy
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+# Instance method User#destroy
+User.count # => 5
+u = User.find(:first)
+u.destroy
+User.count # => 4
+:endinlinecode
+    </td>
+    <td>
+      &nbsp;
+    </td>
+  </tr>
+  <tr>
+    <td>
+:inlinecode
+# Class method User.destroy
+User.destroy(2, 3)
+User.count # => 2
+User.exists?(2) # => false
+User.find(:all).map(&:id) # => [4, 5]
+:endinlinecode
+    </td>
+    <td>
+:inlinecode
+# Class method User.destroy_all
+User.destroy_all("id >= 5")
+User.count # => 1
+User.destroy_all
+User.count # => 0
+:endinlinecode
+    </td>
+  </tr>
+</table>
+
+h1. destroy Class Methods
+
+:inlinecode
+def destroy(id)
+  if id.is_a?(Array)
+    id.map { |one_id| destroy(one_id) }
+  else
+    find(id).destroy
+  end
+end
+
+def destroy_all(conditions = nil)
+  find(:all, :conditions => conditions).each do |object|
+    object.destroy
+  end
+end
+:endinlinecode
+
+h1. delete: Does not Instantiate Objects
+
+:inlinecode
+#   Post.delete_all("person_id = 5 AND (category = 'Something' OR category = 'Else')")
+def delete_all(conditions = nil)
+  sql = "DELETE FROM #{quoted_table_name} "
+  add_conditions!(sql, conditions, scope(:find))
+  connection.delete(sql, "#{name} Delete all")
+end
+
+#   Todo.delete(1)
+#   Todo.delete([2,3,4])
+def delete(id)
+  delete_all([ "#{connection.quote_column_name(primary_key)} IN (?)", id ])
+end
+:endinlinecode
+
+h1. Calculations
+
+:inlinecode
+Person.minimum('age')
+Person.maximum('age')
+Person.sum('age')
+Person.count(:conditions => ["age > ?", 25])
+Person.average('age')
+Person.calculate(:std, :age)
+:endinlinecode
+
+h1. Executing SQL
+
+:inlinecode
+#   Post.find_by_sql ["SELECT title FROM posts created_at > ?", start_date]
+def find_by_sql(sql)
+  connection.select_all(sanitize_sql(sql), "#{name} Load").collect! { |record| instantiate(record) }
+end
+
+ActiveRecord::Base.connection.execute("delete from users")
+ActiveRecord::Base.connection.select_one("select * from users where id = 1")
+ActiveRecord::Base.connection.select_all("select * from users")
+ActiveRecord::Base.connection.select_value("select name from users where id = 1")
+ActiveRecord::Base.connection.select_values("select name from users")
+:endinlinecode
+
+h1. Virtual Attributes
+
+:inlinecode
+# Virtual attributes are attributes that do not correspond
+# directly to database columns.
+class Person < ActiveRecord::Base
+  def full_name
+    first_name + " " + last_name
+  end
+
+  def full_name=(full_name)
+    self.first_name = full_name.split.first
+    self.last_name = full_name.split.last
+  end
+end
+:endinlinecode
+
+h1. Serializing Attributes
+
+:inlinecode
+class Person < ActiveRecord::Base
+  serialize params
+end
+
+person = Person.new
+person.params = {
+  :height => 190,
+  :weight => 80,
+  :eye_color => 'blue'
+}
+person.save # Serializes the hash in YAML format in the db
+:endinlinecode
+
+h1. Defining Composite Attributes
+
+:inlinecode
+class Name 
+  attr_reader :first, :initials, :last 
+  def initialize(first, initials, last) 
+    @first = first 
+    @initials = initials 
+    @last = last 
+  end 
+  def to_s 
+    [ @first, @initials, @last ].compact.join(" ") 
+  end 
+end 
+
+class Customer < ActiveRecord::Base 
+  composed_of :name, 
+    :class_name => Name, 
+    :mapping => 
+      [#database    ruby
+      [:first_name, :first], 
+      [:initials,   :initials], 
+      [:last_name,  :last] 
+end 
+:endinlinecode
+
+h1. Using Composite Attributes
+
+:inlinecode
+name = Name.new("Dwight" , "D" , "Eisenhower" )
+Customer.create(:credit_limit => 1000, :name => name)
+customer = Customer.find(:first)
+puts customer.name.first #=> Dwight
+puts customer.name.last #=> Eisenhower
+puts customer.name.to_s #=> Dwight D Eisenhower
+customer.name = Name.new("Harry" , nil, "Truman" )
+customer.save
+:endinlinecode
+
+h1. Transactions
+
+:inlinecode
+Account.transaction do
+  account1.deposit(100)
+  account2.withdraw(100)
+end
+:endinlinecode
+
+h1. The Illusion of Simplicity
+
+<center>
+  <div style="margin: 40px; color: #993333;">
+    <p>
+    ??"ActiveRecord is an example of a leaky abstraction and you need to understand the SQL that it generates to avoid gotchas such as the N+1 problem."??
+    </p>
+  
+    <p>
+    - Chad Fowler
+    </p>
+  </div>
+</center>

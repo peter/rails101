@@ -94,6 +94,10 @@ h1. Table of Contents
 
 "Migrations":migrations.html
 
+"Active Record Basics":active_record.html
+
+"Active Record Validations":active_record_validations.html
+
 "Internationalization"
 
 h1. License
