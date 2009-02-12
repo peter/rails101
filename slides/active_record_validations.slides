@@ -1,8 +1,133 @@
 h1. Active Record Validations
 
+h1. Introduction
+
+* Validations are rules in your model objects to help protect the integrity of your data
+* Validation is invoked by the save method. Save returns true if validations pass and false otherwise.
+* If you invoke save! then a RecordInvalid exception is raised if the object is not valid
+* Use save(false) if you need to turn off validation
+
+h1. Validation Methods
+
+:inlinecode
+class Person < ActiveRecord::Base
+  def validate
+  end
+
+  def validate_on_create
+  end
+
+  def validate_on_update
+  end
+end
+:endinlinecode
+
+h1. Validation Callbacks
+
+:inlinecode
+class Person < ActiveRecord::Base
+  validate :check_n_subjects
+  validate_on_update :check_n_geographic_areas
+  validate_on_create :check_emails_valid
+
+  def check_n_subjects    
+    errors.add(:subjects, "too many subjects") if subjects.size > 7
+  end  
+  def check_n_geographic_areas
+  end  
+  def check_emails_valid  
+  end
+end
+:endinlinecode
+
+h1. ActiveRecord::Base#valid?
+
+:inlinecode
+def valid?
+  errors.clear
+  run_callbacks(:validate)
+  validate
+  if new_record?
+    run_callbacks(:validate_on_create)
+    validate_on_create
+  else
+    run_callbacks(:validate_on_update)
+    validate_on_update
+  end
+  errors.empty?
+end
+:endinlinecode
+
 h1. Saving without validation
 
+:inlinecode
 person = Person.find(5)
 person.age = -5
 person.save(false) # saves without validation
 person.update_attribute(:age, -5) # saves without validation
+:endinlinecode
+
+h1. Validation Macros
+
+:inlinecode
+validates_acceptance_of
+validate_associated
+validates_confirmation_of
+validates_each
+validates_exclusion_of
+validates_format_of
+validates_inclusion_of
+validates_length_of
+validates_numericality_of
+validates_presence_of
+validates_size_of
+validates_uniqueness_of
+:endinlinecode
+
+h1. Validation Macros: Usage
+
+:inlinecode
+class User < ActiveRecord::Base
+  validates_presence_of :name, :email, :password
+  validates_format_of :name,
+    :with => /^\w+$/,
+    :message => "may only contain word characters"
+  validates_uniqueness_of :name,
+    :message => "is already in use"
+  validates_length_of :password,
+    :within => 4..40
+  validates_confirmation_of :password
+end
+:endinlinecode
+
+h1. Validation Macros: More Usage
+
+:inlinecode
+class User < ActiveRecord::Base
+  validates_inclusion_of :role,
+    :in => %w(super admin user),
+    :message => “must be super, admin, or user”,
+    :allow_nil => true
+  validates_presence_of :customer_id,
+    :if => Proc.new { |u| %w(admin user).include?(u.role) }
+  validates_numericality_of :weight,
+    :only_integer => true,
+    :allow_nil => true,
+    :greater_than => 0,
+    :less_than => 500
+end
+:endinlinecode
+
+h1. Validation Error Messages
+
+:inlinecode
+class Person < ActiveRecord::Base
+  validates_uniqueness_of :name
+end
+
+peter = Person.create(:name => "Peter")
+peter2 = Person.create(:name => "Peter")
+peter2.valid? # => false
+peter2.errors.on(:name) # => "has already been taken"
+peter2.errors.full_messages # => ["Name has already been taken"]
+:endinlinecode

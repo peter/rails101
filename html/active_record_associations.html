@@ -1,0 +1,756 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Active Record Associations</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Three Kinds of Relationships</h1>
+
+
+<table style="font-size: 60%">
+  <tr>
+    <th>class A</th>
+    <th>class B</th>
+    <th>Foreign keys</th>
+    <th>Mapping</th>
+  </tr>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class User
+  has_one :weblog
+end
+</pre></div>
+
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Weblog
+  belongs_to :user
+end
+</pre></div>
+
+    </td>
+    <td>
+weblogs.user_id
+    </td>
+    <td>
+      One user maps to zero or one weblog
+    </td>
+  </tr>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Weblog
+  has_many :posts
+end
+</pre></div>
+
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Post
+  belongs_to :weblog
+end
+</pre></div>
+
+    </td>
+    <td>
+      posts.weblog_id
+    </td>
+    <td>
+      One weblog maps to zero or more posts
+    </td>
+  </tr>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Post
+  has_and_belongs_to_many :categories
+end
+</pre></div>
+
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Category
+  has_and_belongs_to_many :posts
+end
+</pre></div>
+
+    </td>
+    <td>
+      categories_posts.post_id
+      categories_posts.category_id
+    </td>
+    <td>
+      Any number of posts maps to any number of categories
+    </td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>has_one</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+has_one :credit_card, :dependent =&gt; :destroy
+has_one :credit_card, :dependent =&gt; :nullify
+has_one :last_comment, :class_name =&gt; "Comment", :order =&gt; "posted_on" 
+has_one :project_manager, :class_name =&gt; "Person",
+  :conditions =&gt; "role = 'project_manager'" 
+has_one :attachment, :as =&gt; :attachable # Polymorphic association
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>belongs_to</h1>
+
+
+<div class="code-tiny">
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class LineItem &lt; ActiveRecord::Base
+  belongs_to :paid_order,
+                    :class_name =&gt; 'Order',
+                    :foreign_key =&gt; 'order_id',
+                    :conditions =&gt; 'paid_on is not null'
+  belongs_to :product
+end
+
+li = LineItem.find(1)
+li.product = Product.new(:name =&gt; 'Programming Ruby Book')
+li.save
+
+li.build_product(:name =&gt; 'MacBook Pro') # Equivalent to product = Product.new
+li.create_product(:name =&gt; 'SoundsSticks II') # build_product + save
+</pre></div>
+
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>has_many</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+has_many :comments, :order =&gt; "posted_on" 
+has_many :comments, :include =&gt; :author
+has_many :people, :class_name =&gt; "Person",
+:conditions =&gt; "deleted = 0", :order =&gt; "name" 
+has_many :tracks, :order =&gt; "position", :dependent =&gt; :destroy
+has_many :comments, :dependent =&gt; :nullify
+has_many :tags, :as =&gt; :taggable
+has_many :subscribers, :through =&gt; :subscriptions, :source =&gt; :user
+has_many :subscribers, :class_name =&gt; "Person", :finder_sql =&gt;
+      'SELECT DISTINCT people.* ' +
+      'FROM people p, post_subscriptions ps ' +
+      'WHERE ps.post_id = #{id} AND ps.person_id = p.id ' +
+      'ORDER BY p.first_name'
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Methods Added by has_many</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+firm.clients # (similar to Clients.find :all, :conditions =&gt; "firm_id = #{id}")
+firm.clients&lt;&lt;
+firm.clients.delete
+firm.clients=
+firm.client_ids
+firm.client_ids=
+firm.clients.clear
+firm.clients.empty? # (similar to firm.clients.size == 0)
+firm.clients.count
+firm.clients.find # (similar to Client.find(id, :conditions =&gt; "firm_id = #{id}"))
+firm.clients.build # (similar to Client.new("firm_id" =&gt; id))
+firm.clients.create # (similar to c = Client.new("firm_id" =&gt; id); c.save; c)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>has_many Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+blog = User.find(1).weblog
+blog.posts.count # =&gt; 0
+blog.posts &lt;&lt; Post.new(:title =&gt; "Hi, this is my first post!")
+blog.posts.count # =&gt; 1
+blog.posts.find(:conditions =&gt; ["created_at &gt; ?", 1.minute.ago]) = blog.posts.first
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>has_and_belongs_to_many</h1>
+
+
+<div class="code-tiny">
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Requires a join table
+create_table :categories_posts, :id =&gt; false do
+  t.column :category_id, :integer, :null =&gt; false
+  t.column :post_id, :integer, :null =&gt; false
+end
+# Indices for performance
+add_index :categories_posts, [:category_id, :post_id] 
+add_index :categories_posts, :post_id 
+
+product = Product.find_by_name “MacBook Pro”
+category = Category.find_by_name(“Laptops”)
+product.categories.count # =&gt; 0
+category.products.count # =&gt; 0
+product.categories &lt;&lt; category
+product.categories.count # =&gt; 1
+category.products.count # =&gt; 1
+</pre></div>
+
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>Join Models</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Article &lt; ActiveRecord::Base 
+  has_many :readings
+  has_many :users, :through =&gt; :readings, :uniq =&gt; true
+end 
+class User &lt; ActiveRecord::Base 
+  has_many :readings
+  has_many :articles, :through =&gt; :readings
+end 
+class Reading &lt; ActiveRecord::Base 
+  belongs_to :article 
+  belongs_to :user 
+end 
+</pre></div>
+
+  </td>
+  <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = User.find(1)
+article = Article.find(1)
+Reading.create(
+  :rating =&gt; 3,
+  :read_at =&gt; Time.now,
+  :article =&gt; article,
+  :user =&gt; user
+)
+article.users.first == user
+</pre></div>
+
+</td>
+</tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Join Model with Conditions</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Article &lt; ActiveRecord::Base 
+  has_many :happy_users, :through =&gt; :readings,
+    :source =&gt; :user,
+    :conditions =&gt; "readings.rating &gt;= 4" 
+end
+ 
+article = Article.find(1)
+article.happy_users
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Extending Associations</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class User &lt; ActiveRecord::Base 
+  has_many :articles, :through =&gt; :readings do
+    def rated_at_or_above(rating)
+      find :all, :conditions =&gt; ['rating &gt;= ?', rating]
+    end
+  end
+end 
+
+user = User.find(1)
+good_articles = user.articles.rated_at_or_above(4)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Polymorphic Associations</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+create_table :images, :force =&gt; true do |t|
+  t.string :comment
+  t.string :file_path
+  t.integer :has_image_id
+  t.string :has_image_type
+end 
+</pre></div>
+
+</td>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Image &lt; ActiveRecord::Base 
+  belongs_to :has_image, :polymorphic =&gt; true 
+end 
+
+class User &lt; ActiveRecord::Base 
+  has_one :image, :as =&gt; :has_image 
+end 
+
+class Post &lt; ActiveRecord::Base 
+  has_one :image, :as =&gt; :has_image 
+end 
+</pre></div>
+
+</td>
+</tr>
+</table>
+</div>
+<div class="slide">
+
+	<h1>Single Table Inheritance: Table Definition</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+create_table :people, :force =&gt; true do |t| 
+  t.string :type
+  # common attributes 
+  t.string :name
+  t.string :email
+  # attributes for type=Customer 
+  t.decimal :balance, :precision =&gt; 10, :scale =&gt; 2 
+  # attributes for type=Employee 
+  t.integer :reports_to
+  t.integer :dept
+  # attributes for type=Manager 
+  # - none - 
+end 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Single Table Inheritance: Class Hierarchy</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Person &lt; ActiveRecord::Base 
+end 
+
+class Customer &lt; Person 
+end 
+
+class Employee &lt; Person
+  belongs_to :boss, :class_name =&gt;
+    "Employee", :foreign_key =&gt; :reports_to 
+end 
+
+class Manager &lt; Employee 
+end 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Single Table Inheritance: Usage</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+wilma = Manager.create(
+  :name =&gt; 'Wilma Flint',
+  :email =&gt;"wilma@here.com", 
+  :dept =&gt; 23) 
+Customer.create(
+  :name =&gt; 'Bert Public',
+  :email =&gt; "b@public.net", 
+  :balance =&gt; 12.45) 
+barney = Employee.new(
+  :name =&gt; 'Barney Rub',
+  :email =&gt; "barney@here.com", 
+  :dept =&gt; 23) 
+barney.boss = wilma 
+barney.save! 
+</pre></div>
+
+</td>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+manager = Person.find_by_name("Wilma Flint") 
+puts manager.class #=&gt; Manager 
+puts manager.email #=&gt; wilma@here.com 
+puts manager.dept #=&gt; 23 
+customer = Person.find_by_name("Bert Public") 
+puts customer.class #=&gt; Customer 
+puts customer.email #=&gt; b@public.net 
+puts customer.balance #=&gt; 12.45
+</pre></div>
+
+</td>
+</tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Acts As List</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Parent &lt; ActiveRecord::Base 
+  has_many :children, :order =&gt; :position 
+end
+ 
+class Child &lt; ActiveRecord::Base 
+  belongs_to :parent 
+  acts_as_list :scope =&gt; :parent
+end 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Acts As List: Usage</h1>
+
+
+<table>
+<tr>
+  <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+parent = Parent.new 
+%w{ One Two Three Four}.each do |name| 
+parent.children.create(:name =&gt; name) 
+end
+parent.save 
+
+def display_children(parent) 
+  # Passing true forces reload
+  puts parent.children(true).map do |child|
+    child.name
+  end.join(", ") 
+end 
+</pre></div>
+
+</td>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+display_children(parent) #=&gt; One, Two, Three, Four 
+puts parent.children[0].first? #=&gt; true 
+two = parent.children[1] 
+puts two.lower_item.name #=&gt; Three 
+puts two.higher_item.name #=&gt; One 
+
+parent.children[0].move_lower 
+display_children(parent) #=&gt; Two, One, Three, Four 
+parent.children[2].move_to_top 
+display_children(parent) #=&gt; Three, Two, One, Four 
+parent.children[2].destroy 
+display_children(parent) #=&gt; Three, Two, Four
+</pre></div>
+
+</td>
+</tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Acts As Tree</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+create_table :categories, :force =&gt; true do |t| 
+  t.string :name
+  t.integer :parent_id
+end 
+
+class Category &lt; ActiveRecord::Base 
+  acts_as_tree :order =&gt; "name" 
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Acts As Tree: Usage</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+root = Category.create(:name =&gt;"Books") 
+fiction = root.children.create(:name =&gt;"Fiction") 
+
+non_fiction = root.children.create(:name =&gt;"NonFiction") 
+non_fiction.children.create(:name =&gt;"Computers") 
+non_fiction.children.create(:name =&gt;"Science") 
+non_fiction.children.create(:name =&gt;"ArtHistory") 
+
+fiction.children.create(:name =&gt;"Mystery") 
+fiction.children.create(:name =&gt;"Romance") 
+fiction.children.create(:name =&gt;"ScienceFiction") 
+</pre></div>
+
+</td>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+display_children(root) # Fiction, Non Fiction 
+
+sub_category = root.children.first 
+
+puts sub_category.children.size #=&gt; 3 
+display_children(sub_category) #=&gt; Mystery, Romance, Science Fiction 
+non_fiction = root.children.find(:first, :conditions =&gt; "name = 'Non Fiction'") 
+display_children(non_fiction) #=&gt; Art History, Computers, Science 
+puts non_fiction.parent.name #=&gt; Books 
+</pre></div>
+
+</td>
+</tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Eager Loading: From N+1 to 1 Query</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Joins posts, authors, comments
+# in a single select
+@posts = Post.find(:all,
+  :conditions =&gt; "posts.title like '%ruby%'",
+  :include =&gt; [:author, :comments]) 
+
+&lt;% for post in @posts %&gt;
+  &lt;%= post.author.name %&gt;: &lt;%= post.title %&gt;
+  Comments:
+  &lt;% for comment in post.comments %&gt;
+    &lt;%= comment.body %&gt;
+  &lt;% end %&gt;
+&lt;% end %
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Counter Cache</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+create_table :posts do
+  ...
+  t.integer comments_count
+end
+
+class Post &lt; ActiveRecord::Base
+  has_many :comments
+end
+
+class Comment &lt; ActiveRecord::Base
+  belongs_to :post, :counter_cache =&gt; true
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Association Callbacks</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Project
+  # Possible callbacks: :after_add, :before_add, :after_remove, :before_remove
+  has_and_belongs_to_many :developers,
+    :after_add =&gt; [:evaluate_velocity,
+      Proc.new { |p, d| p.shipping_date = Time.now}]
+
+  def evaluate_velocity(developer)
+    ...
+  end
+end
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Active Record Callbacks</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Callback Sequence</h1>
+
+
+<table border="1">
+  <tr>
+    <th>create</th>
+    <th>update</th>
+    <th>destroy</th>
+  </tr>
+  <tr>
+    <td>
+      before_validation
+      before_validation_on_create
+      after_validation
+      after_validation_on_create
+      before_save
+      before_create
+    </td>
+    <td>
+      before_validation
+      before_validation_on_update
+      after_validation
+      after_validation_on_update
+      before_save
+      before_update      
+    </td>
+    <td>
+      before_destroy
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <i>create operation</i>
+    </td>
+    <td><i>update operation</i></td>
+    <td><i>destroy operation</i></td>
+  </tr>
+  <tr>
+    <td>
+      after_create
+      after_save
+    </td>
+    <td>
+      after_update
+      after_save      
+    </td>
+    <td>
+      after_destroy
+    </td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Three Common Ways to Define Callbacks</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# 1. Defining a method
+def before_save
+  # encrypt password here
+end
+
+# 2. Referring to a method with a symbol
+before_save :encrypt_password
+
+# 3. With a Proc object
+before_save Proc.new { |object| ... }
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>before_save Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class User &lt; ActiveRecord::Base
+  before_save :encrypt_password
+
+  private
+  def encrypt_password
+    return if password.blank?
+    if new_record?
+      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--")
+    end
+    self.crypted_password = encrypt(password)
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>after_save Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Comment &lt; ActiveRecord::Base
+  belongs_to :user
+
+  def after_save
+    user.update_search_index
+  end
+
+  def after_destroy
+    user.update_search_index
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Observers</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class AuditObserver &lt; ActiveRecord::Observer 
+  observe Order, Payment, Refund 
+
+  def after_save(model) 
+    model.logger.info("Audit: #{model.class.name} #{model.id} created") 
+  end 
+end 
+
+# List your observers in config/environment.rb
+config.active_record.observers = :order_observer, :audit_observer
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>after_find and after_initialize: Must be Methods</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def after_find
+  # After any find invocation
+end
+
+def after_initialize
+  # After any object is created
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<p>h1.</p>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

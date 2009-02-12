@@ -1,0 +1,127 @@
+h1. Active Record Callbacks
+
+h1. Callback Sequence
+
+<table border="1">
+  <tr>
+    <th>create</th>
+    <th>update</th>
+    <th>destroy</th>
+  </tr>
+  <tr>
+    <td>
+      before_validation
+      before_validation_on_create
+      after_validation
+      after_validation_on_create
+      before_save
+      before_create
+    </td>
+    <td>
+      before_validation
+      before_validation_on_update
+      after_validation
+      after_validation_on_update
+      before_save
+      before_update      
+    </td>
+    <td>
+      before_destroy
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <i>create operation</i>
+    </td>
+    <td><i>update operation</i></td>
+    <td><i>destroy operation</i></td>
+  </tr>
+  <tr>
+    <td>
+      after_create
+      after_save
+    </td>
+    <td>
+      after_update
+      after_save      
+    </td>
+    <td>
+      after_destroy
+    </td>
+  </tr>
+</table>
+
+h1. Three Common Ways to Define Callbacks
+
+:inlinecode
+# 1. Defining a method
+def before_save
+  # encrypt password here
+end
+
+# 2. Referring to a method with a symbol
+before_save :encrypt_password
+
+# 3. With a Proc object
+before_save Proc.new { |object| ... }
+:endinlinecode
+
+h1. before_save Example
+
+:inlinecode
+class User < ActiveRecord::Base
+  before_save :encrypt_password
+
+  private
+  def encrypt_password
+    return if password.blank?
+    if new_record?
+      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--")
+    end
+    self.crypted_password = encrypt(password)
+  end
+end
+:endinlinecode
+
+h1. after_save Example
+
+:inlinecode
+class Comment < ActiveRecord::Base
+  belongs_to :user
+
+  def after_save
+    user.update_search_index
+  end
+
+  def after_destroy
+    user.update_search_index
+  end
+end
+:endinlinecode
+
+h1. Observers
+
+:inlinecode
+class AuditObserver < ActiveRecord::Observer 
+  observe Order, Payment, Refund 
+
+  def after_save(model) 
+    model.logger.info("Audit: #{model.class.name} #{model.id} created") 
+  end 
+end 
+
+# List your observers in config/environment.rb
+config.active_record.observers = :order_observer, :audit_observer
+:endinlinecode
+
+h1. after_find and after_initialize: Must be Methods
+
+:inlinecode
+def after_find
+  # After any find invocation
+end
+
+def after_initialize
+  # After any object is created
+end
+:endinlinecode

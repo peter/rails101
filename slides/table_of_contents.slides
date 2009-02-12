@@ -94,9 +94,15 @@ h1. Table of Contents
 
 "Migrations":migrations.html
 
-"Active Record Basics":active_record.html
+"Active Record Basics":active_record_basics.html
+
+"Action Controller Basics":action_controller_basics.html
+
+"Active Record Associations":active_record_associations.html
 
 "Active Record Validations":active_record_validations.html
+
+"Active Record Callbacks":active_record_callbacks.html
 
 "Internationalization"
 

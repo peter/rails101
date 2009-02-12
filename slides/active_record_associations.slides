@@ -1,0 +1,497 @@
+h1. Active Record Associations
+
+h1. Three Kinds of Relationships
+
+<table style="font-size: 60%">
+  <tr>
+    <th>class A</th>
+    <th>class B</th>
+    <th>Foreign keys</th>
+    <th>Mapping</th>
+  </tr>
+  <tr>
+    <td>
+:inlinecode
+class User
+  has_one :weblog
+end
+:endinlinecode
+    </td>
+    <td>
+:inlinecode
+class Weblog
+  belongs_to :user
+end
+:endinlinecode      
+    </td>
+    <td>
+weblogs.user_id
+    </td>
+    <td>
+      One user maps to zero or one weblog
+    </td>
+  </tr>
+  <tr>
+    <td>
+:inlinecode
+class Weblog
+  has_many :posts
+end
+:endinlinecode      
+    </td>
+    <td>
+:inlinecode
+class Post
+  belongs_to :weblog
+end
+:endinlinecode
+    </td>
+    <td>
+      posts.weblog_id
+    </td>
+    <td>
+      One weblog maps to zero or more posts
+    </td>
+  </tr>
+  <tr>
+    <td>
+:inlinecode
+class Post
+  has_and_belongs_to_many :categories
+end
+:endinlinecode      
+    </td>
+    <td>
+:inlinecode
+class Category
+  has_and_belongs_to_many :posts
+end
+:endinlinecode
+    </td>
+    <td>
+      categories_posts.post_id
+      categories_posts.category_id
+    </td>
+    <td>
+      Any number of posts maps to any number of categories
+    </td>
+  </tr>
+</table>
+
+h1. has_one
+
+:inlinecode
+has_one :credit_card, :dependent => :destroy
+has_one :credit_card, :dependent => :nullify
+has_one :last_comment, :class_name => "Comment", :order => "posted_on"
+has_one :project_manager, :class_name => "Person",
+  :conditions => "role = 'project_manager'"
+has_one :attachment, :as => :attachable # Polymorphic association
+:endinlinecode
+
+h1. belongs_to
+
+<div class="code-tiny">
+:inlinecode
+class LineItem < ActiveRecord::Base
+  belongs_to :paid_order,
+                    :class_name => 'Order',
+                    :foreign_key => 'order_id',
+                    :conditions => 'paid_on is not null'
+  belongs_to :product
+end
+
+li = LineItem.find(1)
+li.product = Product.new(:name => 'Programming Ruby Book')
+li.save
+
+li.build_product(:name => 'MacBook Pro') # Equivalent to product = Product.new
+li.create_product(:name => 'SoundsSticks II') # build_product + save
+:endinlinecode
+</div>
+
+h1. has_many
+
+:inlinecode
+has_many :comments, :order => "posted_on"
+has_many :comments, :include => :author
+has_many :people, :class_name => "Person",
+:conditions => "deleted = 0", :order => "name"
+has_many :tracks, :order => "position", :dependent => :destroy
+has_many :comments, :dependent => :nullify
+has_many :tags, :as => :taggable
+has_many :subscribers, :through => :subscriptions, :source => :user
+has_many :subscribers, :class_name => "Person", :finder_sql =>
+      'SELECT DISTINCT people.* ' +
+      'FROM people p, post_subscriptions ps ' +
+      'WHERE ps.post_id = #{id} AND ps.person_id = p.id ' +
+      'ORDER BY p.first_name'
+:endinlinecode
+
+h1. Methods Added by has_many
+
+:inlinecode
+firm.clients # (similar to Clients.find :all, :conditions => "firm_id = #{id}")
+firm.clients<<
+firm.clients.delete
+firm.clients=
+firm.client_ids
+firm.client_ids=
+firm.clients.clear
+firm.clients.empty? # (similar to firm.clients.size == 0)
+firm.clients.count
+firm.clients.find # (similar to Client.find(id, :conditions => "firm_id = #{id}"))
+firm.clients.build # (similar to Client.new("firm_id" => id))
+firm.clients.create # (similar to c = Client.new("firm_id" => id); c.save; c)
+:endinlinecode
+
+h1. has_many Example
+
+:inlinecode
+blog = User.find(1).weblog
+blog.posts.count # => 0
+blog.posts << Post.new(:title => "Hi, this is my first post!")
+blog.posts.count # => 1
+blog.posts.find(:conditions => ["created_at > ?", 1.minute.ago]) = blog.posts.first
+:endinlinecode
+
+h1. has_and_belongs_to_many
+
+<div class="code-tiny">
+:inlinecode
+# Requires a join table
+create_table :categories_posts, :id => false do
+  t.column :category_id, :integer, :null => false
+  t.column :post_id, :integer, :null => false
+end
+# Indices for performance
+add_index :categories_posts, [:category_id, :post_id] 
+add_index :categories_posts, :post_id 
+
+product = Product.find_by_name “MacBook Pro”
+category = Category.find_by_name(“Laptops”)
+product.categories.count # => 0
+category.products.count # => 0
+product.categories << category
+product.categories.count # => 1
+category.products.count # => 1
+:endinlinecode
+</div>
+
+h1. Join Models
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+class Article < ActiveRecord::Base 
+  has_many :readings
+  has_many :users, :through => :readings, :uniq => true
+end 
+class User < ActiveRecord::Base 
+  has_many :readings
+  has_many :articles, :through => :readings
+end 
+class Reading < ActiveRecord::Base 
+  belongs_to :article 
+  belongs_to :user 
+end 
+:endinlinecode
+  </td>
+  <td>
+:inlinecode
+user = User.find(1)
+article = Article.find(1)
+Reading.create(
+  :rating => 3,
+  :read_at => Time.now,
+  :article => article,
+  :user => user
+)
+article.users.first == user
+:endinlinecode
+</td>
+</tr>
+</table>
+
+h1. Join Model with Conditions
+
+:inlinecode
+class Article < ActiveRecord::Base 
+  has_many :happy_users, :through => :readings,
+    :source => :user,
+    :conditions => "readings.rating >= 4"
+end
+ 
+article = Article.find(1)
+article.happy_users
+:endinlinecode
+
+h1. Extending Associations
+
+:inlinecode
+class User < ActiveRecord::Base 
+  has_many :articles, :through => :readings do
+    def rated_at_or_above(rating)
+      find :all, :conditions => ['rating >= ?', rating]
+    end
+  end
+end 
+
+user = User.find(1)
+good_articles = user.articles.rated_at_or_above(4)
+:endinlinecode
+
+h1. Polymorphic Associations
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+create_table :images, :force => true do |t|
+  t.string :comment
+  t.string :file_path
+  t.integer :has_image_id
+  t.string :has_image_type
+end 
+:endinlinecode
+</td>
+<td>
+:inlinecode
+class Image < ActiveRecord::Base 
+  belongs_to :has_image, :polymorphic => true 
+end 
+
+class User < ActiveRecord::Base 
+  has_one :image, :as => :has_image 
+end 
+
+class Post < ActiveRecord::Base 
+  has_one :image, :as => :has_image 
+end 
+:endinlinecode
+</td>
+</tr>
+</table>
+h1. Single Table Inheritance: Table Definition
+
+:inlinecode
+create_table :people, :force => true do |t| 
+  t.string :type
+  # common attributes 
+  t.string :name
+  t.string :email
+  # attributes for type=Customer 
+  t.decimal :balance, :precision => 10, :scale => 2 
+  # attributes for type=Employee 
+  t.integer :reports_to
+  t.integer :dept
+  # attributes for type=Manager 
+  # - none - 
+end 
+:endinlinecode
+
+h1. Single Table Inheritance: Class Hierarchy
+
+:inlinecode
+class Person < ActiveRecord::Base 
+end 
+
+class Customer < Person 
+end 
+
+class Employee < Person
+  belongs_to :boss, :class_name =>
+    "Employee", :foreign_key => :reports_to 
+end 
+
+class Manager < Employee 
+end 
+:endinlinecode
+
+h1. Single Table Inheritance: Usage
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+wilma = Manager.create(
+  :name => 'Wilma Flint',
+  :email =>"wilma@here.com", 
+  :dept => 23) 
+Customer.create(
+  :name => 'Bert Public',
+  :email => "b@public.net", 
+  :balance => 12.45) 
+barney = Employee.new(
+  :name => 'Barney Rub',
+  :email => "barney@here.com", 
+  :dept => 23) 
+barney.boss = wilma 
+barney.save! 
+:endinlinecode
+</td>
+<td>
+:inlinecode
+manager = Person.find_by_name("Wilma Flint") 
+puts manager.class #=> Manager 
+puts manager.email #=> wilma@here.com 
+puts manager.dept #=> 23 
+customer = Person.find_by_name("Bert Public") 
+puts customer.class #=> Customer 
+puts customer.email #=> b@public.net 
+puts customer.balance #=> 12.45
+:endinlinecode
+</td>
+</tr>
+</table>
+
+h1. Acts As List
+
+:inlinecode
+class Parent < ActiveRecord::Base 
+  has_many :children, :order => :position 
+end
+ 
+class Child < ActiveRecord::Base 
+  belongs_to :parent 
+  acts_as_list :scope => :parent
+end 
+:endinlinecode
+
+h1. Acts As List: Usage
+
+<table>
+<tr>
+  <td>
+:inlinecode
+parent = Parent.new 
+%w{ One Two Three Four}.each do |name| 
+parent.children.create(:name => name) 
+end
+parent.save 
+
+def display_children(parent) 
+  # Passing true forces reload
+  puts parent.children(true).map do |child|
+    child.name
+  end.join(", ") 
+end 
+:endinlinecode
+</td>
+<td>
+:inlinecode
+display_children(parent) #=> One, Two, Three, Four 
+puts parent.children[0].first? #=> true 
+two = parent.children[1] 
+puts two.lower_item.name #=> Three 
+puts two.higher_item.name #=> One 
+
+parent.children[0].move_lower 
+display_children(parent) #=> Two, One, Three, Four 
+parent.children[2].move_to_top 
+display_children(parent) #=> Three, Two, One, Four 
+parent.children[2].destroy 
+display_children(parent) #=> Three, Two, Four
+:endinlinecode
+</td>
+</tr>
+</table>
+
+h1. Acts As Tree
+
+:inlinecode
+create_table :categories, :force => true do |t| 
+  t.string :name
+  t.integer :parent_id
+end 
+
+class Category < ActiveRecord::Base 
+  acts_as_tree :order => "name"
+end
+:endinlinecode
+
+h1. Acts As Tree: Usage
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+root = Category.create(:name =>"Books") 
+fiction = root.children.create(:name =>"Fiction") 
+
+non_fiction = root.children.create(:name =>"NonFiction") 
+non_fiction.children.create(:name =>"Computers") 
+non_fiction.children.create(:name =>"Science") 
+non_fiction.children.create(:name =>"ArtHistory") 
+
+fiction.children.create(:name =>"Mystery") 
+fiction.children.create(:name =>"Romance") 
+fiction.children.create(:name =>"ScienceFiction") 
+:endinlinecode
+</td>
+<td>
+:inlinecode
+display_children(root) # Fiction, Non Fiction 
+
+sub_category = root.children.first 
+
+puts sub_category.children.size #=> 3 
+display_children(sub_category) #=> Mystery, Romance, Science Fiction 
+non_fiction = root.children.find(:first, :conditions => "name = 'Non Fiction'") 
+display_children(non_fiction) #=> Art History, Computers, Science 
+puts non_fiction.parent.name #=> Books 
+:endinlinecode
+</td>
+</tr>
+</table>
+
+h1. Eager Loading: From N+1 to 1 Query
+
+:inlinecode
+# Joins posts, authors, comments
+# in a single select
+@posts = Post.find(:all,
+  :conditions => "posts.title like '%ruby%'",
+  :include => [:author, :comments]) 
+
+<% for post in @posts %>
+  <%= post.author.name %>: <%= post.title %>
+  Comments:
+  <% for comment in post.comments %>
+    <%= comment.body %>
+  <% end %>
+<% end %
+:endinlinecode
+
+h1. Counter Cache
+
+:inlinecode
+create_table :posts do
+  ...
+  t.integer comments_count
+end
+
+class Post < ActiveRecord::Base
+  has_many :comments
+end
+
+class Comment < ActiveRecord::Base
+  belongs_to :post, :counter_cache => true
+end
+:endinlinecode
+
+h1. Association Callbacks
+
+:inlinecode
+class Project
+  # Possible callbacks: :after_add, :before_add, :after_remove, :before_remove
+  has_and_belongs_to_many :developers,
+    :after_add => [:evaluate_velocity,
+      Proc.new { |p, d| p.shipping_date = Time.now}]
+
+  def evaluate_velocity(developer)
+    ...
+  end
+end
+:endinlinecode

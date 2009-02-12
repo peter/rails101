@@ -1,0 +1,867 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Active Record Basics</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Fundamentals</h1>
+
+
+	<ul>
+	<li>One database table maps to one Ruby class</li>
+		<li>Ruby classes live under app/models and extend ActiveRecord::Base</li>
+		<li>Table names are plural and class names are singular</li>
+		<li>Database columns map to attributes, i.e. get and set methods, in the model class</li>
+		<li>All tables have an integer primary key, by convention called id</li>
+		<li>Database tables are created with migrations</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Overriding Naming Conventions</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class MyModel &lt; ActiveRecord::Base
+  self.table_name = 'my_legacy_table'
+  self.primary_key = 'my_id'
+  self.pluralize_table_names = false
+  self.table_name_prefix = 'my_app'
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">CRUD</span></h1>
+
+
+<table>
+  <tr>
+    <th>Operation</th>
+    <th>Method</th>
+  </tr>
+  <tr>
+    <td>Create</td>
+    <td>create, new</td>
+  </tr>
+  <tr>
+    <td>Read</td>
+    <td>find, find_by_&lt;attr&gt;</td>
+  </tr>
+  <tr>
+    <td>Update</td>
+    <td>save, update_attributes</td>
+  </tr>
+  <tr>
+    <td>Delete</td>
+    <td>destroy</td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>create = new + save</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = User.new
+user.first_name = "Dave" 
+user.last_name = "Thomas" 
+user.save
+</pre></div>
+
+    </td>
+    <td style="text-align: center">
+      &lt;=&gt;
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = User.new(
+  :first_name =&gt; "Dave",
+  :last_name =&gt; "Thomas" 
+)
+user.save
+</pre></div>
+
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user.create(
+  :first_name =&gt; "Dave",
+  :last_name =&gt; "Thomas" 
+)
+</pre></div>
+
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>save!</h1>
+
+
+<table>
+  <tr>
+    <td colspan="2">
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = User.new(
+  :first_name =&gt; "Dave",
+  :last_name =&gt; "Thomas" 
+)
+</pre></div>
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+if user.save
+  # All is ok
+else
+  # Could not save user
+end
+</pre></div>
+
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+begin
+  user.save!
+rescue ActiveRecord::RecordInvalid =&gt; e
+  # Could not save user
+end
+</pre></div>
+
+    </td>    
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Column/Attribute Data Types</h1>
+
+
+<table>
+  <tr>
+    <th>MySQL</th>
+    <th>Ruby Class</th>
+  </tr>
+  <tr>
+    <td>integer</td>
+    <td>Fixnum</td>
+  </tr>
+  <tr>
+    <td>clob, blob, text</td>
+    <td>String</td>
+  </tr>
+  <tr>
+    <td>float, double</td>
+    <td>Float</td>
+  </tr>
+  <tr>
+    <td>char, varchar</td>
+    <td>String</td>
+  </tr>
+  <tr>
+    <td>datetime, time</td>
+    <td>Time</td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Custom Attribute Accessors</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+ class Song &lt; ActiveRecord::Base
+  def length=(minutes)
+    # self[:length] = minutes*60
+    write_attribute(:length, minutes * 60)
+  end
+ 
+  def length
+    # self[:length] / 60
+    read_attribute(:length) / 60
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Default Attribute Values</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class User &lt; ActiveRecord::Base
+  def language
+    read_attribute(:language) || "sv" 
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Boolean Attributes</h1>
+
+
+	<ul>
+	<li>Everything except nil and false is true in Ruby</li>
+		<li>In MySQL boolean columns are char(1) with values 0 or 1, both of which are true in Ruby.</li>
+		<li>Instead of using user.admin use user.admin?</li>
+		<li>When you add the question mark, false is returned for all of the following: the number 0, one of the strings &#8216;0&#8217;, &#8216;f&#8217;, &#8216;false&#8217;, &#8217;&#8217;, or the constant false</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>find</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+  User.find(:first) # =&gt; First user object
+  User.first # short hand for find(:first)
+  User.find(:last) # =&gt; Last user object
+  User.last # short hand for find(:last)
+  User.find(:all) # =&gt; Array with all User objects
+  User.all # short hand for find(:all)
+  User.find(3) # =&gt; User object with id 3
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>find with :conditions</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+User.find(:all, 
+  :conditions =&gt;
+    ["first_name = ? and created_at &gt; ?", "David", 1.year.ago])
+
+User.find(:all, 
+  :conditions =&gt; 
+    ["first_name = :first_name, last_name = :last_name",
+    {:first_name =&gt; "David", :last_name =&gt; "Letterman"}])
+  
+User.find(:all, 
+  :conditions =&gt; {:first_name =&gt; "Jamis", :last_name =&gt; "Buck"})
+
+User.find(:all, :conditions =&gt; [ "category IN (?)", categories])
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Everything is a find :all</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# select * from users limit 1
+User.find(:first) &lt;=&gt; User.find(:all, :limit =&gt; 1).first
+
+# select * from users where id = 1
+User.find(1) &lt;=&gt; User.find(:all, :conditions =&gt; "users.id = 1").first
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Like Clauses</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# This works
+User.find(:all,
+  :conditions =&gt; ["name like ?", "%" + params[:name] + "%")
+
+# This doesn't work
+User.find(:all,
+  :conditions =&gt; ["name like ‘%?%’", params[:name])
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Dynamic Finders</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+User.find_by_first_name "Peter" 
+User.find_all_by_last_name "Hanson" 
+User.find_by_age "20" 
+User.find_by_last_name("Buck",
+  :conditions =&gt; {:country = "Sweden", :age =&gt; 20..30})
+User.find_by_first_name_and_last_name "Andreas", "Kviby" 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Named Scopes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Article &lt; ActiveRecord::Base
+  named_scope :approved, :conditions =&gt; {:status =&gt; 'approved'}
+  named_scope :since, lambda { |time_ago| { :conditions =&gt; ['published_at &gt; ?', time_ago] }}
+
+  named_scope :inactive, :conditions =&gt; {:active =&gt; false} do
+    def activate
+      each { |article| article.update_attribute(:active, true) }
+    end
+  end
+end
+
+Article.approved.since(3.days.ago) # all approved articles in the last three days
+Article.inactive.activate # activate all inactive articles
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>RecordNotFound Exception</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+User.exists?(999) # =&gt; false
+User.find(999) # =&gt; raises ActiveRecord::RecordNotFound
+User.find_by_id(999) # =&gt; nil
+User.find(:first, :conditions =&gt; {:id =&gt; 999}) # =&gt; nil
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Find or Create</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# No 'Summer' tag exists
+Tag.find_or_create_by_name("Summer") # equal to Tag.create(:name =&gt; "Summer")
+    
+# Now the 'Summer' tag does exist
+Tag.find_or_create_by_name("Summer") # equal to Tag.find_by_name("Summer")
+
+# No 'Winter' tag exists
+winter = Tag.find_or_initialize_by_name("Winter")
+winter.new_record? # true
+winter.save
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Update</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+order = Order.find(12)
+order.name = "Bill Gates" 
+order.charge = 10000
+order.save!
+</pre></div>
+
+    </td>
+    <td>
+      &lt;=&gt;
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+order = Order.find(13)
+order.update_attributes!(
+  :name =&gt; "Bill Gates",
+  :charge =&gt; 10000
+)
+</pre></div>
+
+    </td>    
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>update_attributes is Syntactic Sugar</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def update_attributes(attributes)
+  self.attributes = attributes
+  save
+end
+      
+def update_attributes!(attributes)
+  self.attributes = attributes
+  save!
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Partial Updates</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = Users.find_by_name("Dave" )
+user.changed? # =&gt; false
+
+user.name = "Dave Thomas" 
+user.changed? # =&gt; true
+user.changed # =&gt; ['name']
+user.changes # =&gt; {"name"=&gt;["dave", "Dave Thomas"]}
+user.name_changed? # =&gt; true
+
+user.name_was # =&gt; 'Dave'
+user.name_change # =&gt; ['Dave', 'Dave Thomas']
+user.name = 'Bill'
+user.name_change # =&gt; ['Dave', 'Dave Thomas']
+user.save # updates only the name in the db
+user.changed? # =&gt; false
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Locking</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# SELECT * FROM accounts WHERE (account.`id` = 1) FOR UPDATE
+account = Account.find(id, :lock =&gt; true)
+account.status = 'disabled'
+account.save!
+
+# Optimistic locking with integer column lock_version in the accounts table:
+account1 = Account.find(4)
+account2 = Account.find(4)
+account1.update_attributes(:status =&gt; 'disabled')
+account2.update_attributes(:status =&gt; 'enabled') # =&gt; Raises ActiveRecord::StaleObjectError
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>destroy</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Instance method User#destroy
+User.count # =&gt; 5
+u = User.find(:first)
+u.destroy
+User.count # =&gt; 4
+</pre></div>
+
+    </td>
+    <td>
+      &nbsp;
+    </td>
+  </tr>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Class method User.destroy
+User.destroy(2, 3)
+User.count # =&gt; 2
+User.exists?(2) # =&gt; false
+User.find(:all).map(&#38;:id) # =&gt; [4, 5]
+</pre></div>
+
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Class method User.destroy_all
+User.destroy_all("id &gt;= 5")
+User.count # =&gt; 1
+User.destroy_all
+User.count # =&gt; 0
+</pre></div>
+
+    </td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>destroy Class Methods</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def destroy(id)
+  if id.is_a?(Array)
+    id.map { |one_id| destroy(one_id) }
+  else
+    find(id).destroy
+  end
+end
+
+def destroy_all(conditions = nil)
+  find(:all, :conditions =&gt; conditions).each do |object|
+    object.destroy
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>delete: Does not Instantiate Objects</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+#   Post.delete_all("person_id = 5 AND (category = 'Something' OR category = 'Else')")
+def delete_all(conditions = nil)
+  sql = "DELETE FROM #{quoted_table_name} " 
+  add_conditions!(sql, conditions, scope(:find))
+  connection.delete(sql, "#{name} Delete all")
+end
+
+#   Todo.delete(1)
+#   Todo.delete([2,3,4])
+def delete(id)
+  delete_all([ "#{connection.quote_column_name(primary_key)} IN (?)", id ])
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Calculations</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+Person.minimum('age')
+Person.maximum('age')
+Person.sum('age')
+Person.count(:conditions =&gt; ["age &gt; ?", 25])
+Person.average('age')
+Person.calculate(:std, :age)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Executing <span class="caps">SQL</span></h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+#   Post.find_by_sql ["SELECT title FROM posts created_at &gt; ?", start_date]
+def find_by_sql(sql)
+  connection.select_all(sanitize_sql(sql), "#{name} Load").collect! { |record| instantiate(record) }
+end
+
+ActiveRecord::Base.connection.execute("delete from users")
+ActiveRecord::Base.connection.select_one("select * from users where id = 1")
+ActiveRecord::Base.connection.select_all("select * from users")
+ActiveRecord::Base.connection.select_value("select name from users where id = 1")
+ActiveRecord::Base.connection.select_values("select name from users")
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Virtual Attributes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Virtual attributes are attributes that do not correspond
+# directly to database columns.
+class Person &lt; ActiveRecord::Base
+  def full_name
+    first_name + " " + last_name
+  end
+
+  def full_name=(full_name)
+    self.first_name = full_name.split.first
+    self.last_name = full_name.split.last
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Serializing Attributes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Person &lt; ActiveRecord::Base
+  serialize params
+end
+
+person = Person.new
+person.params = {
+  :height =&gt; 190,
+  :weight =&gt; 80,
+  :eye_color =&gt; 'blue'
+}
+person.save # Serializes the hash in YAML format in the db
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Defining Composite Attributes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Name 
+  attr_reader :first, :initials, :last 
+  def initialize(first, initials, last) 
+    @first = first 
+    @initials = initials 
+    @last = last 
+  end 
+  def to_s 
+    [ @first, @initials, @last ].compact.join(" ") 
+  end 
+end 
+
+class Customer &lt; ActiveRecord::Base 
+  composed_of :name, 
+    :class_name =&gt; Name, 
+    :mapping =&gt; 
+      [#database    ruby
+      [:first_name, :first], 
+      [:initials,   :initials], 
+      [:last_name,  :last] 
+end 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Using Composite Attributes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+name = Name.new("Dwight" , "D" , "Eisenhower" )
+Customer.create(:credit_limit =&gt; 1000, :name =&gt; name)
+customer = Customer.find(:first)
+puts customer.name.first #=&gt; Dwight
+puts customer.name.last #=&gt; Eisenhower
+puts customer.name.to_s #=&gt; Dwight D Eisenhower
+customer.name = Name.new("Harry" , nil, "Truman" )
+customer.save
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Transactions</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+Account.transaction do
+  account1.deposit(100)
+  account2.withdraw(100)
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>The Illusion of Simplicity</h1>
+
+
+<center>
+  <div style="margin: 40px; color: #993333;">
+    <p>
+    <cite>&#8220;ActiveRecord is an example of a leaky abstraction and you need to understand the <span class="caps">SQL</span> that it generates to avoid gotchas such as the N+1 problem.&#8221;</cite>
+    </p>
+
+    <p>
+    &#8211; Chad Fowler
+    </p>
+  </div>
+</center></div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>
