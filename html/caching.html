@@ -78,6 +78,8 @@ caches_page :public_action
 expire_page :action =&gt; 'public_action'
 caches_action :premium_content
 expire_action :action =&gt; 'premium_content', :id =&gt; 2
+cache 'recent_products'
+expire_fragment 'recent_products'
 
 # Configuration:
 config.action_controller.perform_caching = true
@@ -143,10 +145,29 @@ end
 
 	<ul>
 	<li>Fragment caching is used for pages where only certain parts (fragments) should be cached whereas other parts should be dynamic</li>
-		<li>Parts of the page that should be cached are included in a &lt;% cache do <span>&gt; ... &lt;</span> end %&gt; block.</li>
-		<li>The cache method can take a hash of options to identify the fragment, i.e. &lt;% cache(:action =&gt; ‘list’, :part =&gt; ‘articles’) %&gt;</li>
-		<li>You expire cached fragments with an invocation such as expire_fragment(:action =&gt; ‘list’, :part =&gt; ‘articles’)</div></li>
+		<li>Parts of the page that should be cached are included in a &lt;% cache &#8216;cache_name&#8217; do <span>&gt; ... &lt;</span> end %&gt; block.</li>
+		<li>You expire cached fragments with an invocation such as expire_fragment(&#8216;cache_name&#8217;)</li>
 	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Fragment Cache Storage</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+ActionController::Base.cache_store = :memory_store
+ActionController::Base.cache_store = :file_store, "/path/to/cache/directory" 
+ActionController::Base.cache_store = :drb_store, "druby://localhost:9192" 
+ActionController::Base.cache_store = :mem_cache_store, "localhost" 
+ActionController::Base.cache_store = MyOwnStore.new("parameter")
+</pre></div>
+
+</div>
 
   <!-- Syntax Highlighter -->
   <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
