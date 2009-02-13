@@ -1,0 +1,70 @@
+h1. Caching
+
+h1. Introduction
+
+* Rails provides three types of caching: page, action, and fragment caching
+* Page caching creates whole html pages under public that get served by the web server without touching Rails. It's appropriate for pages that look the same for all users.
+* Action caching caches only the output of an action. Filters (i.e. authentication) still get run.
+* With fragment caching you can cache certain expensive elements on a page, i.e. a menu or a list of recent content.
+* You can use Memcached with plugins such as Cached Model and Cache Fu to cache some or all of your database queries
+
+h1. Cache Methods and Configuration
+
+:inlinecode
+caches_page :public_action
+expire_page :action => 'public_action'
+caches_action :premium_content
+expire_action :action => 'premium_content', :id => 2
+cache 'recent_products'
+expire_fragment 'recent_products'
+
+# Configuration:
+config.action_controller.perform_caching = true
+:endinlinecode
+
+h1. Cache Storage
+
+* You can store fragments in file system, DRb, memcached
+* If you have multiple servers and store in the file system you need to setup a shared network drive
+* Page caches are always kept as HTML files under the public directory and needs sharing across servers as well
+
+h1. Cache Sweepers
+
+:inlinecode
+class ArticleSweeper < ActionController::Caching::Sweeper
+  observe Article
+  def after_create(article) 
+    expire_page(:controller => "content", :action => 'public_content') 
+  end 
+  def after_update(article)
+    expire_action(:controller => "content",  :action => "premium_content", :id => article_id) 
+  end 
+  def after_destroy(article) 
+    ...
+  end 
+end
+:endinlinecode
+
+h1. Hooking up the Cache Sweeper
+
+:inlinecode
+class ContentController < ApplicationController 
+  cache_sweeper :article_sweeper, :only => [ :create_article, :update_article, :delete_article ]
+end
+:endinlinecode
+
+h1. Fragment Caching
+
+* Fragment caching is used for pages where only certain parts (fragments) should be cached whereas other parts should be dynamic
+* Parts of the page that should be cached are included in a <% cache 'cache_name' do %> ... <% end %> block.
+* You expire cached fragments with an invocation such as expire_fragment('cache_name')
+
+h1. Fragment Cache Storage
+
+:inlinecode
+ActionController::Base.cache_store = :memory_store
+ActionController::Base.cache_store = :file_store, "/path/to/cache/directory"
+ActionController::Base.cache_store = :drb_store, "druby://localhost:9192"
+ActionController::Base.cache_store = :mem_cache_store, "localhost"
+ActionController::Base.cache_store = MyOwnStore.new("parameter")
+:endinlinecode

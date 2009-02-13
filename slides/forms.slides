@@ -194,4 +194,3 @@ end
 # You may turn off inline form error messages if they mess up your form layouts
 config.action_view.field_error_proc = Proc.new{ |html_tag, instance| html_tag }
 :endinlinecode
-
