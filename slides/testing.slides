@@ -1,0 +1,336 @@
+h1. Testing
+
+h1. Rails Testing Landscape
+
+<table border="1">
+  <tr>
+    <th>Rails Test</th>
+    <th>Test tools</th>
+    <th>Interface</th>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Selenium, Watir</td>
+    <td>HTTP from Browser (IE, Firefox)</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+      WWW::Mechanize,
+      <a href="http://github.com/brynary/webrat/tree/master">Webrat</a>
+    </td>
+    <td>HTTP</td>
+  </tr>
+  <tr>
+    <td>Integration</td>
+    <td>
+      <a href="http://github.com/brynary/webrat/tree/master">Webrat</a>,
+      RSpec Stories, Cucumber
+    </td>
+    <td>Rails Dispatcher</td>
+  </tr>
+  <tr>
+    <td>Functional</td>
+    <td>RSpec, Shoulda</td>
+    <td>Controller</td>
+  </tr>
+  <tr>
+    <td>Unit</td>
+    <td>RSpec, Shoulda</td>
+    <td>Model</td>
+  </tr>
+</table>
+
+h1. Test::Unit::TestCase
+
+* Test::Unit is a Ruby testing library, similar to JUnit.
+* Rails ships with three types of tests: unit, functional, and integration. Those tests are all structured into test case classes that extend the Test::Unit::TestCase class.
+* Every test contains a number of test blocks that get executed by the test framework.
+* Before every test block the setup block is invoked, and afterwards the teardown block.
+* Every test method makes one or more assertions about the behaviour of the class under test
+
+h1. Unit Tests
+
+* Every model MyModel in Rails has a corresponding unit test case in the class TestMyModel in the file test/units/test_my_model.rb
+* Unit tests are created for you by script/generate model
+
+h1. Unit Test Example
+
+:inlinecode
+class UserTest < ActiveSupport::TestCase
+  fixtures :customers, :services, :users  
+  setup do
+    @user = users(:joe)
+  end
+  test "should have a unique name" do
+    assert_no_difference 'User.count' do
+      user = User.create(:name => @user.name)
+      assert !user.valid?
+      assert user.errors.on(:name)
+    end
+  end
+end
+:endinlinecode
+
+h1. test_helper.rb
+
+:inlinecode
+ENV["RAILS_ENV"] = "test"
+require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
+require 'test_help'
+
+class ActiveSupport::TestCase
+  self.use_transactional_fixtures = true
+  self.use_instantiated_fixtures  = false
+  fixtures :all
+end
+:endinlinecode
+
+h1. Test Data Through Fixtures
+
+* Fixtures are files that load test data into the test database that tests can run against. Every model and database table has a corresponding fixture file at test/fixtures/table_name.yml.
+* Fixture files are in YAML format, a readable alternative to XML. You can also keep fixture files in CSV format if you like.
+* The fixture command will delete from the specified tables and then load their fixture files. The fixtures will then be available in your tests as table_name(:fixture_name), i.e. users(:joe).
+
+h1. Fixture Example: articles.yml
+
+:inlinecode
+ruby:
+  header: Introductory article on Ruby
+  body: bla bla bla
+  user: joe # Article belongs_to :user
+  created_at: <%= 5.days.ago.to_s :db %>
+
+rails:
+  header: Ruby on Rails 101
+  body: bla bla bla
+  user: peter
+  created_at: <%= 5.days.ago.to_s :db %>
+:endinlinecode
+
+h1. Assertions
+
+:inlinecode
+assert(actual, comment) # Asserts truth
+assert_equal(expected, actual, comment)
+assert_in_delta(expected_float, actual_float, delta, message)
+assert_match(pattern, string, message)
+assert_nil(object, message)/assert_not_nil
+assert_raise(Exception, ..., message) { block ... }
+assert_difference(expressions, difference = 1, &block)
+:endinlinecode
+
+h1. Functional Testing of Controllers
+
+* Functional tests run against a single controller instance, simulate requests against it, and make assertions about the responses
+* Requests are made with the methods get/post/put/delete and they invoke a certain action in the controller.
+
+h1. Functional Test Example
+
+:inlinecode
+class ArticlesControllerTest < ActionController::TestCase
+  fixtures :users, :comments
+  test "should get rss action" do
+    get :rss, :id => users(:quentin)
+    assert_response :success
+    assert_select "rss > channel" do
+      assert_select "title", /Recent comments/
+      assert_select "item", 1
+      assert_select "item > title", Regexp.new(users(:aaron).login)
+      assert_select "item > description", users(:quentin).comments.first.body
+    end
+  end
+end
+:endinlinecode
+
+h1. Assertions in Functional Tests
+
+:inlinecode
+assert_response :success|:redirect|:missing|:error
+assert_redirected_to(:controller => 'blog', :action => 'list')
+assert_template 'store/index'
+assert_not_nil assigns(:items)
+assert session[:user]
+assert_not_nil flash[:notice]
+:endinlinecode
+
+h1. assert_select
+
+:inlinecode
+assert_select "p.warning" # <p class="warning">...</p>
+assert_select "p#warning" # <p id="warning">...</p>
+assert_select "html p.warning" # Ancestor chaining
+assert_select "html > body > p.warning" # Direct parent chaining
+assert_select "div#cart table tr", 3 # Integer, n times
+assert_select "div#cart table tr", 3..5 # Range, n times
+assert_select "div#cart table tr", false # Not present on page
+assert_select "div#cart table tr td#price", "$23" # Tag contents
+assert_select "div#cart table tr td#price", /23/ # Regexp for tag contents
+
+assert_select "form input" do
+  assert_select "[name=?]", /.+/  # Not empty
+end
+:endinlinecode
+
+h1. Integration Tests
+
+* Test against the Rails dispatcher and invoke any controller
+* Simulate user scenarios/stories.
+* Can involve multiple simultaneous sessions
+* Make requests with the methods get/post etc. to certain URLs
+* You have access to the same environment and assertions as in functional tests
+
+h1. Integration Test Example
+
+:inlinecode
+class TracerBulletTest < ActionController::IntegrationTest
+  test "main use case" do
+    get("/user/login")
+    assert_response :success
+
+    post("user/login", :email => @email, :password => @password)
+    assert_redirected_to :controller => '/general'
+    follow_redirect!
+    assert_response :success
+
+    post("/contacts/search", :q => 'sandler new york')
+    assert_response :success
+  end
+end
+:endinlinecode
+
+h1. Integration Test Using a DSL
+
+:inlinecode
+test "buying a product" do
+  dave = regular_user
+  dave.get "/store/index"
+  dave.is_viewing "index"
+  dave.buys_a @ruby_book
+  dave.has_a_cart_containing @ruby_book
+  dave.checks_out DAVES_DETAILS
+  dave.is_viewing "index"
+  check_for_order DAVES_DETAILS, @ruby_book
+end
+:endinlinecode
+
+h1. Integration Test DSL
+
+:inlinecode
+def regular_user
+  open_session do |user|
+    def user.is_viewing(page)
+      assert_response :success
+      assert_template page
+    end  
+    def user.buys_a(product)
+      xml_http_request :put, "/store/add_to_cart", :id => product.id
+      assert_response :success 
+    end
+    ...
+  end  
+end
+:endinlinecode
+
+h1. Running Tests
+
+:inlinecode
+rake # runs all tests
+rake test:units
+rake test:functionals
+rake test:integration
+ruby test/unit/user_test.rb # run single test
+:endinlinecode
+
+h1. Stubbing and Mocking
+
+* Sometimes you may need to stub out interactions with external systems (payment gateways etc.) and isolate the code under test.
+* Mock and stub objects are similar, but mock objects tend to be more intelligent and verify that the right messages are received.
+* Mock classes that should be in place for all tests (static mocks) can be put under test/mocks/test.
+* You may use the libraries Mocha, FlexMock, or "RR":http://github.com/btakita/rr/tree/master for dynamic stubbing/mocking. The stubs/mocks that you set up are isolated to the test.
+
+h1. Mocha Example
+
+:inlinecode
+product = Product.new
+Product.expects(:find).with(1).returns(product)
+assert_equal product, Product.find(1)
+
+Product.any_instance.stubs(:name).returns('stubbed_name')
+product = Product.new
+assert_equal 'stubbed_name', product.name
+
+object = mock()
+object.expects(:expected_method).with(:p1, :p2).returns(:result)
+assert_equal :result, object.expected_method(:p1, :p2)
+:endinlinecode
+
+h1. Submitting Forms and Clicking Links
+
+* A limitation in most controller and integration tests is that they bypass forms and links in the views.
+* To submit forms in functional tests you may use plugins such as "Form Test Helper" or "Hpricot Forms". For integration tests there is the Webrat plugin.
+
+h1. rcov
+
+* rcov is a Ruby library that measures code coverage of tests. It can be used to find gaps in your test coverage.
+* rcov will generate a report of how many percent of each Ruby class is covered and indicate which lines of code are not executed by the tests.
+
+:inlinecode
+# Installation of rcov:
+sudo gem install rcov
+ruby script/plugin install http://svn.codahale.com/rails_rcov
+rake test:test:rcov
+:endinlinecode
+
+h1. Heckle
+
+* Heckle will mutate your code by inverting boolean expressions and run your tests and make sure they fail
+* Heckle helps find missing assertions and can also find redundancies in your code.
+
+:inlinecode
+# Installation of Heckle:
+sudo gem install heckle
+heckle -t test/functional/comments_controller_test.rb CommentsController create
+:endinlinecode
+
+h1. AJAX and RJS Testing
+
+* When you develop AJAX functionality you write actions generate and return JavaScript with the RJS API.
+* The most realistic way to test AJAX functionality is with a browser testing tool like Selenium.
+* With the ARTS plugin you can make assertions against the RJS code in your controller and integration tests. These tests are quite fragile though.
+
+h1. HTML Validation and Link Checking
+
+* There is a plugin called htmltest that you can use to HTML validate all your HTML responses in your controller and integration tests.
+* You can also use the plugin to make sure that URLs in links and redirects can be resolved by your application.
+
+h1. Using the Rails Tests as Documentation
+
+* A great way to learn the Rails API is to read the tests that ship with Rails. The tests tell you how the API is intended to be used, how you should and should not use it. You can also learn about edge cases.
+* The Rails tests are also a good place to learn how to write tests for your own application.
+
+h1. BDD: From Verification to Specification
+
+* Behaviour Driven Development (BDD) is Test Driven Development (TDD) with a new terminology and structure
+* Instead of tests BDD talks about specifications
+* RSpec is the most popular BDD framework
+* In BDD specifications are not necessarily structured around a certain class like is typically the case in unit testing, but rather a certain context, such as an empty list.
+
+h1. RSpec Example
+
+:inlinecode
+describe Contact do
+  before(:each) do
+    @contact = contacts(:peter)
+  end
+  describe "creating" do
+    it "can be created with source, email and invitation_code" do
+      lambda do
+        contact = Contact.create(create_params)
+        contact.reload.email.should == create_params[:email]
+      end.should change(Contact, :count).by(1)
+    end
+  end
+end
+:endinlinecode
+

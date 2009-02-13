@@ -98,13 +98,41 @@ h1. Table of Contents
 
 "Action Controller Basics":action_controller_basics.html
 
+"Action View Basics":action_view_basics.html
+
+"Testing":testing.html
+
 "Active Record Associations":active_record_associations.html
 
 "Active Record Validations":active_record_validations.html
 
 "Active Record Callbacks":active_record_callbacks.html
 
-"Internationalization"
+"Active Support":active_support.html
+
+"Forms":forms.html
+
+"Filters":filters.html
+
+"Caching":caching.html
+
+"AJAX":ajax.html
+
+"Routing":routing.html
+
+"REST":rest.html
+
+"Action Mailer":action_mailer.html
+
+"Internationalization":internationalization.html
+
+"Plugins":plugins.html
+
+"Deployment":deployment.html
+
+"Resources":resources.html
+
+"Parting Words of Advice":parting_words_of_advice.html
 
 h1. License
 

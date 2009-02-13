@@ -234,7 +234,7 @@ ActionController::Base.session = {
 
 	<ul>
 	<li><b>Don&#8217;t put <span class="caps">SQL</span> and too much code in your controllers/views &#8211; it&#8217;s a code smell, and maybe the most common design mistake Rails developers make. Actions should be 3-4 lines that script business objects. The goal is to have fat models and skinny controllers.</b></li>
-		<li><b>Always access data via the logged in user object (i.e. current_user.articles.find(params[:id]) instead of Article.find(params[:id])).</b></div></li>
+		<li><b>Always access data via the logged in user object (i.e. prefer current_user.articles.find(params[:id]) over Article.find(params[:id])).</b></div></li>
 	</ul>
 
   <!-- Syntax Highlighter -->

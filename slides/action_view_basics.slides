@@ -1,0 +1,236 @@
+h1. Action View Basics
+
+h1. Introduction
+
+* ActionView is the module in the ActionPack library that deals with rendering a response to the client.
+* The controller decides which template and/or partial and layout to use in the response
+* Templates use helper methods to format text, generate links, forms, and JavaScript.
+
+h1. Where Templates Live
+
+* Templates that belong to a certain controller typically live under app/view/controller_name, i.e. templates for Admin::UsersController live under app/views/admin/users
+* Templates shared across controllers are put under app/views/shared. You can render them with render :template => 'shared/my_template'
+* You can have templates shared across Rails applications and render them with render :file => 'path/to/template'
+
+h1. Template Environment
+
+* Templates have access to the controller objects flash, headers, logger, params, request, response, and session. 
+* Instance variables (i.e. @variable) in the controller are available in templates
+* The current controller is available as the attribute controller.
+
+h1. Three Common Template Types
+
+* html.erb - The most common type of template used for HTML. They are HTML files with embedded Ruby and they use the ERb library.
+* xml.erb - Files with Ruby code using the Builder library to generate XML. Typically used to generate RSS/Atom feeds or web services.
+* js.rjs - Ruby code with a Rails specific API (RJS) that generate JavaScript. Used for AJAX functionality.
+
+h1. Builder Template Example: RSS
+
+<div class="code-tiny">
+:inlinecode
+xml.instruct!
+xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1/" do
+  xml.channel do
+    xml.title "Recent comments for #{@user.login}"
+    xml.link @rss_url
+    xml.pubDate CGI.rfc1123_date(@comments.first ? @comments.first.updated_at : Time.now)
+    xml.description ""
+    @comments.each do |comment|
+      xml.item do
+        xml.title "Comment by #{comment.creation_user.login} #{time_ago_in_words comment.created_at} ago"
+        xml.link @server_url + comment_url(comment)
+        xml.description h(comment.body)
+        xml.pubDate CGI.rfc1123_date(comment.updated_at)
+        xml.guid @server_url + comment_url(comment)
+        xml.author h(comment.creation_user.login)
+      end
+    end
+  end
+end
+:endinlinecode
+</div>
+
+h1. .html.erb Templates
+
+:inlinecode
+# Evaluate Ruby code and print the last evaluated value to the page.
+<%= ruby code here %> 
+
+#  Evaluates Ruby code without outputting anything to the page
+<% ruby code here %>
+
+# Use a minus sign to avoid printing a newline to the page
+<%= ... %->
+<% ... %->
+
+# HTML quoting/escaping with the h() helper method
+<%=h comment.header %>
+:endinlinecode
+
+h1. Partials
+
+* Partials are templates that render a part of a page, such as a header or footer, or a menu, or a listing of articles
+* Partials help promote reuse of page elements
+* Partials work just like page templates (views) and run in the same environment. They also live in the same directory as page templates.
+* The filenames of partials always start with an underscore.
+
+h1. Rendering Partials
+
+:inlinecode
+# Inside a controller action
+render :partial => 'name_of_partial'
+
+# In an .html.erb template
+<%= render :partial => 'name_of_partial' %>
+:endinlinecode
+
+h1. Passing Variables to Partials
+
+:inlinecode
+# Controller instance variables are available
+<%=h @article.name @%
+
+# You can pass any objects into local variables in the partial:
+# render :partial => 'article', :locals => { :article => @article, :options => @options }
+<%=h article.name %>
+
+# The :object argument initializes local variable with same name as partial.
+# render :partial => 'article', :object => @an_article
+<%= article.name %
+:endinlinecode
+
+h1. Partials and Collections
+
+:inlinecode
+<% for article in @articles %>
+  <%= render :partial => 'article', :object => article %>
+<% end %>
+
+# Can be written more concisely with the :collection argument:
+<%= render :partial => 'article', :collection => @articles %>
+:endinlinecode
+
+h1. Layouts
+
+* Layouts are templates under app/views/layouts that contain common page elements around pages such as headers, footers, menus etc.
+* The layout template contains the invocation <%= yield %> which will render the action output.
+
+h1. Determining whith Layout to Use
+
+:inlinecode
+# 1. Layout specified when you invoke render
+render 'some_template', :layout => 'my_special_layout'
+render 'some_template', :layout => false # no layout
+
+# 2. Layout specified for the controller
+layout 'standard', :except => [:rss, :atom]
+layout nil # turns off layouts
+
+# 3. Rails looks for a controller layout at:
+app/views/layouts/controller_name.html.erb
+
+# 4. Rails looks for an application layout in the file:
+app/views/layouts/application.html.erb
+:endinlinecode
+
+h1. Dynamic Layout Selection
+
+:inlinecode
+class BlogController < ActionController::Base
+  layout :determine_layout
+
+  private
+  def determine_layout
+    user.admin? ? "admin" : "standard"
+  end
+end
+:endinlinecode
+
+h1. Passing Data to Layouts
+
+:inlinecode
+# You can pass data to layouts with instance variables
+<%=h @page_title %>
+
+# You can pass parts of your template with content_for.
+# In your template:
+<% content_for(:left_menu) %>
+  ...
+<% end %>
+# In your layout:
+<% yield :left_menu %>
+:endinlinecode
+
+h1. Helpers
+
+* Helpers are Ruby modules with methods that are available in your templates.
+* Helpers can avoid duplication and minimize the amount of code in your templates.
+* By default each controller has a corresponding helper file at app/helpers/controller_name_helper.rb
+* By default Rails will make all helpers available in all controllers
+
+h1. text_helper.rb
+
+:inlinecode
+truncate("Once upon a time in a world far far away", 14)
+highlight('You searched for: rails', 'rails')
+excerpt('This is an example', 'an', 5)
+pluralize(2, 'person')
+word_wrap('Once upon a time', 4)
+textilize(text)
+markdown(text)
+simple_format(text)
+auto_link(text)
+strip_links(text)
+sanitize(html)
+strip_tags(html)
+<tr class="<%= cycle("even", "odd") -%>">
+:endinlinecode
+
+h1. url_helper.rb
+
+:inlinecode
+url_for({:controller => ‘blog’}, :only_path => false)
+link_to "Other Site", "http://www.rubyonrails.org/", :confirm => "Sure?"
+link_to "Image", { :action => "view" }, :popup => ['new_window','height=300,width=600']
+link_to "Delete Image", { :action => "delete", :id => @image.id }, :method => :delete
+button_to "New", :action => "new"
+link_to_unless_current("Home", { :action => "index" })
+mail_to "me@domain.com", "My email", :encode => "javascript"
+# => <script type="text/javascript">eval(unescape('%64%6f%63...%6d%65%6e'))</script>
+mail_to "me@domain.com", "My email", :encode => "hex"
+# => <a href="mailto:%6d%65@%64%6f%6d%61%69%6e.%63%6f%6d">My email</a>
+:endinlinecode
+
+h1. HAML - An Alternative Templating System
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+<div id='content'>
+    <div class='left column'>
+      <h2>Welcome to our site!</h2>
+      <p>
+        <%= print_information %>
+      </p>
+    </div>
+    <div class="right column">
+      <%= render :partial => "sidebar" %>
+    </div>
+</div>
+:endinlinecode     
+    </td>
+    <td>
+      =&gt;
+    </td>
+    <td>
+:inlinecode
+#content
+    .left.column
+      %h2 Welcome to our site!
+      %p= print_information
+    .right.column= render :partial => "sidebar"
+:endinlinecode
+</td>
+</tr>
+</table>

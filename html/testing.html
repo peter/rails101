@@ -1,0 +1,591 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Testing</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Rails Testing Landscape</h1>
+
+
+<table border="1">
+  <tr>
+    <th>Rails Test</th>
+    <th>Test tools</th>
+    <th>Interface</th>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Selenium, Watir</td>
+    <td><span class="caps">HTTP</span> from Browser (IE, Firefox)</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
+      <span class="caps">WWW</span>::Mechanize,
+      <a href="http://github.com/brynary/webrat/tree/master">Webrat</a>
+    </td>
+    <td><span class="caps">HTTP</span></td>
+  </tr>
+  <tr>
+    <td>Integration</td>
+    <td>
+      <a href="http://github.com/brynary/webrat/tree/master">Webrat</a>,
+      RSpec Stories, Cucumber
+    </td>
+    <td>Rails Dispatcher</td>
+  </tr>
+  <tr>
+    <td>Functional</td>
+    <td>RSpec, Shoulda</td>
+    <td>Controller</td>
+  </tr>
+  <tr>
+    <td>Unit</td>
+    <td>RSpec, Shoulda</td>
+    <td>Model</td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Test::Unit::TestCase</h1>
+
+
+	<ul>
+	<li>Test::Unit is a Ruby testing library, similar to JUnit.</li>
+		<li>Rails ships with three types of tests: unit, functional, and integration. Those tests are all structured into test case classes that extend the Test::Unit::TestCase class.</li>
+		<li>Every test contains a number of test blocks that get executed by the test framework.</li>
+		<li>Before every test block the setup block is invoked, and afterwards the teardown block.</li>
+		<li>Every test method makes one or more assertions about the behaviour of the class under test</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Unit Tests</h1>
+
+
+	<ul>
+	<li>Every model MyModel in Rails has a corresponding unit test case in the class TestMyModel in the file test/units/test_my_model.rb</li>
+		<li>Unit tests are created for you by script/generate model</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Unit Test Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class UserTest &lt; ActiveSupport::TestCase
+  fixtures :customers, :services, :users  
+  setup do
+    @user = users(:joe)
+  end
+  test "should have a unique name" do
+    assert_no_difference 'User.count' do
+      user = User.create(:name =&gt; @user.name)
+      assert !user.valid?
+      assert user.errors.on(:name)
+    end
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>test_helper.rb</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+ENV["RAILS_ENV"] = "test" 
+require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
+require 'test_help'
+
+class ActiveSupport::TestCase
+  self.use_transactional_fixtures = true
+  self.use_instantiated_fixtures  = false
+  fixtures :all
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Test Data Through Fixtures</h1>
+
+
+	<ul>
+	<li>Fixtures are files that load test data into the test database that tests can run against. Every model and database table has a corresponding fixture file at test/fixtures/table_name.yml.</li>
+		<li>Fixture files are in <span class="caps">YAML</span> format, a readable alternative to <span class="caps">XML</span>. You can also keep fixture files in <span class="caps">CSV</span> format if you like.</li>
+		<li>The fixture command will delete from the specified tables and then load their fixture files. The fixtures will then be available in your tests as table_name(:fixture_name), i.e. users(:joe).</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Fixture Example: articles.yml</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+ruby:
+  header: Introductory article on Ruby
+  body: bla bla bla
+  user: joe # Article belongs_to :user
+  created_at: &lt;%= 5.days.ago.to_s :db %&gt;
+
+rails:
+  header: Ruby on Rails 101
+  body: bla bla bla
+  user: peter
+  created_at: &lt;%= 5.days.ago.to_s :db %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Assertions</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+assert(actual, comment) # Asserts truth
+assert_equal(expected, actual, comment)
+assert_in_delta(expected_float, actual_float, delta, message)
+assert_match(pattern, string, message)
+assert_nil(object, message)/assert_not_nil
+assert_raise(Exception, ..., message) { block ... }
+assert_difference(expressions, difference = 1, &#38;block)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Functional Testing of Controllers</h1>
+
+
+	<ul>
+	<li>Functional tests run against a single controller instance, simulate requests against it, and make assertions about the responses</li>
+		<li>Requests are made with the methods get/post/put/delete and they invoke a certain action in the controller.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Functional Test Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class ArticlesControllerTest &lt; ActionController::TestCase
+  fixtures :users, :comments
+  test "should get rss action" do
+    get :rss, :id =&gt; users(:quentin)
+    assert_response :success
+    assert_select "rss &gt; channel" do
+      assert_select "title", /Recent comments/
+      assert_select "item", 1
+      assert_select "item &gt; title", Regexp.new(users(:aaron).login)
+      assert_select "item &gt; description", users(:quentin).comments.first.body
+    end
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Assertions in Functional Tests</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+assert_response :success|:redirect|:missing|:error
+assert_redirected_to(:controller =&gt; 'blog', :action =&gt; 'list')
+assert_template 'store/index'
+assert_not_nil assigns(:items)
+assert session[:user]
+assert_not_nil flash[:notice]
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>assert_select</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+assert_select "p.warning" # &lt;p class="warning"&gt;...&lt;/p&gt;
+assert_select "p#warning" # &lt;p id="warning"&gt;...&lt;/p&gt;
+assert_select "html p.warning" # Ancestor chaining
+assert_select "html &gt; body &gt; p.warning" # Direct parent chaining
+assert_select "div#cart table tr", 3 # Integer, n times
+assert_select "div#cart table tr", 3..5 # Range, n times
+assert_select "div#cart table tr", false # Not present on page
+assert_select "div#cart table tr td#price", "$23" # Tag contents
+assert_select "div#cart table tr td#price", /23/ # Regexp for tag contents
+
+assert_select "form input" do
+  assert_select "[name=?]", /.+/  # Not empty
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Integration Tests</h1>
+
+
+	<ul>
+	<li>Test against the Rails dispatcher and invoke any controller</li>
+		<li>Simulate user scenarios/stories.</li>
+		<li>Can involve multiple simultaneous sessions</li>
+		<li>Make requests with the methods get/post etc. to certain URLs</li>
+		<li>You have access to the same environment and assertions as in functional tests</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Integration Test Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class TracerBulletTest &lt; ActionController::IntegrationTest
+  test "main use case" do
+    get("/user/login")
+    assert_response :success
+
+    post("user/login", :email =&gt; @email, :password =&gt; @password)
+    assert_redirected_to :controller =&gt; '/general'
+    follow_redirect!
+    assert_response :success
+
+    post("/contacts/search", :q =&gt; 'sandler new york')
+    assert_response :success
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Integration Test Using a <span class="caps">DSL</span></h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+test "buying a product" do
+  dave = regular_user
+  dave.get "/store/index" 
+  dave.is_viewing "index" 
+  dave.buys_a @ruby_book
+  dave.has_a_cart_containing @ruby_book
+  dave.checks_out DAVES_DETAILS
+  dave.is_viewing "index" 
+  check_for_order DAVES_DETAILS, @ruby_book
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Integration Test <span class="caps">DSL</span></h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def regular_user
+  open_session do |user|
+    def user.is_viewing(page)
+      assert_response :success
+      assert_template page
+    end  
+    def user.buys_a(product)
+      xml_http_request :put, "/store/add_to_cart", :id =&gt; product.id
+      assert_response :success 
+    end
+    ...
+  end  
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Running Tests</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+rake # runs all tests
+rake test:units
+rake test:functionals
+rake test:integration
+ruby test/unit/user_test.rb # run single test
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Stubbing and Mocking</h1>
+
+
+	<ul>
+	<li>Sometimes you may need to stub out interactions with external systems (payment gateways etc.) and isolate the code under test.</li>
+		<li>Mock and stub objects are similar, but mock objects tend to be more intelligent and verify that the right messages are received.</li>
+		<li>Mock classes that should be in place for all tests (static mocks) can be put under test/mocks/test.</li>
+		<li>You may use the libraries Mocha, FlexMock, or <a href="http://github.com/btakita/rr/tree/master">RR</a> for dynamic stubbing/mocking. The stubs/mocks that you set up are isolated to the test.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Mocha Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+product = Product.new
+Product.expects(:find).with(1).returns(product)
+assert_equal product, Product.find(1)
+
+Product.any_instance.stubs(:name).returns('stubbed_name')
+product = Product.new
+assert_equal 'stubbed_name', product.name
+
+object = mock()
+object.expects(:expected_method).with(:p1, :p2).returns(:result)
+assert_equal :result, object.expected_method(:p1, :p2)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Submitting Forms and Clicking Links</h1>
+
+
+	<ul>
+	<li>A limitation in most controller and integration tests is that they bypass forms and links in the views.</li>
+		<li>To submit forms in functional tests you may use plugins such as &#8220;Form Test Helper&#8221; or &#8220;Hpricot Forms&#8221;. For integration tests there is the Webrat plugin.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>rcov</h1>
+
+
+	<ul>
+	<li>rcov is a Ruby library that measures code coverage of tests. It can be used to find gaps in your test coverage.</li>
+		<li>rcov will generate a report of how many percent of each Ruby class is covered and indicate which lines of code are not executed by the tests.</li>
+	</ul>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Installation of rcov:
+sudo gem install rcov
+ruby script/plugin install http://svn.codahale.com/rails_rcov
+rake test:test:rcov
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Heckle</h1>
+
+
+	<ul>
+	<li>Heckle will mutate your code by inverting boolean expressions and run your tests and make sure they fail</li>
+		<li>Heckle helps find missing assertions and can also find redundancies in your code.</li>
+	</ul>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Installation of Heckle:
+sudo gem install heckle
+heckle -t test/functional/comments_controller_test.rb CommentsController create
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">AJAX</span> and <span class="caps">RJS</span> Testing</h1>
+
+
+	<ul>
+	<li>When you develop <span class="caps">AJAX</span> functionality you write actions generate and return JavaScript with the <span class="caps">RJS API</span>.</li>
+		<li>The most realistic way to test <span class="caps">AJAX</span> functionality is with a browser testing tool like Selenium.</li>
+		<li>With the <span class="caps">ARTS</span> plugin you can make assertions against the <span class="caps">RJS</span> code in your controller and integration tests. These tests are quite fragile though.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">HTML</span> Validation and Link Checking</h1>
+
+
+	<ul>
+	<li>There is a plugin called htmltest that you can use to <span class="caps">HTML</span> validate all your <span class="caps">HTML</span> responses in your controller and integration tests.</li>
+		<li>You can also use the plugin to make sure that URLs in links and redirects can be resolved by your application.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Using the Rails Tests as Documentation</h1>
+
+
+	<ul>
+	<li>A great way to learn the Rails <span class="caps">API</span> is to read the tests that ship with Rails. The tests tell you how the <span class="caps">API</span> is intended to be used, how you should and should not use it. You can also learn about edge cases.</li>
+		<li>The Rails tests are also a good place to learn how to write tests for your own application.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">BDD</span>: From Verification to Specification</h1>
+
+
+	<ul>
+	<li>Behaviour Driven Development (BDD) is Test Driven Development (TDD) with a new terminology and structure</li>
+		<li>Instead of tests <span class="caps">BDD</span> talks about specifications</li>
+		<li>RSpec is the most popular <span class="caps">BDD</span> framework</li>
+		<li>In <span class="caps">BDD</span> specifications are not necessarily structured around a certain class like is typically the case in unit testing, but rather a certain context, such as an empty list.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>RSpec Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+describe Contact do
+  before(:each) do
+    @contact = contacts(:ankaret_pending)
+  end
+  describe "creating" do
+    it "can be created with source, email and invitation_code" do
+      lambda do
+        contact = Contact.create(create_params)
+        contact.reload.email.should == create_params[:email]
+      end.should change(Contact, :count).by(1)
+    end
+  end
+end
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

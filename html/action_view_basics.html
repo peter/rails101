@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Action View Basics</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Introduction</h1>
+
+
+	<ul>
+	<li>ActionView is the module in the ActionPack library that deals with rendering a response to the client.</li>
+		<li>The controller decides which template and/or partial and layout to use in the response</li>
+		<li>Templates use helper methods to format text, generate links, forms, and JavaScript.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Where Templates Live</h1>
+
+
+	<ul>
+	<li>Templates that belong to a certain controller typically live under app/view/controller_name, i.e. templates for Admin::UsersController live under app/views/admin/users</li>
+		<li>Templates shared across controllers are put under app/views/shared. You can render them with render :template =&gt; &#8216;shared/my_template&#8217;</li>
+		<li>You can have templates shared across Rails applications and render them with render :file =&gt; &#8216;path/to/template&#8217;</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Template Environment</h1>
+
+
+	<ul>
+	<li>Templates have access to the controller objects flash, headers, logger, params, request, response, and session. </li>
+		<li>Instance variables (i.e. @variable) in the controller are available in templates</li>
+		<li>The current controller is available as the attribute controller.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Three Common Template Types</h1>
+
+
+	<ul>
+	<li>html.erb &#8211; The most common type of template used for <span class="caps">HTML</span>. They are <span class="caps">HTML</span> files with embedded Ruby and they use the ERb library.</li>
+		<li>xml.erb &#8211; Files with Ruby code using the Builder library to generate <span class="caps">XML</span>. Typically used to generate <span class="caps">RSS</span>/Atom feeds or web services.</li>
+		<li>js.rjs &#8211; Ruby code with a Rails specific <span class="caps">API</span> (RJS) that generate JavaScript. Used for <span class="caps">AJAX</span> functionality.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Builder Template Example: <span class="caps">RSS</span></h1>
+
+
+<div class="code-tiny">
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+xml.instruct!
+xml.rss "version" =&gt; "2.0", "xmlns:dc" =&gt; "http://purl.org/dc/elements/1.1/" do
+  xml.channel do
+    xml.title "Recent comments for #{@user.login}" 
+    xml.link @rss_url
+    xml.pubDate CGI.rfc1123_date(@comments.first ? @comments.first.updated_at : Time.now)
+    xml.description "" 
+    @comments.each do |comment|
+      xml.item do
+        xml.title "Comment by #{comment.creation_user.login} #{time_ago_in_words comment.created_at} ago" 
+        xml.link @server_url + comment_url(comment)
+        xml.description h(comment.body)
+        xml.pubDate CGI.rfc1123_date(comment.updated_at)
+        xml.guid @server_url + comment_url(comment)
+        xml.author h(comment.creation_user.login)
+      end
+    end
+  end
+end
+</pre></div>
+
+</div>
+
+</div>
+<div class="slide">
+
+	<h1>.html.erb Templates</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Evaluate Ruby code and print the last evaluated value to the page.
+&lt;%= ruby code here %&gt; 
+
+#  Evaluates Ruby code without outputting anything to the page
+&lt;% ruby code here %&gt;
+
+# Use a minus sign to avoid printing a newline to the page
+&lt;%= ... %-&gt;
+&lt;% ... %-&gt;
+
+# HTML quoting/escaping with the h() helper method
+&lt;%=h comment.header %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Partials</h1>
+
+
+	<ul>
+	<li>Partials are templates that render a part of a page, such as a header or footer, or a menu, or a listing of articles</li>
+		<li>Partials help promote reuse of page elements</li>
+		<li>Partials work just like page templates (views) and run in the same environment. They also live in the same directory as page templates.</li>
+		<li>The filenames of partials always start with an underscore.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Rendering Partials</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Inside a controller action
+render :partial =&gt; 'name_of_partial'
+
+# In an .html.erb template
+&lt;%= render :partial =&gt; 'name_of_partial' %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Passing Variables to Partials</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Controller instance variables are available
+&lt;%=h @article.name @%
+
+# You can pass any objects into local variables in the partial:
+# render :partial =&gt; 'article', :locals =&gt; { :article =&gt; @article, :options =&gt; @options }
+&lt;%=h article.name %&gt;
+
+# The :object argument initializes local variable with same name as partial.
+# render :partial =&gt; 'article', :object =&gt; @an_article
+&lt;%= article.name %
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Partials and Collections</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+&lt;% for article in @articles %&gt;
+  &lt;%= render :partial =&gt; 'article', :object =&gt; article %&gt;
+&lt;% end %&gt;
+
+# Can be written more concisely with the :collection argument:
+&lt;%= render :partial =&gt; 'article', :collection =&gt; @articles %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Layouts</h1>
+
+
+	<ul>
+	<li>Layouts are templates under app/views/layouts that contain common page elements around pages such as headers, footers, menus etc.</li>
+		<li>The layout template contains the invocation &lt;%= yield %&gt; which will render the action output.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Determining whith Layout to Use</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# 1. Layout specified when you invoke render
+render 'some_template', :layout =&gt; 'my_special_layout'
+render 'some_template', :layout =&gt; false # no layout
+
+# 2. Layout specified for the controller
+layout 'standard', :except =&gt; [:rss, :atom]
+layout nil # turns off layouts
+
+# 3. Rails looks for a controller layout at:
+app/views/layouts/controller_name.html.erb
+
+# 4. Rails looks for an application layout in the file:
+app/views/layouts/application.html.erb
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Dynamic Layout Selection</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class BlogController &lt; ActionController::Base
+  layout :determine_layout
+
+  private
+  def determine_layout
+    user.admin? ? "admin" : "standard" 
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Passing Data to Layouts</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# You can pass data to layouts with instance variables
+&lt;%=h @page_title %&gt;
+
+# You can pass parts of your template with content_for.
+# In your template:
+&lt;% content_for(:left_menu) %&gt;
+  ...
+&lt;% end %&gt;
+# In your layout:
+&lt;% yield :left_menu %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Helpers</h1>
+
+
+	<ul>
+	<li>Helpers are Ruby modules with methods that are available in your templates.</li>
+		<li>Helpers can avoid duplication and minimize the amount of code in your templates.</li>
+		<li>By default each controller has a corresponding helper file at app/helpers/controller_name_helper.rb</li>
+		<li>By default Rails will make all helpers available in all controllers</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>text_helper.rb</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+truncate("Once upon a time in a world far far away", 14)
+highlight('You searched for: rails', 'rails')
+excerpt('This is an example', 'an', 5)
+pluralize(2, 'person')
+word_wrap('Once upon a time', 4)
+textilize(text)
+markdown(text)
+simple_format(text)
+auto_link(text)
+strip_links(text)
+sanitize(html)
+strip_tags(html)
+&lt;tr class="&lt;%= cycle("even", "odd") -%&gt;"&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>url_helper.rb</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+url_for({:controller =&gt; ‘blog’}, :only_path =&gt; false)
+link_to "Other Site", "http://www.rubyonrails.org/", :confirm =&gt; "Sure?" 
+link_to "Image", { :action =&gt; "view" }, :popup =&gt; ['new_window','height=300,width=600']
+link_to "Delete Image", { :action =&gt; "delete", :id =&gt; @image.id }, :method =&gt; :delete
+button_to "New", :action =&gt; "new" 
+link_to_unless_current("Home", { :action =&gt; "index" })
+mail_to "me@domain.com", "My email", :encode =&gt; "javascript" 
+# =&gt; &lt;script type="text/javascript"&gt;eval(unescape('%64%6f%63...%6d%65%6e'))&lt;/script&gt;
+mail_to "me@domain.com", "My email", :encode =&gt; "hex" 
+# =&gt; &lt;a href="mailto:%6d%65@%64%6f%6d%61%69%6e.%63%6f%6d"&gt;My email&lt;/a&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">HAML</span> &#8211; An Alternative Templating System</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+&lt;div id='content'&gt;
+    &lt;div class='left column'&gt;
+      &lt;h2&gt;Welcome to our site!&lt;/h2&gt;
+      &lt;p&gt;
+        &lt;%= print_information %&gt;
+      &lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="right column"&gt;
+      &lt;%= render :partial =&gt; "sidebar" %&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre></div>
+
+    </td>
+    <td>
+      =&gt;
+    </td>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+#content
+    .left.column
+      %h2 Welcome to our site!
+      %p= print_information
+    .right.column= render :partial =&gt; "sidebar" 
+</pre></div>
+
+</td>
+</tr>
+</table></div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>
