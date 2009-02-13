@@ -1,0 +1,197 @@
+h1. Forms
+
+h1. Generating HTML Forms
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+# 1. Form helper is used to generate form in view
+<% form_tag({:action => 'update', :id => @user} do %>
+  <%= text_field 'user', 'email'  %>
+<% end %>
+:endinlinecode
+</td>
+</tr>
+<tr>
+<td>
+:inlinecode
+# The generated form HTML
+<form action="/admin/users/update/1" method="post">
+  <input id="user_email" name="user[email]" />
+</form>
+:endinlinecode
+</td>
+</tr>
+</table>
+
+h1. Receiving Submitted Form Data
+
+:inlinecode
+# The submitted form data is in the params hash
+params = {:user => {:email => "joe@user.com"}}
+
+# The form data is passed to an ActiveRecord model
+@user = User.find(params[:id])
+@user.update_attributes(params[:user])
+:endinlinecode
+
+h1. form_for - Wrapping Model Objects
+
+:inlinecode
+<% form_for(@post) do |f| %>
+  <%= f.error_messages %>
+  <%= f.label :header %>
+  <%= f.text_field :header %><br />
+  <%= f.label :body %>
+  <%= f.text_area :body %><br />
+  <%= f.submit "Create" %>
+<% end %>
+:endinlinecode
+
+h1. form_for with Options
+
+:inlinecode
+<% form_for :user, @admin_user,
+  :url => {:action => 'save'},
+  :html => {:class => 'admin_form', :multipart => true} do |f| -%>
+
+  <%= f.error_messages %>
+  <%= f.text_field :email %><br/>
+  <%= text_area :user, 'bio' %><br/>
+  <%= submit_tag 'Sign up' %><br/>
+<% end -%>
+:endinlinecode
+
+h1. Forms with Multiple Objects - fields_for
+
+:inlinecode
+<% form_for @person, :url => { :action => "update" } do |person_form| %>
+  First name: <%= person_form.text_field :first_name %>
+  Last name : <%= person_form.text_field :last_name %>
+
+  <% fields_for @person.permission do |permission_fields| %>
+    Admin?  : <%= permission_fields.check_box :admin %>
+  <% end %>
+<% end %>
+:endinlinecode
+
+h1. Processing Multiple Object Form Submission
+
+:inlinecode
+def create
+  @company = Company.new(params[:company])
+  @product = Product.new(params[:product])
+
+  Company.transaction do
+    @company.save!
+    @product.save!
+    redirect_to :action => :show, :id => @company
+  end
+rescue ActiveRecord::RecordInvalid => e
+  @product.valid? # Force validation as it may not have been validated
+  render :action => :new
+end
+:endinlinecode
+
+h1. form_helper.rb
+
+:inlinecode
+fields_for :permission, @person.permission do |fields| ...
+text_field("post", "title", "size" => 20)
+password_field
+hidden_field
+file_field
+text_area("post", "body", "cols" => 20, "rows" => 40)
+check_box("post", "validated") # => 0/1 booleans
+radio_button("post", "category", "rails")
+:endinlinecode
+
+h1. Select Boxes
+
+:inlinecode
+  select_tag(:gender, options_for_select(['Male', 'Female']))
+  select_tag(:gender, options_for_select([['Male', 'm'], ['Female', 'f']]))
+  f.select(:person_id, Person.all.map {|p| [ p.name, p.id ] })
+  f.collection_select(:person_id, Person.all, :id, :name)
+  f.time_zone_select(:time_zone, TimeZone.us_zones, :default => "Pacific Time (US & Canada)")
+:endinlinecode
+
+h1. date_helper.rb
+
+:inlinecode
+distance_of_time_in_words(from_time, to_time)
+time_ago_in_words(from_time)
+f.date_select(:written_on,
+  :start_year => 1995, :use_month_numbers => true,
+  :discard_day => true, :include_blank => true)
+f.datetime_select(:written_on)
+:endinlinecode
+
+h1. Custom Form Builder
+
+:inlinecode
+class LabelFormBuilder < ActionView::Helpers::FormBuilder
+  helpers = field_helpers +
+            %w{date_select datetime_select time_select} +
+            %w{collection_select select country_select time_zone_select} -
+            %w{hidden_field label fields_for} # Don't decorate these
+
+  helpers.each do |name|
+    define_method(name) do |field, *args|
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      label = label(field, options[:label], :class => options[:label_clas])
+      @template.content_tag(:p, label +'<br/>' + super)  #wrap with a paragraph 
+    end
+  end
+end
+
+ActionView::Base.default_form_builder = LabelFormBuilder
+:endinlinecode
+
+h1. Using the Custom Form Builder
+
+:inlinecode
+# Labels and line breaks and paragraphs are generated automatically
+<% form_for(@user, :builder => LabelFormBuilder) do |f| %>
+  <%= f.error_messages %>
+  <%= f.text_field :name %>
+  <%= f.text_field :address %>
+  <%= f.text_area :comment %>
+  <%= f.check_box :check %>
+  <%= f.submit "Update" %>
+<% end %>
+:endinlinecode
+
+h1. File Upload
+
+The easiest way to upload files is to use a plugin such as "Paperclip":http://www.thoughtbot.com/projects/paperclip or "Attachment Fu":http://clarkware.com/cgi/blosxom/2007/02/24
+
+h1. Paperclip Usage
+
+:inlinecode
+class User < ActiveRecord::Base
+  has_attached_file :avatar, 
+                    :styles => { :medium => "300x300>",
+                                 :thumb => "100x100>" }
+end
+
+<% form_for :user, :html => { :multipart => true } do |form| %>
+  <%= form.file_field :avatar %>
+<% end %>
+:endinlinecode
+
+h1. Styling Error Messages
+
+:inlinecode
+# Style #errorExplanation and .fieldWithErrors in your CSS file
+
+# Default markup for form fields with errors:
+ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
+  "<div class=\"fieldWithErrors\">#{html_tag}</div>"
+end
+
+# You may turn off inline form error messages if they mess up your form layouts
+config.action_view.field_error_proc = Proc.new{ |html_tag, instance| html_tag }
+:endinlinecode
+

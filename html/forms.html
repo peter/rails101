@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Forms</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Generating <span class="caps">HTML</span> Forms</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# 1. Form helper is used to generate form in view
+&lt;% form_tag({:action =&gt; 'update', :id =&gt; @user} do %&gt;
+  &lt;%= text_field 'user', 'email'  %&gt;
+&lt;% end %&gt;
+</pre></div>
+
+</td>
+</tr>
+<tr>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# The generated form HTML
+&lt;form action="/admin/users/update/1" method="post"&gt;
+  &lt;input id="user_email" name="user[email]" /&gt;
+&lt;/form&gt;
+</pre></div>
+
+</td>
+</tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>Receiving Submitted Form Data</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# The submitted form data is in the params hash
+params = {:user =&gt; {:email =&gt; "joe@user.com"}}
+
+# The form data is passed to an ActiveRecord model
+@user = User.find(params[:id])
+@user.update_attributes(params[:user])
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>form_for &#8211; Wrapping Model Objects</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+&lt;% form_for(@post) do |f| %&gt;
+  &lt;%= f.error_messages %&gt;
+  &lt;%= f.label :header %&gt;
+  &lt;%= f.text_field :header %&gt;&lt;br /&gt;
+  &lt;%= f.label :body %&gt;
+  &lt;%= f.text_area :body %&gt;&lt;br /&gt;
+  &lt;%= f.submit "Create" %&gt;
+&lt;% end %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>form_for with Options</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+&lt;% form_for :user, @admin_user,
+  :url =&gt; {:action =&gt; 'save'},
+  :html =&gt; {:class =&gt; 'admin_form', :multipart =&gt; true} do |f| -%&gt;
+
+  &lt;%= f.error_messages %&gt;
+  &lt;%= f.text_field :email %&gt;&lt;br/&gt;
+  &lt;%= text_area :user, 'bio' %&gt;&lt;br/&gt;
+  &lt;%= submit_tag 'Sign up' %&gt;&lt;br/&gt;
+&lt;% end -%&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Forms with Multiple Objects &#8211; fields_for</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+&lt;% form_for @person, :url =&gt; { :action =&gt; "update" } do |person_form| %&gt;
+  First name: &lt;%= person_form.text_field :first_name %&gt;
+  Last name : &lt;%= person_form.text_field :last_name %&gt;
+
+  &lt;% fields_for @person.permission do |permission_fields| %&gt;
+    Admin?  : &lt;%= permission_fields.check_box :admin %&gt;
+  &lt;% end %&gt;
+&lt;% end %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Processing Multiple Object Form Submission</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def create
+  @company = Company.new(params[:company])
+  @product = Product.new(params[:product])
+
+  Company.transaction do
+    @company.save!
+    @product.save!
+    redirect_to :action =&gt; :show, :id =&gt; @company
+  end
+rescue ActiveRecord::RecordInvalid =&gt; e
+  @product.valid? # Force validation as it may not have been validated
+  render :action =&gt; :new
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>form_helper.rb</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+fields_for :permission, @person.permission do |fields| ...
+text_field("post", "title", "size" =&gt; 20)
+password_field
+hidden_field
+file_field
+text_area("post", "body", "cols" =&gt; 20, "rows" =&gt; 40)
+check_box("post", "validated") # =&gt; 0/1 booleans
+radio_button("post", "category", "rails")
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Select Boxes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+  select_tag(:gender, options_for_select(['Male', 'Female']))
+  select_tag(:gender, options_for_select([['Male', 'm'], ['Female', 'f']]))
+  f.select(:person_id, Person.all.map {|p| [ p.name, p.id ] })
+  f.collection_select(:person_id, Person.all, :id, :name)
+  f.time_zone_select(:time_zone, TimeZone.us_zones, :default =&gt; "Pacific Time (US &#38; Canada)")
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>date_helper.rb</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+distance_of_time_in_words(from_time, to_time)
+time_ago_in_words(from_time)
+f.date_select(:written_on,
+  :start_year =&gt; 1995, :use_month_numbers =&gt; true,
+  :discard_day =&gt; true, :include_blank =&gt; true)
+f.datetime_select(:written_on)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Custom Form Builder</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class LabelFormBuilder &lt; ActionView::Helpers::FormBuilder
+  helpers = field_helpers +
+            %w{date_select datetime_select time_select} +
+            %w{collection_select select country_select time_zone_select} -
+            %w{hidden_field label fields_for} # Don't decorate these
+
+  helpers.each do |name|
+    define_method(name) do |field, *args|
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      label = label(field, options[:label], :class =&gt; options[:label_clas])
+      @template.content_tag(:p, label +'&lt;br/&gt;' + super)  #wrap with a paragraph 
+    end
+  end
+end
+
+ActionView::Base.default_form_builder = LabelFormBuilder
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Using the Custom Form Builder</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Labels and line breaks and paragraphs are generated automatically
+&lt;% form_for(@user, :builder =&gt; LabelFormBuilder) do |f| %&gt;
+  &lt;%= f.error_messages %&gt;
+  &lt;%= f.text_field :name %&gt;
+  &lt;%= f.text_field :address %&gt;
+  &lt;%= f.text_area :comment %&gt;
+  &lt;%= f.check_box :check %&gt;
+  &lt;%= f.submit "Update" %&gt;
+&lt;% end %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>File Upload</h1>
+
+
+	<p>The easiest way to upload files is to use a plugin such as <a href="http://www.thoughtbot.com/projects/paperclip">Paperclip</a> or <a href="http://clarkware.com/cgi/blosxom/2007/02/24">Attachment Fu</a></p>
+
+
+</div>
+<div class="slide">
+
+	<h1>Paperclip Usage</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class User &lt; ActiveRecord::Base
+  has_attached_file :avatar, 
+                    :styles =&gt; { :medium =&gt; "300x300&gt;",
+                                 :thumb =&gt; "100x100&gt;" }
+end
+
+&lt;% form_for :user, :html =&gt; { :multipart =&gt; true } do |form| %&gt;
+  &lt;%= form.file_field :avatar %&gt;
+&lt;% end %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Styling Error Messages</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Style #errorExplanation and .fieldWithErrors in your CSS file
+
+# Default markup for form fields with errors:
+ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
+  "&lt;div class=\"fieldWithErrors\"&gt;#{html_tag}&lt;/div&gt;" 
+end
+
+# You may turn off inline form error messages if they mess up your form layouts
+config.action_view.field_error_proc = Proc.new{ |html_tag, instance| html_tag }
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>
