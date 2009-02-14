@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Filters</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Introduction</h1>
+
+
+	<ul>
+	<li>Typically used to implement authentication and authorization. Can also be used for logging, compression, or just code reuse between actions</li>
+		<li>There are before, after, and around filters</li>
+		<li>If a before filter returns false then the request is aborted</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>before_filter Example</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class UsersController &lt; ApplicationController
+  before_filter :admin_required, :only =&gt; [:suspend, :unsuspend, :destroy, :purge]
+
+  private
+  def admin_required
+    if !logged_in_as_admin?
+      flash[:notice] = "You need to be admin to access that page" 
+      session[:return_to] = request.request_uri
+      redirect_to login_path
+    end
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>before_filter: Inheritance, Skipping, and Ordering</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class ApplicationController &lt; ActionController::Base
+  before_filter :log_session, :set_locale
+end
+
+class ArticlesController &lt; ApplicationController
+  skip_filter :log_session, :only =&gt; [:rss]
+  prepend_before_filter :initialize_article_session
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>after_filter</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class NewspaperController &lt; ActionController::Base
+   after_filter :compress_response
+
+   def compress_response
+    self.response.body = compress(response.body)
+   end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>around_filter</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class BlogController &lt; ApplicationController 
+  around_filter :time_an_action
+
+  def time_an_action 
+    started = Time.now 
+    yield 
+    elapsed = Time.now - started 
+    logger.info("#{action_name} took #{elapsed} seconds") 
+  end 
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Filter Blocks</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+around_filter do |controller, action| 
+  started = Time.now 
+  action.call 
+  elapsed = Time.now - started 
+end 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Filter Classes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class TimingFilter 
+  def self.filter(controller) 
+    started = Time.now 
+    yield 
+    elapsed = Time.now - started 
+  end 
+end 
+
+around_filter TimingFilter
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Verification</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+verify :params =&gt; "admin_privileges", :xhr =&gt; true,
+  :only =&gt; :update_post, :redirect_to =&gt; { :action =&gt; "settings" }
+
+verify :method =&gt; :post,
+  :only =&gt; [:destroy, :create, :update],
+  :redirect_to =&gt; {:action =&gt; :list}
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+h1. Filters
+
+h1. Introduction
+
+* Typically used to implement authentication and authorization. Can also be used for logging, compression, or just code reuse between actions
+* There are before, after, and around filters
+* If a before filter returns false then the request is aborted
+
+h1. before_filter Example
+
+:inlinecode
+class UsersController < ApplicationController
+  before_filter :admin_required, :only => [:suspend, :unsuspend, :destroy, :purge]
+
+  private
+  def admin_required
+    if !logged_in_as_admin?
+      flash[:notice] = "You need to be admin to access that page"
+      session[:return_to] = request.request_uri
+      redirect_to login_path
+    end
+  end
+end
+:endinlinecode
+
+h1. before_filter: Inheritance, Skipping, and Ordering
+
+:inlinecode
+class ApplicationController < ActionController::Base
+  before_filter :log_session, :set_locale
+end
+
+class ArticlesController < ApplicationController
+  skip_filter :log_session, :only => [:rss]
+  prepend_before_filter :initialize_article_session
+end
+:endinlinecode
+
+h1. after_filter
+
+:inlinecode
+class NewspaperController < ActionController::Base
+   after_filter :compress_response
+
+   def compress_response
+    self.response.body = compress(response.body)
+   end
+end
+:endinlinecode
+
+h1. around_filter
+
+:inlinecode
+class BlogController < ApplicationController 
+  around_filter :time_an_action
+
+  def time_an_action 
+    started = Time.now 
+    yield 
+    elapsed = Time.now - started 
+    logger.info("#{action_name} took #{elapsed} seconds") 
+  end 
+end
+:endinlinecode
+
+h1. Filter Blocks
+
+:inlinecode
+around_filter do |controller, action| 
+  started = Time.now 
+  action.call 
+  elapsed = Time.now - started 
+end 
+:endinlinecode
+
+h1. Filter Classes
+
+:inlinecode
+class TimingFilter 
+  def self.filter(controller) 
+    started = Time.now 
+    yield 
+    elapsed = Time.now - started 
+  end 
+end 
+
+around_filter TimingFilter
+:endinlinecode
+
+h1. Verification
+
+:inlinecode
+verify :params => "admin_privileges", :xhr => true,
+  :only => :update_post, :redirect_to => { :action => "settings" }
+
+verify :method => :post,
+  :only => [:destroy, :create, :update],
+  :redirect_to => {:action => :list}
+:endinlinecode

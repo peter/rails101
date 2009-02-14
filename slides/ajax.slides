@@ -316,16 +316,28 @@ end
 
 h1. Degradability for When there is No JavaScript
 
-* form_remote_tag will by default fall and submit to the AJAX URL. To submit to a different URL, you can specify :html => {:action => {:action => ‘some_action’}}
+* form_remote_tag will by default fall and submit to the AJAX URL. To submit to a different URL, you can specify :html => {:action => {:action => 'some_action'}}
 * You can get link_to_remote to make a normal GET request if there is no JavaScript with the :href HTML option.
 * In your actions you can give different responses depending on if the request is an AJAX request or not (using request.xhr?).
 
-h1.
+h1. RJS Reuse
 
 :inlinecode
+module ApplicationHelper
+  def replace_article(article)
+    update_page do |page|
+      page[:article].replace partial => :article, :locals => {:article => article}
+    end 
+  end
+end 
+
+# In the controller action
+render :update do |page|
+  page << replace_article(@article)
+  page.highlight :article
+end
 :endinlinecode
 
-h1.
+h1. Browser Tools
 
-:inlinecode
-:endinlinecode
+Firebug and the Web Developer Extension for Firefox are great tools when working with AJAX. You can use Firebug Lite in other browsers (i.e. IE on windows).

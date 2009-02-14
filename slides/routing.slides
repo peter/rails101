@@ -1,0 +1,106 @@
+h1. Routing
+
+h1. Introduction
+
+* Routes are rules that map URLs to the params hash
+* The params hash contains the controller and action to invoke
+* Routes are defined in config/routes.rb and are applied in the order that they appear
+* If no routes matches an incoming request a 404 is returned
+* The goal is pretty, human readable, and search engine friendly URLs
+
+h1. Anatomy of a Route
+
+:inlinecode
+# In config/routes.rb
+map.route_name 'url_pattern', params_hash
+map.user_list 'users', :controller => 'users', :action => 'list'
+map.root, :controller => 'home'
+:endinlinecode
+
+h1. Route Defaults and Requirements
+
+:inlinecode
+map.connect "blog/:year/:month/:day", 
+      :controller => "blog", 
+      :action => "show_date", 
+      :requirements => { :year => /(19|20)\d\d/, 
+        :month => /[01]?\d/, 
+        :day => /[0-3]?\d/}, 
+      :day => nil, 
+      :month => nil
+:endinlinecode
+
+h1. Using Named Routes
+
+:inlinecode
+# In your views
+link_to "User list", user_list_path # => <a href="/users">User List</a>
+link_to "User list", user_list_url # => <a href="http://site.url/users">User List</a>
+form_tag(search_path)
+form_for(@person, :url => super_post_path)
+
+# In a controller action
+redirect_to root_path
+:endinlinecode
+
+h1. url_for: Generating a URL from params
+
+:inlinecode
+params = {"action"=>"show", "id"=>"2", "controller"=>"posts"}
+url_for(params) #=> http://localhost:3000/posts/2
+# url_for is used by link_to, redirect_to, form_for etc.
+:endinlinecode
+
+h1. Wildcards
+
+:inlinecode
+map.connect '*anything',
+  :controller => 'blog',
+  :action => 'unknown_request'
+              
+map.connect 'download/*path',
+  :controller => 'file'
+  :action => 'download'
+:endinlinecode
+
+h1. Listing Routes with rake routes
+
+:inlinecode
+# rake routes
+# map.resources :posts
+posts GET        /posts(.:format)               {:controller=>"posts", :action=>"index"}
+      POST       /posts(.:format)               {:controller=>"posts", :action=>"create"}
+new_post GET     /posts/new(.:format)           {:controller=>"posts", :action=>"new"}
+edit_post GET    /posts/:id/edit(.:format)      {:controller=>"posts", :action=>"edit"}
+     post GET    /posts/:id(.:format)           {:controller=>"posts", :action=>"show"}
+          PUT    /posts/:id(.:format)           {:controller=>"posts", :action=>"update"}
+          DELETE /posts/:id(.:format)           {:controller=>"posts", :action=>"destroy"}
+# Default routes
+/:controller/:action/:id           
+/:controller/:action/:id(.:format)
+:endinlinecode
+
+h1. Routes in the Console
+
+:inlinecode
+rs = ActionController::Routing::Routes
+puts rs.routes
+rs.generate :controller => 'posts', :action => 'show', :id => 1
+# => "/posts/1"
+rs.recognize_path("/posts/1", :method => :get)
+#=> {:controller=>"posts", :action=>"show", :id=>"1"}
+:endinlinecode
+
+h1. Testing Routes
+
+:inlinecode
+def test_movie_route_properly_splits
+    opts = {:controller => "plugin", :action => "checkout", :id => "2"}
+    assert_routing "plugin/checkout/2", opts
+end  
+  
+def test_route_has_options
+  opts = {:controller => "plugin", :action => "show", :id => "12"}
+  assert_recognizes opts, "/plugins/show/12"
+end
+:endinlinecode

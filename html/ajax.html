@@ -420,6 +420,29 @@ end
 </div>
 <div class="slide">
 
+	<h1>Global <span class="caps">AJAX</span> Hooks for the Spinner Icon</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# In public/javascripts/application.js. Will show the spinner whenever
+# an AJAX request is in process.
+Ajax.Responders.register({ 
+  onCreate: function(){ 
+    $('spinner').show(); 
+  }, 
+  onComplete: function() { 
+    if(Ajax.activeRequestCount == 0) 
+      $('spinner').hide(); 
+  } 
+}); 
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Drag and Drop Example: The Request Side</h1>
 
 
@@ -525,63 +548,48 @@ end
 </div>
 <div class="slide">
 
-	<h1>Global <span class="caps">AJAX</span> Hooks</h1>
+	<h1>Degradability for When there is No JavaScript</h1>
+
+
+	<ul>
+	<li>form_remote_tag will by default fall and submit to the <span class="caps">AJAX URL</span>. To submit to a different <span class="caps">URL</span>, you can specify :html =&gt; {:action =&gt; {:action =&gt; &#8216;some_action&#8217;}}</li>
+		<li>You can get link_to_remote to make a normal <span class="caps">GET</span> request if there is no JavaScript with the :href <span class="caps">HTML</span> option.</li>
+		<li>In your actions you can give different responses depending on if the request is an <span class="caps">AJAX</span> request or not (using request.xhr?).</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">RJS</span> Reuse</h1>
 
 
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
 
-# In public/javascripts/application.js. Will show the spinner whenever
-# an AJAX request is in process.
-Ajax.Responders.register({ 
-  onCreate: function(){ 
-    $('spinner').show(); 
-  }, 
-  onComplete: function() { 
-    if(Ajax.activeRequestCount == 0) 
-      $('spinner').hide(); 
-  } 
-}); 
+module ApplicationHelper
+  def replace_article(article)
+    update_page do |page|
+      page[:article].replace partial =&gt; :article, :locals =&gt; {:article =&gt; article}
+    end 
+  end
+end 
+
+# In the controller action
+render :update do |page|
+  page &lt;&lt; replace_article(@article)
+  page.highlight :article
+end
 </pre></div>
 
 </div>
 <div class="slide">
 
-	<p>h1.</p>
+	<h1>Browser Tools</h1>
 
 
-<div class="code-normal">
-
-<pre name="code" class="ruby:nogutter:nocontrols">
-
-</pre></div>
-
-</div>
-<div class="slide">
-
-	<p>h1.</p>
-
-
-<div class="code-normal">
-
-<pre name="code" class="ruby:nogutter:nocontrols">
-
-</pre></div>
-
-</div>
-<div class="slide">
-
-	<p>h1.</p>
-
-
-<div class="code-normal">
-
-<pre name="code" class="ruby:nogutter:nocontrols">
-
-</pre></div>
-
-</div>
+	<p>Firebug and the Web Developer Extension for Firefox are great tools when working with <span class="caps">AJAX</span>. You can use Firebug Lite in other browsers (i.e. IE on windows).</div></p>
 
   <!-- Syntax Highlighter -->
   <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>

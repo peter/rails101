@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Routing</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Introduction</h1>
+
+
+	<ul>
+	<li>Routes are rules that map URLs to the params hash</li>
+		<li>The params hash contains the controller and action to invoke</li>
+		<li>Routes are defined in config/routes.rb and are applied in the order that they appear</li>
+		<li>If no routes matches an incoming request a 404 is returned</li>
+		<li>The goal is pretty, human readable, and search engine friendly URLs</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Anatomy of a Route</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# In config/routes.rb
+map.route_name 'url_pattern', params_hash
+map.user_list 'users', :controller =&gt; 'users', :action =&gt; 'list'
+map.root, :controller =&gt; 'home'
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Route Defaults and Requirements</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+map.connect "blog/:year/:month/:day", 
+      :controller =&gt; "blog", 
+      :action =&gt; "show_date", 
+      :requirements =&gt; { :year =&gt; /(19|20)\d\d/, 
+        :month =&gt; /[01]?\d/, 
+        :day =&gt; /[0-3]?\d/}, 
+      :day =&gt; nil, 
+      :month =&gt; nil
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Using Named Routes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# In your views
+link_to "User list", user_list_path # =&gt; &lt;a href="/users"&gt;User List&lt;/a&gt;
+link_to "User list", user_list_url # =&gt; &lt;a href="http://site.url/users"&gt;User List&lt;/a&gt;
+form_tag(search_path)
+form_for(@person, :url =&gt; super_post_path)
+
+# In a controller action
+redirect_to root_path
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>url_for: Generating a <span class="caps">URL</span> from params</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+params = {"action"=&gt;"show", "id"=&gt;"2", "controller"=&gt;"posts"}
+url_for(params) #=&gt; http://localhost:3000/posts/2
+# url_for is used by link_to, redirect_to, form_for etc.
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Wildcards</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+map.connect '*anything',
+  :controller =&gt; 'blog',
+  :action =&gt; 'unknown_request'
+              
+map.connect 'download/*path',
+  :controller =&gt; 'file'
+  :action =&gt; 'download'
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Listing Routes with rake routes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# rake routes
+posts GET        /posts(.:format)               {:controller=&gt;"posts", :action=&gt;"index"}
+      POST       /posts(.:format)               {:controller=&gt;"posts", :action=&gt;"create"}
+new_post GET     /posts/new(.:format)           {:controller=&gt;"posts", :action=&gt;"new"}
+edit_post GET    /posts/:id/edit(.:format)      {:controller=&gt;"posts", :action=&gt;"edit"}
+     post GET    /posts/:id(.:format)           {:controller=&gt;"posts", :action=&gt;"show"}
+          PUT    /posts/:id(.:format)           {:controller=&gt;"posts", :action=&gt;"update"}
+          DELETE /posts/:id(.:format)           {:controller=&gt;"posts", :action=&gt;"destroy"}
+                 /:controller/:action/:id           
+                 /:controller/:action/:id(.:format)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Routes in the Console</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+rs = ActionController::Routing::Routes
+puts rs.routes
+rs.generate :controller =&gt; 'posts', :action =&gt; 'show', :id =&gt; 1
+# =&gt; "/posts/1" 
+rs.recognize_path("/posts/1", :method =&gt; :get)
+#=&gt; {:controller=&gt;"posts", :action=&gt;"show", :id=&gt;"1"}
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Testing Routes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def test_movie_route_properly_splits
+    opts = {:controller =&gt; "plugin", :action =&gt; "checkout", :id =&gt; "2"}
+    assert_routing "plugin/checkout/2", opts
+end  
+  
+def test_route_has_options
+  opts = {:controller =&gt; "plugin", :action =&gt; "show", :id =&gt; "12"}
+  assert_recognizes opts, "/plugins/show/12" 
+end
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>
