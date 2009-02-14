@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1><span class="caps">REST</span></h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Background and Theory</h1>
+
+
+	<ul>
+	<li><span class="caps">REST</span> is an alternative to <span class="caps">SOAP</span> and is a way to add a web service <span class="caps">API</span> to your application.</li>
+		<li>Representional State Transfer (REST) is an architecture for hypermedia system.</li>
+		<li>The state of a system is divided into resources that are addressable with hyperlinks. All resources share a uniform interface with well defined operations. Connections between client and server are stateless.</li>
+		<li><span class="caps">REST</span> is designed to support scalability and decoupling.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Rails Implementation of <span class="caps">REST</span> &#8211; <span class="caps">CRUD</span></h1>
+
+
+	<ul>
+	<li>Resources are typically ActiveRecord models and each model has a controller with seven actions: index, create, new, show, update, edit, destroy</li>
+		<li>We are constrained to four types of operations: Create, Read, Update, and Delete (CRUD)</li>
+		<li>The four operations correspond to the <span class="caps">HTTP</span> verbs <span class="caps">GET</span>, POST, <span class="caps">PUT</span>, DELETE</li>
+		<li>In <span class="caps">REST</span> we strive to have associations be join models so that they can be exposed as resources.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">REST</span> Building Blocks in Rails</h1>
+
+
+	<ul>
+	<li>Naming conventions for controllers and actions</li>
+		<li>A set of URLs for the <span class="caps">CRUD</span> operations. URLs are resource IDs and not verbs.</li>
+		<li>A set of named routes for the <span class="caps">CRUD</span> URLs (from map.resources)</li>
+		<li>Using the the <span class="caps">HTTP</span> Accept header via the respond_to method and ActiveRecord::Base#to_xml to render a response. </li>
+		<li>The ActiveResource Ruby client for consuming <span class="caps">REST</span> services. Modeled after ActiveRecord.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>map.resources :articles</h1>
+
+
+<table>
+  <tr>
+    <th>Method</th>
+    <th><span class="caps">URL</span></th>
+    <th>Action</th>
+    <th>Helper</th>
+  </tr>
+  <tr>
+    <td><span class="caps">GET</span></td>
+    <td>/articles</td>
+    <td>index</td>
+    <td>articles_path</td>
+  </tr>
+  <tr>
+    <td><span class="caps">GET</span></td>
+    <td>/articles/1</td>
+    <td>show</td>
+    <td>article_path(:id =&gt; 1)</td>
+  </tr>
+  <tr>
+    <td><span class="caps">GET</span></td>
+    <td>/articles/new</td>
+    <td>new</td>
+    <td>new_article_path</td>
+  </tr>
+  <tr>
+    <td><span class="caps">GET</span></td>
+    <td>/articles/1/edit</td>
+    <td>edit</td>
+    <td>edit_article_path(:id =&gt; 1)</td>
+  </tr>
+  <tr>
+    <td><span class="caps">POST</span></td>
+    <td>/articles</td>
+    <td>create</td>
+    <td>articles_path</td>
+  </tr>
+  <tr>
+    <td><span class="caps">PUT</span></td>
+    <td>/articles</td>
+    <td>update</td>
+    <td>article_path(:id =&gt; 1)</td>
+  </tr>
+  <tr>
+    <td><span class="caps">DELETE</span></td>
+    <td>/articles/1</td>
+    <td>destroy</td>
+    <td>article_path(:id =&gt; 1)</td>
+  </tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1><span class="caps">REST</span> Simplifies Links and Forms</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Without REST
+link_to "Show", :controller =&gt; 'articles', :action =&gt; 'show', :id =&gt; @article
+link_to "Destroy", :controller =&gt; 'articles', :action =&gt; 'destroy', :id =&gt; @article
+form_for(@article, :url =&gt; { :action =&gt; "create" })
+
+# With REST
+link_to "Show", @article
+link_to "Destroy", @article, :method =&gt; :delete
+form_for(@article)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Serving Different Content Types</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# The respond_to method will use the HTTP Accept header or any extension in the URL.
+# So if the URL is /people/1.xml you will get XML back.
+
+# GET /posts/1
+# GET /posts/1.xml
+def show
+  @post = Post.find(params[:id])
+  respond_to do |format|
+    format.html # show.html.erb
+    format.xml  { render :xml =&gt; @post }
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Custom Resource Routes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Adding a new recent action for a collection
+# GET /articles/recent (recent_articles_path)
+map.resources :articles, :collection =&gt; { :recent =&gt; :get }
+
+# Adding an action for an individual resource
+# PUT /articles/1/release (release_article_path(:id =&gt; 1))
+map.resources :articles, :member =&gt; { :release =&gt; :put }
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Nested Resources (Associations)</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+map.resources :article, :has_one =&gt; :author, :has_many =&gt; [:comments, :attachments]
+
+# Same as:
+map.resources :articles do |article|
+  article.resource  :author
+  article.resources :comments
+  article.resources :attachments
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Scaffolding</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+script/generate scaffold article title:string body:text publish_time:datetime
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Consuming <span class="caps">REST</span></h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# You can any HTTP client to consume a REST service, such as curl or wget on the
+# command line, or Net::HTTP in your Ruby scripts.
+# Using the ActiveResource client:
+class Post &lt; ActiveResource::Base
+  self.site = "http://localhost:3000" 
+end
+
+post = Post.find(1)
+post.inspect
+post.body = “new body”
+post.save
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Authentication</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class PostsController &lt; ApplicationController
+  before_filter :authenticate
+
+  private
+  def authenticate
+    authenticate_or_request_with_http_basic do |user_name, password|
+      user_name == "peter" &#38;&#38; password == "open sesame" 
+    end
+  end
+end
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

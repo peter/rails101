@@ -1,0 +1,169 @@
+h1. REST
+
+h1. Background and Theory
+
+* REST is an alternative to SOAP and is a way to add a web service API to your application.
+* Representional State Transfer (REST) is an architecture for hypermedia system.
+* The state of a system is divided into resources that are addressable with hyperlinks. All resources share a uniform interface with well defined operations. Connections between client and server are stateless.
+* REST is designed to support scalability and decoupling.
+
+h1. Rails Implementation of REST - CRUD
+
+* Resources are typically ActiveRecord models and each model has a controller with seven actions: index, create, new, show, update, edit, destroy
+* We are constrained to four types of operations: Create, Read, Update, and Delete (CRUD)
+* The four operations correspond to the HTTP verbs GET, POST, PUT, DELETE
+* In REST we strive to have associations be join models so that they can be exposed as resources.
+
+h1. REST Building Blocks in Rails
+
+* Naming conventions for controllers and actions
+* A set of URLs for the CRUD operations. URLs are resource IDs and not verbs.
+* A set of named routes for the CRUD URLs (from map.resources)
+* Using the the HTTP Accept header via the respond_to method and ActiveRecord::Base#to_xml to render a response. 
+* The ActiveResource Ruby client for consuming REST services. Modeled after ActiveRecord.
+
+h1. map.resources :articles
+
+<table>
+  <tr>
+    <th>Method</th>
+    <th>URL</th>
+    <th>Action</th>
+    <th>Helper</th>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/articles</td>
+    <td>index</td>
+    <td>articles_path</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/articles/1</td>
+    <td>show</td>
+    <td>article_path(:id => 1)</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/articles/new</td>
+    <td>new</td>
+    <td>new_article_path</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>/articles/1/edit</td>
+    <td>edit</td>
+    <td>edit_article_path(:id => 1)</td>
+  </tr>
+  <tr>
+    <td>POST</td>
+    <td>/articles</td>
+    <td>create</td>
+    <td>articles_path</td>
+  </tr>
+  <tr>
+    <td>PUT</td>
+    <td>/articles</td>
+    <td>update</td>
+    <td>article_path(:id => 1)</td>
+  </tr>
+  <tr>
+    <td>DELETE</td>
+    <td>/articles/1</td>
+    <td>destroy</td>
+    <td>article_path(:id => 1)</td>
+  </tr>
+</table>
+
+h1. REST Simplifies Links and Forms
+
+:inlinecode
+# Without REST
+link_to "Show", :controller => 'articles', :action => 'show', :id => @article
+link_to "Destroy", :controller => 'articles', :action => 'destroy', :id => @article
+form_for(@article, :url => { :action => "create" })
+
+# With REST
+link_to "Show", @article
+link_to "Destroy", @article, :method => :delete
+form_for(@article)
+:endinlinecode
+
+h1. Serving Different Content Types
+
+:inlinecode
+# The respond_to method will use the HTTP Accept header or any extension in the URL.
+# So if the URL is /people/1.xml you will get XML back.
+
+# GET /posts/1
+# GET /posts/1.xml
+def show
+  @post = Post.find(params[:id])
+  respond_to do |format|
+    format.html # show.html.erb
+    format.xml  { render :xml => @post }
+  end
+end
+:endinlinecode
+
+h1. Custom Resource Routes
+
+:inlinecode
+# Adding a new recent action for a collection
+# GET /articles/recent (recent_articles_path)
+map.resources :articles, :collection => { :recent => :get }
+
+# Adding an action for an individual resource
+# PUT /articles/1/release (release_article_path(:id => 1))
+map.resources :articles, :member => { :release => :put }
+:endinlinecode
+
+h1. Nested Resources (Associations)
+
+:inlinecode
+map.resources :article, :has_one => :author, :has_many => [:comments, :attachments]
+
+# Same as:
+map.resources :articles do |article|
+  article.resource  :author
+  article.resources :comments
+  article.resources :attachments
+end
+:endinlinecode
+
+h1. Scaffolding
+
+:inlinecode
+script/generate scaffold article title:string body:text publish_time:datetime
+:endinlinecode
+
+h1. Consuming REST
+
+:inlinecode
+# You can any HTTP client to consume a REST service, such as curl or wget on the
+# command line, or Net::HTTP in your Ruby scripts.
+# Using the ActiveResource client:
+class Post < ActiveResource::Base
+  self.site = "http://localhost:3000"
+end
+
+post = Post.find(1)
+post.inspect
+post.body = “new body”
+post.save
+:endinlinecode
+
+h1. Authentication
+
+:inlinecode
+class PostsController < ApplicationController
+  before_filter :authenticate
+
+  private
+  def authenticate
+    authenticate_or_request_with_http_basic do |user_name, password|
+      user_name == "peter" && password == "open sesame"
+    end
+  end
+end
+:endinlinecode

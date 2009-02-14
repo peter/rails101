@@ -165,6 +165,7 @@ map.connect 'download/*path',
 <pre name="code" class="ruby:nogutter:nocontrols">
 
 # rake routes
+# map.resources :posts
 posts GET        /posts(.:format)               {:controller=&gt;"posts", :action=&gt;"index"}
       POST       /posts(.:format)               {:controller=&gt;"posts", :action=&gt;"create"}
 new_post GET     /posts/new(.:format)           {:controller=&gt;"posts", :action=&gt;"new"}
@@ -172,8 +173,9 @@ edit_post GET    /posts/:id/edit(.:format)      {:controller=&gt;"posts", :actio
      post GET    /posts/:id(.:format)           {:controller=&gt;"posts", :action=&gt;"show"}
           PUT    /posts/:id(.:format)           {:controller=&gt;"posts", :action=&gt;"update"}
           DELETE /posts/:id(.:format)           {:controller=&gt;"posts", :action=&gt;"destroy"}
-                 /:controller/:action/:id           
-                 /:controller/:action/:id(.:format)
+# Default routes
+/:controller/:action/:id           
+/:controller/:action/:id(.:format)
 </pre></div>
 
 </div>
