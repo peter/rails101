@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Action Mailer</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Introduction</h1>
+
+
+	<ul>
+	<li>Action Mailer is Rails library for sending email</li>
+		<li>The way Action Mailer renders emails is analogous to how Action Controller renders <span class="caps">HTML</span> pages. Each email has a method in a mailer class that sets email headers (recipients, from, subject etc.) as well as variables that are interpolated in a corresponding <span class="caps">ERB</span> template.</li>
+		<li>Email is typically delivered with <span class="caps">SMTP</span> through an <span class="caps">MTA</span> such as Postfix or with Sendmail</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Email Configuration</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# In environment.rb or in config/environments/*. Defaults to :smtp
+config.action_mailer.delivery_method = :test|:smtp|:sendmail
+# Authentication is one of :plain, :login, and :cram_md5
+ActionMailer::Base.smtp_settings = {
+  :address =&gt; "mail.messagingengine.com",
+  :port =&gt; 25,
+  :domain =&gt; "mail.messagingengine.com",
+  :authentication =&gt; :login,
+  :user_name =&gt; "peter_marklund@fastmail.fm",
+  :password =&gt; "..." 
+}
+config.action_mailer.perform_deliveries = true | false
+config.action_mailer.default_charset = "iso-8859-1" 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Creating a Mailer Class</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Creates app/models/statistics_mailer.rb
+script/generate mailer StatisticsMailer
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>The Mailer Class</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class StatisticsMailer &lt; ActionMailer::Base
+  def monthly(user, stats, sent_on = Time.now)
+    subject       "Monthly statistics" 
+    body {:user =&gt; user, :stats =&gt; stats}
+    recipients   user.email
+    from         'admin@somecompany.com'
+    sent_on      sent_on
+    headers      {}
+    bcc          'peter_marklund@fastmail.fm'
+    content_type "text/html" 
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>The Mailer Template</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# In app/views/statistics_mailer/monthly.rhtml
+Dear &lt;%= @user.name %&gt;,
+here is the statistics for &lt;%= @user.customer.name %&gt; for &lt;%= 1.month.ago.strftime("%B") %&gt;.
+
+&lt;%- for service in @user.customer.services -%&gt;
+*** Service &lt;%= service.name %&gt;
+  Number of calls: &lt;%= @stats[service.id]['n_calls'] %&gt;
+  ...
+&lt;%- end -%&gt;
+
+Regards
+
+Peter Marklund
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Sending Email</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+StatisticsMailer.deliver_monthly(user, stats)
+
+# Alternatively, you can do:
+email = StatisticsMailer.create_monthly(user, stats) #=&gt; TMail::Mail object
+# Set any properties on the email here
+email.set_content_type("text/html")
+StatisticsMailer.deliver(email)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Multipart Emails</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Approach 1: One template per content type: monthly.text.plain.erb, monthly.text.html.erb etc.
+
+# Approach 2: Using the part method:
+def signup_notification(recipient)
+  # recipients, subject, from etc. here...
+  part :content_type =&gt; "text/html",
+    :body =&gt; render_message("signup-as-html", :account =&gt; recipient)
+  part "text/plain" do |p|
+    p.body = render_message("signup-as-plain", :account =&gt; recipient)
+    p.transfer_encoding = "base64" 
+ end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Attachments</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def signup_notification(recipient)
+   recipients      recipient.email_address_with_name
+   subject         "New account information" 
+   from            "system@example.com" 
+
+   attachment :content_type =&gt; "image/jpeg",
+     :body =&gt; File.read("an-image.jpg")
+
+   attachment "application/pdf" do |a|
+     a.body = generate_your_pdf_here()
+   end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Receiving Email</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class BulkReceiver &lt; ActionMailer::Base
+  def receive(email)
+    # Process received email here
+  end
+end
+
+# Configure your mail server to pipe incoming email to the program
+# /path/to/app/script/runner 'BulkReceiver.receive(STDIN.read)'
+</pre></div>
+
+	<ul>
+	<li>Note: the approach described above means starting up a Rails process on each incoming
+email so <a href="http://railspikes.com/2007/6/1/rails-email-processing">may not scale so well</a>.</li>
+	</ul>
+
+
+	<ul>
+	<li>An approach to dealing with bounced email is described in the <a href="http://www.pragprog.com/titles/fr_rr/rails-recipes">Rails Recipes book</a>.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Unit Testing Mailers</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = users(:peter)
+email = UserMailer.create_signup_notification(user)
+assert_match /you have been signed up/i, email.subject
+assert email.body.include?(my_account_url(user))
+assert_equal user.email, email.to
+assert_equal "admin@mysite.com", email.from
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

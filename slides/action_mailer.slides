@@ -1,0 +1,142 @@
+h1. Action Mailer
+
+h1. Introduction
+
+* Action Mailer is Rails library for sending email
+* The way Action Mailer renders emails is analogous to how Action Controller renders HTML pages. Each email has a method in a mailer class that sets email headers (recipients, from, subject etc.) as well as variables that are interpolated in a corresponding ERB template.
+* Email is typically delivered with SMTP through an MTA such as Postfix or with Sendmail
+
+h1. Email Configuration
+
+:inlinecode
+# In environment.rb or in config/environments/*. Defaults to :smtp
+config.action_mailer.delivery_method = :test|:smtp|:sendmail
+# Authentication is one of :plain, :login, and :cram_md5
+ActionMailer::Base.smtp_settings = {
+  :address => "mail.messagingengine.com",
+  :port => 25,
+  :domain => "mail.messagingengine.com",
+  :authentication => :login,
+  :user_name => "peter_marklund@fastmail.fm",
+  :password => "..."
+}
+config.action_mailer.perform_deliveries = true | false
+config.action_mailer.default_charset = "iso-8859-1"
+:endinlinecode
+
+h1. Creating a Mailer Class
+
+:inlinecode
+# Creates app/models/statistics_mailer.rb
+script/generate mailer StatisticsMailer
+:endinlinecode
+
+h1. The Mailer Class
+
+:inlinecode
+class StatisticsMailer < ActionMailer::Base
+  def monthly(user, stats, sent_on = Time.now)
+    subject       "Monthly statistics"
+    body {:user => user, :stats => stats}
+    recipients   user.email
+    from         'admin@somecompany.com'
+    sent_on      sent_on
+    headers      {}
+    bcc          'peter_marklund@fastmail.fm'
+    content_type "text/html"
+  end
+end
+:endinlinecode
+
+h1. The Mailer Template
+
+:inlinecode
+# In app/views/statistics_mailer/monthly.rhtml
+Dear <%= @user.name %>,
+here is the statistics for <%= @user.customer.name %> for <%= 1.month.ago.strftime("%B") %>.
+
+<%- for service in @user.customer.services -%>
+*** Service <%= service.name %>
+  Number of calls: <%= @stats[service.id]['n_calls'] %>
+  ...
+<%- end -%>
+
+Regards
+
+Peter Marklund
+:endinlinecode
+
+h1. Sending Email
+
+:inlinecode
+StatisticsMailer.deliver_monthly(user, stats)
+
+# Alternatively, you can do:
+email = StatisticsMailer.create_monthly(user, stats) #=> TMail::Mail object
+# Set any properties on the email here
+email.set_content_type("text/html")
+StatisticsMailer.deliver(email)
+:endinlinecode
+
+h1. Multipart Emails
+
+:inlinecode
+# Approach 1: One template per content type: monthly.text.plain.erb, monthly.text.html.erb etc.
+
+# Approach 2: Using the part method:
+def signup_notification(recipient)
+  # recipients, subject, from etc. here...
+  part :content_type => "text/html",
+    :body => render_message("signup-as-html", :account => recipient)
+  part "text/plain" do |p|
+    p.body = render_message("signup-as-plain", :account => recipient)
+    p.transfer_encoding = "base64"
+ end
+end
+:endinlinecode
+
+h1. Attachments
+
+:inlinecode
+def signup_notification(recipient)
+   recipients      recipient.email_address_with_name
+   subject         "New account information"
+   from            "system@example.com"
+
+   attachment :content_type => "image/jpeg",
+     :body => File.read("an-image.jpg")
+
+   attachment "application/pdf" do |a|
+     a.body = generate_your_pdf_here()
+   end
+end
+:endinlinecode
+
+h1. Receiving Email
+
+:inlinecode
+class BulkReceiver < ActionMailer::Base
+  def receive(email)
+    # Process received email here
+  end
+end
+
+# Configure your mail server to pipe incoming email to the program
+/path/to/app/script/runner 'BulkReceiver.receive(STDIN.read)'
+:endinlinecode
+
+* Note: the approach described above means starting up a Rails process on each incoming
+email so you may want to <a href="http://railspikes.com/2007/6/1/rails-email-processing">run a daemon instead</a>.
+
+* An approach to dealing with bounced email is described in the <a href="http://www.pragprog.com/titles/fr_rr/rails-recipes">Rails Recipes book</a>.
+
+h1. Unit Testing Mailers
+
+:inlinecode
+user = users(:peter)
+email = UserMailer.create_signup_notification(user)
+assert_match /you have been signed up/i, email.subject
+assert email.body.include?(my_account_url(user))
+assert_equal user.email, email.to
+assert_equal "admin@mysite.com", email.from
+:endinlinecode
