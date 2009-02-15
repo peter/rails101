@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>Ruby on Rails 101</title>
+<!-- metadata -->
+<meta name="generator" content="S5" />
+<meta name="version" content="S5 1.1" />
+<meta name="presdate" content="&date" />
+<meta name="author" content="Peter Marklund" />
+<meta name="organization" content="&organization;" />
+<meta name="company" content="Rails Mentor" />
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+<link rel="stylesheet" href="../ui/default/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="../ui/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="../lib/stylesheets/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="../ui/default/opera.css" type="text/css" media="projection" id="operaFix" />
+
+<link rel="stylesheet" href="../lib/stylesheets/pressie.css" type="text/css" />
+
+<!-- S5 JS -->
+<script src="../ui/default/slides.js" type="text/javascript"></script>
+
+<!-- Syntax Highlighter -->
+<link rel="stylesheet"  href="../dp.SyntaxHighlighter/Styles/SyntaxHighlighter.css"></link>
+
+</head>
+<body>
+
+<div class="layout">
+<div id="controls"><!-- DO NOT EDIT --></div>
+<div id="currentSlide"><!-- DO NOT EDIT --></div>
+<div id="header"></div>
+<div id="footer">
+<h2>Copyright &copy; 2009 Peter Marklund</h2>
+</div>
+
+</div>
+
+
+<div class="presentation">
+<div class="slide">
+
+	<h1>Plugins and Gems</h1>
+
+
+</div>
+<div class="slide">
+
+	<h1>Introduction</h1>
+
+
+	<ul>
+	<li>Plugins is Rails extension mechanism that allows easy code sharing between Rails applications</li>
+		<li>Plugins typically add application specific functionality or extend Rails in some way</li>
+		<li>RubyGems is the standard Ruby packaging system and offer an alternative to plugins. Unlike plugins, RubyGems supports versioning and dependency management.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Where to Find Plugins</h1>
+
+
+	<ul>
+	<li>There is a searchable database of plugins at <a href="http://agilewebdevelopment.com/plugins">agilewebdevelopment.com/plugins</a></li>
+		<li>Most popular plugins have been moved from Subversion to Git and you&#8217;ll typically find the most recent version on <a href="http://github.com">Github</a>.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Creating Plugins</h1>
+
+
+	<ul>
+	<li>Generate your plugin with script/generate plugin</li>
+		<li>The files install.rb and uninstall.rb are hooks that run on install/uninstall</li>
+		<li>The init.rb file should load the plugins modules and classes that are kept under lib. In init.rb you have access to special variables config, directory, loaded_plugins, and name.</li>
+		<li>Rake tasks are under tasks and tests under test. You can run the tests with rake in the plugin root directory.</li>
+		<li>As of Rails 2.3 your plugin can contain app/models|controller|views|helpers directories as well as a config/routes.rb files and those will be loaded by Rails automatically.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>A Few Recommended Plugins</h1>
+
+
+	<ul>
+	<li><a href="http://github.com/mislav/will_paginate/tree/master">Will Paginate</a> &#8211; paginate your lists of ActiveRecord objects</li>
+		<li><a href="http://github.com/technoweenie/restful-authentication/tree/master">Restful authentication</a> or <a href="http://github.com/binarylogic/authlogic/tree/master">AuthLogic</a> &#8211; user authentication</li>
+		<li><a href="http://www.thoughtbot.com/projects/paperclip">Paperclip</a> &#8211; file uploads</li>
+		<li><a href="http://github.com/rails/exception_notification/tree/master">Exception Notifier</a> &#8211; receive email when errors occur in production (alternative: the Hoptoad service)</li>
+		<li><a href="http://github.com/rubyist/aasm/tree/master">Acts as State Machine</a> &#8211; allow your models to act as a state machine with different states and transitions between these</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>The Plugin Module Inclusion Pattern</h1>
+
+
+<table>
+  <tr>
+    <td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+module MyPlugin
+  def self.included(base)
+    base.extend ClassMethods
+    base.send :include, InstanceMethods
+  end
+  module InstanceMethods
+    ...
+  end
+  module ClassMethods
+    ...
+  end
+end
+</pre></div>
+
+</td>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class ActiveRecord::Base
+  include MyPlugin
+end
+</pre></div>
+
+</td>
+</tr>
+</table>
+
+</div>
+<div class="slide">
+
+	<h1>A Word of Caution</h1>
+
+
+	<ul>
+	<li>The general code quality of plugins varies a lot and is typically not as high as that of Rails itself</li>
+		<li>Plugins that heavily override (monkey patch) core Rails methods can be error prone and make upgrading to newer Rails versions difficult</li>
+		<li>Look for simple plugins that have a test suite and that have code that you can easily read and understand</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>RubyGems</h1>
+
+
+	<ul>
+	<li>A gem is a packaged Ruby application or library. It has a name (e.g. rake) and a version (e.g. 0.4.16).</li>
+		<li>Gems are managed on your computer using the gem command. You can install, remove, and query (amoung other things) gem packages using the gem command.</li>
+		<li>RubyGems is the name of the project that developed the gem packaging system and the gem command.</li>
+		<li>You can get RubyGems from the <a href="http://rubyforge.org/projects/rubygems">RubyForge repository</a>.</li>
+	</ul>
+
+
+</div>
+<div class="slide">
+
+	<h1>Declaring Gem Dependencies</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# In config/environment.rb:
+config.gem "aws-s3", :lib =&gt; 'aws/s3', :version =&gt; "0.5.1" 
+config.gem "money", :version =&gt; "1.7.1" 
+config.gem "fastercsv", :version =&gt; "1.4.0" 
+config.gem "hpricot", :version =&gt; '0.6', :source =&gt; "http://code.whytheluckystiff.net" 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Installing and Freezing Gems</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Install declared gem dependencies on the system (sudo gem install &lt;gem-name&gt;)
+rake gems:install
+
+# To avoid external libarary dependencies:
+# 1. Copy declared gems to under RAILS_ROOT/vendor/gems
+rake gems:unpack
+# 2. Copy Rails itself to RAILS_ROOT/vendor/rails
+rake rails:freeze:gems
+# The version of Rails your app depends on is given by RAILS_GEM_VERSION in config/environment.rb.
+</pre></div>
+
+</div>
+
+  <!-- Syntax Highlighter -->
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushCpp.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushRuby.js"></script>
+  <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shBrushXml.js"></script>
+  <script language="javascript">
+  dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
+  dp.SyntaxHighlighter.HighlightAll('code');
+  </script>
+</div>
+</body>
+</html>

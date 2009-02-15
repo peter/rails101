@@ -234,12 +234,12 @@ class BulkReceiver &lt; ActionMailer::Base
 end
 
 # Configure your mail server to pipe incoming email to the program
-# /path/to/app/script/runner 'BulkReceiver.receive(STDIN.read)'
+/path/to/app/script/runner 'BulkReceiver.receive(STDIN.read)'
 </pre></div>
 
 	<ul>
 	<li>Note: the approach described above means starting up a Rails process on each incoming
-email so <a href="http://railspikes.com/2007/6/1/rails-email-processing">may not scale so well</a>.</li>
+email so you may want to <a href="http://railspikes.com/2007/6/1/rails-email-processing">run a daemon instead</a>.</li>
 	</ul>
 
 

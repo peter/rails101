@@ -1,0 +1,95 @@
+h1. Plugins and Gems
+
+h1. Introduction
+
+* Plugins is Rails extension mechanism that allows easy code sharing between Rails applications
+* Plugins typically add application specific functionality or extend Rails in some way
+* RubyGems is the standard Ruby packaging system and offer an alternative to plugins. Unlike plugins, RubyGems supports versioning and dependency management.
+
+h1. Where to Find Plugins
+
+* There is a searchable database of plugins at <a href="http://agilewebdevelopment.com/plugins">agilewebdevelopment.com/plugins</a>
+* Most popular plugins have been moved from Subversion to Git and you'll typically find the most recent version on <a href="http://github.com">Github</a>.
+
+h1. Creating Plugins
+
+* Generate your plugin with script/generate plugin
+* The files install.rb and uninstall.rb are hooks that run on install/uninstall
+* The init.rb file should load the plugins modules and classes that are kept under lib. In init.rb you have access to special variables config, directory, loaded_plugins, and name.
+* Rake tasks are under tasks and tests under test. You can run the tests with rake in the plugin root directory.
+* As of Rails 2.3 your plugin can contain app/models|controller|views|helpers directories as well as a config/routes.rb files and those will be loaded by Rails automatically. 
+
+h1. A Few Recommended Plugins
+
+* "Will Paginate":http://github.com/mislav/will_paginate/tree/master - paginate your lists of ActiveRecord objects
+* "Restful authentication":http://github.com/technoweenie/restful-authentication/tree/master or "AuthLogic":http://github.com/binarylogic/authlogic/tree/master - user authentication
+* "Paperclip":http://www.thoughtbot.com/projects/paperclip - file uploads
+* "Exception Notifier":http://github.com/rails/exception_notification/tree/master - receive email when errors occur in production (alternative: the Hoptoad service)
+* "Acts as State Machine":http://github.com/rubyist/aasm/tree/master - allow your models to act as a state machine with different states and transitions between these
+
+h1. The Plugin Module Inclusion Pattern
+
+<table>
+  <tr>
+    <td>
+:inlinecode
+module MyPlugin
+  def self.included(base)
+    base.extend ClassMethods
+    base.send :include, InstanceMethods
+  end
+  module InstanceMethods
+    ...
+  end
+  module ClassMethods
+    ...
+  end
+end
+:endinlinecode
+</td>
+<td>
+:inlinecode
+class ActiveRecord::Base
+  include MyPlugin
+end
+:endinlinecode
+</td>
+</tr>
+</table>
+
+h1. A Word of Caution
+
+* The general code quality of plugins varies a lot and is typically not as high as that of Rails itself
+* Plugins that heavily override (monkey patch) core Rails methods can be error prone and make upgrading to newer Rails versions difficult
+* Look for simple plugins that have a test suite and that have code that you can easily read and understand
+
+h1. RubyGems
+
+* A gem is a packaged Ruby application or library. It has a name (e.g. rake) and a version (e.g. 0.4.16).
+* Gems are managed on your computer using the gem command. You can install, remove, and query (amoung other things) gem packages using the gem command.
+* RubyGems is the name of the project that developed the gem packaging system and the gem command.
+* You can get RubyGems from the <a href="http://rubyforge.org/projects/rubygems">RubyForge repository</a>.
+
+h1. Declaring Gem Dependencies
+
+:inlinecode
+# In config/environment.rb:
+config.gem "aws-s3", :lib => 'aws/s3', :version => "0.5.1"
+config.gem "money", :version => "1.7.1"
+config.gem "fastercsv", :version => "1.4.0"
+config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
+:endinlinecode
+
+h1. Installing and Freezing Gems
+
+:inlinecode
+# Install declared gem dependencies on the system (sudo gem install <gem-name>)
+rake gems:install
+
+# To avoid external libarary dependencies:
+# 1. Copy declared gems to under RAILS_ROOT/vendor/gems
+rake gems:unpack
+# 2. Copy Rails itself to RAILS_ROOT/vendor/rails
+rake rails:freeze:gems
+# The Rails version is given by RAILS_GEM_VERSION in config/environment.rb.
+:endinlinecode
