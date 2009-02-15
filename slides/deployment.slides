@@ -1,0 +1,206 @@
+h1. Deployment
+
+h1. Hosting
+
+* Most production Rails servers run on Unix - primarily Linux, but also FreeBSD, OpenSolaris, Mac OS X etc. You can deploy on Windows, but it’s fairly unsupported and doesn't work with Capistrano.
+* There is a multitude of hosting companies in the US specialized in Rails hosting such as Engine Yard, RailsMachine, Slicehost, Rimuhosting. In Europe there is HostingRails.com, brightbox.co.uk etc.
+* Virtual Private Servers (VPS), typically on Xen, are becoming an increasingly popular hosting strategy
+
+h1. FastCGI
+
+* FastCGI is a long running process that runs a Rails application and handles requests from a front-end web server like Apache or Lighttpd
+* When Rails came out FastCGI was the recommended deployment setup. However, it turns out it is hard to debug and unstable in many cases and the community is moving away from it.
+
+h1. Mongrel
+
+* A light-weight web server written in Ruby
+* Well documented, tested, stable and fast.
+* Secure by being strict about the HTTP protocol
+
+h1. Typical Mongrel Architecture
+
+* There is a front-end web server that receives HTTP requests, such as Apache, Lighttpd, or Nginx. Any static files under the Rails public directory are served directly from this web server without touching Rails.
+* There is a reverse proxy that load balances requests to the Mongrel servers. For Apache this is mod_proxy_balancer, for Nginx there is the "Fair Proxy Balancer":http://github.com/gnosek/nginx-upstream-fair/tree/master, but you can also use HaProxy, Pen, or Pound.
+* There are one or more servers running multiple Mongrel servers (called Mongrel clusters).
+
+h1. Example Deployment Stack
+
+* Apache 2.2 with mod_proxy_balancer or nginx with fair proxy balancer
+* Mongrel with Mongrel Cluster
+* MySQL 5 with MySQL C driver, or PostgreSQL 8
+* Ruby 1.8.6 or 1.8.7
+
+h1. Mongrel Alternative: mod_rails
+
+* mod_rails (Passenger) is an Apache module that encapsulates load balancing to a number Rails processes
+* Supposedly uses less memory when used in conjunction with Ruby Enterprise Edition (a patched version of Ruby 1.8.6)
+* Easy installation, see below:
+
+:inlinecode
+sudo gem install passenger
+sudo passenger-install-apache2-module
+# Copy three lines into your Apache config and setup virtual host
+sudo apachectl graceful # restart Apache
+:endinlinecode
+
+h1. Mongrel Alternative: LiteSpeed
+
+* LiteSpeed is a commercial web server that is optimized for speed and is configuration compatible with Apache
+* LiteSpeed has its own API for acting as a Rails application server so Mongrel is not needed in the picture anymore
+* LiteSpeed can handle load balancing and also restart application servers that are hung
+
+h1. Capistrano
+
+* Capistrano is a Ruby tool used primarily to deploy Rails applications to one or more production servers
+* Capistrano logs in to your production servers with SSH, updates the production code and restarts the servers automatically for you
+* If something goes wrong you can do a rollback
+* Capistrano is also an excellent generic tool for running sysadmin related scripts on your servers
+
+h1. Capistrano - Installation and Configuration
+
+:inlinecode
+gem install capistrano; cd path_to_rails_app; capify .
+# Edit deploy.rb
+set :application, "community"
+set :deploy_to, "/var/www/apps/#{application}"
+set :domain, "community.marklunds.com"
+set :user, "deploy"
+set :repository, "svn+ssh://#{user}@#{domain}#/var/www/apps/marklunds/repos/community"
+role :web, domain
+role :app, domain
+role :db,  domain, :primary => true
+role :scm, domain
+:endinlinecode
+
+h1. Capistrano - Bootstrap and Deploy
+
+:inlinecode
+# Setup directory structure on server
+cap setup
+# First deploy. Here we assume database is created and mongrel cluster config is set up.
+cap cold_deploy
+:endinlinecode
+
+h1. Capistrano Tasks
+
+:inlinecode
+cap -T # Show tasks
+deploy:update # update code and symlink
+deploy # Update and restart
+deploy:migrate # run migrations
+deploy:migrations # deploy and run migrations
+deploy:cleanup # cleanup old releases
+deploy:web:disable
+deploy:web:enable
+deploy:rollback # rollback code and restart
+:endinlinecode
+
+h1. Custom Capistrano Tasks
+
+:inlinecode
+namespace :deploy do
+  def mongrel_cluster(command)
+    "mongrel_rails cluster::#{command} -C #{current_path}/config/mongrel_cluster.yml"
+  end
+  
+  %w(restart stop start).each do |command|
+    task command.to_sym, :roles => :app do
+      run mongrel_cluster(command)
+    end
+  end
+end
+:endinlinecode
+
+h1. Custom Capistrano Tasks
+
+:inlinecode
+namespace :deploy do
+  desc "Run the full tests on the deployed app." 
+  task :run_tests do
+    run "cd #{release_path} && RAILS_ENV=production rake && cat /dev/null > log/test.log" 
+  end
+  desc "Clear out old sessions from the database"
+  task :clear_sessions, :roles => :db, :only => { :primary => true } do
+    delete_sql = "DELETE FROM sessions WHERE updated_at < now() - 48*3600"
+    run <<-CMD
+      cd #{current_path} && ./script/runner 'ActiveRecord::Base.connection.delete("#{delete_sql}")'
+    CMD
+  end
+end
+
+end
+:endinlinecode
+
+h1. Capistrano Callbacks
+
+:inlinecode
+namespace :deploy do
+  desc "Run pre-symlink tasks" 
+  task :before_symlink, :roles => :web do
+    copy_shared
+    backup_db
+    run_tests
+  end
+end
+:endinlinecode
+
+h1. MySQL and Charsets
+
+:inlinecode
+# Abort if database doesn't have right encoding configured.
+# You can also use the mysql_requirement plugin for this
+%w(character_set_database character_set_client character_set_connection).each do |v|
+  ActiveRecord::Base.connection.execute("SHOW VARIABLES LIKE '#{v}'").each do |f|
+    unless f[1] == "utf8"
+      puts "ERROR: MySQL database isn't properly encoded"
+      puts "Kindly set your #{f[0]} variable to utf8"
+      RAILS_DEFAULT_LOGGER.error("MySQL database isn't properly encoded")
+      exit 1
+    end
+  end
+end
+:endinlinecode
+
+h1. Deployment Checklist
+
+* Be alerted of server errors by installing the exception_notification plugin
+* You can rotate your log files with logrotate
+* If you store sessions in the database - remember to clear out old sessions.
+* Use an external monitor/uptime service such as pingdom.com to make sure your site is up
+* Monitor your mongrels with Monit to make sure they stay up and don't grow too big
+* You might want to monitor your server with services such as New Relic RPM or FiveRuns Manage
+
+h1. Security
+
+* SQL Injection - always use bind variables in your SQL conditions
+* Creating records directly from the params hash. Use attr_protected or attr_accessible to protect sensitive attributes
+* Don’t trust the ID parameter. Check permissions. Use the currently logged in user as a starting point.
+* Remember that all public controller methods can be requested. Get rid of the default route if you can and use explicit named routes instead.
+* HTML quote user input (CSS/XSS protection).
+* Don’t store sensitive information in the clear. Use filter_parameter_logging :password.
+
+h1. Performance
+
+* Use find with the :include option to avoid the N+1 query problem
+* If you loop over objects with many attributes and you only need a few of them you can specify the ones you need with the :select option
+* Monitor your log file for slow or unnecessary queries. You can use the query_analyzer plugin to get queries analyzed in the log file. MySQL has a slow query log. 
+* Setup master-slave replication for your database and load balance the connections from Rails. There is the Magic Multi Connections plugin for this.
+
+h1. Performance
+
+* Use Memcached and the Cached Model or Cache Fu plugins to cache your database queries.
+* Use the Rails Analyzer gem to get response time statistics for your actions and find the slowest ones.
+* Use script/performance/profiler to profile parts of your code and see where most time is spent
+* Cache expensive calculations within a request
+* Use the right number of Mongrels
+* Use a tool such as httperf for load testing
+
+h1. Deploy Early
+
+Release early in the project and release often. Just like your application, your deployment doesn't need to be perfect from day one. You can start simple and grow into more sophisticated deployment strategies over time.
+
+- paraphrased from James Duncan Davidson
+
+h1. JRuby
+
+h1. Ruby 1.9
