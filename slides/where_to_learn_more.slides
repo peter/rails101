@@ -1,0 +1,26 @@
+h1. Where to Learn More
+
+h1. Recommended Books
+
+* "Agile Web Development with Rails, 3d edition":http://www.pragprog.com/titles/rails3/agile-web-development-with-rails-third-edition - available as PDF.
+* "Programming Ruby, 3d edition":http://www.pragprog.com/titles/ruby3/programming-ruby-1-9 - available as PDF.
+* "The Ruby Programming Language":http://oreilly.com/catalog/9780596516178
+* "Beginning Ruby":http://oreilly.com/catalog/9780596516178 - en easier introduction to Ruby if you have little programming experience
+* "The Ruby Way":http://www.amazon.com/Ruby-Way-Second-Addison-Wesley-Professional/dp/0672328844 and "Ruby Cookbook":http://www.amazon.com/Cookbook-Cookbooks-OReilly-Lucas-Carlson/dp/0596523696/ref=pd_sim_b_5
+* "Advanced Rails Recipes":http://www.pragprog.com/titles/fr_arr/advanced-rails-recipes - available as PDF
+* "Deploying Rails Applications":http://www.pragprog.com/titles/fr_deploy/deploying-rails-applications - available as PDF
+
+h1. Recommended Educational Screencasts
+
+* "RailsCasts":http://railscasts.com - excellent short screencasts for free
+* "PeepCode":http://peepcode.com - long and in-depth screencasts for $9 each
+* "EnvyCasts":http://envycasts.com - long and in-depth screencasts for $9 each
+* "Pragmatic Programmer":http://pragprog.com/screencasts - meta programming, forms etc. for $5 each
+* "Scaling Rails Screencasts":http://railslab.newrelic.com/scaling-rails - good free screencasts on caching
+
+h1. Staying Up-To-Date
+
+* "Riding Rails":http://weblog.rubyonrails.org - the official Rails weblog
+* "Ruby Inside":http://www.rubyinside.com - Ruby news
+* "Rails Inside":http://www.railsinside.com - Rails news
+* "RailsEnvy Podcast":http://www.railsenvy.com/podcast - weekly Ruby and Rails updates

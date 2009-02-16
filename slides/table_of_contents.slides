@@ -88,51 +88,48 @@ h1. Agenda
 
 h1. Table of Contents
 
-"Rails Introduction":rails_introduction.html
+<div style="font-size: 70%">
+  <table>
+    <tr>
+      <td>
+  <ul>
+<li>"Rails Introduction":rails_introduction.html</li>
+<li>"Ruby":ruby.html</li>
+<li>"Migrations":migrations.html</li>
+<li>"Active Record Basics":active_record_basics.html</li>
+<li>"Action Controller Basics":action_controller_basics.html</li>
+<li>"Action View Basics":action_view_basics.html</li>
+<li>"Testing":testing.html</li>
+<li>"Active Record Associations":active_record_associations.html</li>
+<li>"Active Record Validations":active_record_validations.html</li>
+<li>"Active Record Callbacks":active_record_callbacks.html</li>
+<li>"Active Support":active_support.html</li>
+</ul>
+<td>
+  <ul>
+<li>"Forms":forms.html</li>
+<li>"Filters":filters.html</li>
+<li>"Caching":caching.html</li>
+<li>"AJAX":ajax.html</li>
+<li>"Routing":routing.html</li>
+<li>"REST":rest.html</li>
+<li>"Action Mailer":action_mailer.html</li>
+<li>"Internationalization":internationalization.html</li>
+<li>"Plugins and Gems":plugins_and_gems.html</li>
+<li>"Deployment":deployment.html</li>
+<li>"Where to Learn More":where_to_learn_more.html</li>
+  </ul>
+</td>
+</table>
+</div>
 
-"Ruby":ruby.html
+h1. Parting Words of Advice
 
-"Migrations":migrations.html
-
-"Active Record Basics":active_record_basics.html
-
-"Action Controller Basics":action_controller_basics.html
-
-"Action View Basics":action_view_basics.html
-
-"Testing":testing.html
-
-"Active Record Associations":active_record_associations.html
-
-"Active Record Validations":active_record_validations.html
-
-"Active Record Callbacks":active_record_callbacks.html
-
-"Active Support":active_support.html
-
-"Forms":forms.html
-
-"Filters":filters.html
-
-"Caching":caching.html
-
-"AJAX":ajax.html
-
-"Routing":routing.html
-
-"REST":rest.html
-
-"Action Mailer":action_mailer.html
-
-"Internationalization":internationalization.html
-
-"Plugins and Gems":plugins_and_gems.html
-
-"Deployment":deployment.html
-
-"Resources":resources.html
-
-"Parting Words of Advice":parting_words_of_advice.html
+* Go with the flow. Stay on the golden path of Rails. Don’t break conventions unless you really have to.
+* Familiarize yourself with the Rails source code and tests.
+* Write tests and give TDD and BDD a serious try
+* Learn Ruby and master it.
+* Get involved in the community. Somebody has probably come across and solved your problem already.
 
 h1. License
 
