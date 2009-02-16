@@ -179,7 +179,9 @@ has_one :attachment, :as =&gt; :attachable # Polymorphic association
 	<h1>belongs_to</h1>
 
 
-<div class="code-tiny">
+<table>
+  <tr>
+    <td>
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -191,16 +193,31 @@ class LineItem &lt; ActiveRecord::Base
                     :conditions =&gt; 'paid_on is not null'
   belongs_to :product
 end
-
-li = LineItem.find(1)
-li.product = Product.new(:name =&gt; 'Programming Ruby Book')
-li.save
-
-li.build_product(:name =&gt; 'MacBook Pro') # Equivalent to product = Product.new
-li.create_product(:name =&gt; 'SoundsSticks II') # build_product + save
 </pre></div>
 
-</div>
+</td>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+li = LineItem.find(1)
+li.product = Product.new(
+  :name =&gt; 'Programming Ruby Book'
+)
+li.save
+
+li.build_product(
+  :name =&gt; 'MacBook Pro'
+) # invokes Product.new
+li.create_product(
+  :name =&gt; 'SoundsSticks II'
+) # build_product + save
+</pre></div>
+
+</td>
+</tr>
+</table>
 
 </div>
 <div class="slide">
@@ -554,12 +571,9 @@ end
 </div>
 <div class="slide">
 
-	<h1>Acts As List: Usage</h1>
+	<h1>Acts As List: Creating a List</h1>
 
 
-<table>
-<tr>
-  <td>
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -578,8 +592,12 @@ def display_children(parent)
 end 
 </pre></div>
 
-</td>
-<td>
+</div>
+<div class="slide">
+
+	<h1>Acts As List: Accessing the List</h1>
+
+
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -597,10 +615,6 @@ display_children(parent) #=&gt; Three, Two, One, Four
 parent.children[2].destroy 
 display_children(parent) #=&gt; Three, Two, Four
 </pre></div>
-
-</td>
-</tr>
-</table>
 
 </div>
 <div class="slide">
@@ -625,12 +639,9 @@ end
 </div>
 <div class="slide">
 
-	<h1>Acts As Tree: Usage</h1>
+	<h1>Acts As Tree: Creating the Tree</h1>
 
 
-<table>
-  <tr>
-    <td>
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -648,8 +659,12 @@ fiction.children.create(:name =&gt;"Romance")
 fiction.children.create(:name =&gt;"ScienceFiction") 
 </pre></div>
 
-</td>
-<td>
+</div>
+<div class="slide">
+
+	<h1>Acts As Tree: Accessing the Tree</h1>
+
+
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -664,10 +679,6 @@ non_fiction = root.children.find(:first, :conditions =&gt; "name = 'Non Fiction'
 display_children(non_fiction) #=&gt; Art History, Computers, Science 
 puts non_fiction.parent.name #=&gt; Books 
 </pre></div>
-
-</td>
-</tr>
-</table>
 
 </div>
 <div class="slide">

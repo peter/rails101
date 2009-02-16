@@ -2,7 +2,7 @@ h1. Deployment
 
 h1. Hosting
 
-* Most production Rails servers run on Unix - primarily Linux, but also FreeBSD, OpenSolaris, Mac OS X etc. You can deploy on Windows, but it’s fairly unsupported and doesn't work with Capistrano.
+* Most production Rails servers run on Unix - primarily Linux, but also FreeBSD, OpenSolaris, Mac OS X etc. You can deploy on Windows, but it's fairly unsupported and doesn't work with Capistrano.
 * There is a multitude of hosting companies in the US specialized in Rails hosting such as Engine Yard, RailsMachine, Slicehost, Rimuhosting. In Europe there is HostingRails.com, brightbox.co.uk etc.
 * Virtual Private Servers (VPS), typically on Xen, are becoming an increasingly popular hosting strategy
 

@@ -49,7 +49,6 @@ total_orders = Order.find(:all).sum(&:value)
 
 h1. Strings
 
-<div class="code-tiny">
 :inlinecode
 string = "Ruby on Rails"
 puts string.at(2) #=> 'b'
@@ -59,16 +58,13 @@ puts string.first(4) #=> 'Ruby'
 puts string.last(4) #=> 'ails'
 puts string.starts_with?("R") #=> true
 puts string.ends_with?("Perl") #=> false
-
 count = Hash.new(0) 
 string.each_char {|ch| count[ch] += 1} 
-
 "person".pluralize #=> people
 "people".singularize #=> person
 "first_name".humanize #=> First Name
 "ruby on rails".titleize #=> Ruby On Rails
 :endinlinecode
-</div>
 
 h1. Numbers
 

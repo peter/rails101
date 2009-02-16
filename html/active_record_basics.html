@@ -772,6 +772,9 @@ person.save # Serializes the hash in YAML format in the db
 	<h1>Defining Composite Attributes</h1>
 
 
+<table>
+  <tr>
+    <td>
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -787,6 +790,13 @@ class Name
     [ @first, @initials, @last ].compact.join(" ") 
   end 
 end 
+</pre></div>
+
+</td>
+<td>
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
 
 class Customer &lt; ActiveRecord::Base 
   composed_of :name, 
@@ -798,6 +808,10 @@ class Customer &lt; ActiveRecord::Base
       [:last_name,  :last] 
 end 
 </pre></div>
+
+</td>
+</tr>
+</table>
 
 </div>
 <div class="slide">

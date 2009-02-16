@@ -127,7 +127,6 @@ total_orders = Order.find(:all).sum(&#38;:value)
 	<h1>Strings</h1>
 
 
-<div class="code-tiny">
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -140,17 +139,13 @@ puts string.first(4) #=&gt; 'Ruby'
 puts string.last(4) #=&gt; 'ails'
 puts string.starts_with?("R") #=&gt; true
 puts string.ends_with?("Perl") #=&gt; false
-
 count = Hash.new(0) 
 string.each_char {|ch| count[ch] += 1} 
-
 "person".pluralize #=&gt; people
 "people".singularize #=&gt; person
 "first_name".humanize #=&gt; First Name
 "ruby on rails".titleize #=&gt; Ruby On Rails
 </pre></div>
-
-</div>
 
 </div>
 <div class="slide">

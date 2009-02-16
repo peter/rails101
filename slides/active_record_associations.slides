@@ -91,7 +91,9 @@ has_one :attachment, :as => :attachable # Polymorphic association
 
 h1. belongs_to
 
-<div class="code-tiny">
+<table>
+  <tr>
+    <td>
 :inlinecode
 class LineItem < ActiveRecord::Base
   belongs_to :paid_order,
@@ -100,15 +102,26 @@ class LineItem < ActiveRecord::Base
                     :conditions => 'paid_on is not null'
   belongs_to :product
 end
-
+:endinlinecode
+</td>
+<td>
+:inlinecode
 li = LineItem.find(1)
-li.product = Product.new(:name => 'Programming Ruby Book')
+li.product = Product.new(
+  :name => 'Programming Ruby Book'
+)
 li.save
 
-li.build_product(:name => 'MacBook Pro') # Equivalent to product = Product.new
-li.create_product(:name => 'SoundsSticks II') # build_product + save
+li.build_product(
+  :name => 'MacBook Pro'
+) # invokes Product.new
+li.create_product(
+  :name => 'SoundsSticks II'
+) # build_product + save
 :endinlinecode
-</div>
+</td>
+</tr>
+</table>
 
 h1. has_many
 
@@ -359,11 +372,8 @@ class Child < ActiveRecord::Base
 end 
 :endinlinecode
 
-h1. Acts As List: Usage
+h1. Acts As List: Creating a List
 
-<table>
-<tr>
-  <td>
 :inlinecode
 parent = Parent.new 
 %w{ One Two Three Four}.each do |name| 
@@ -378,8 +388,9 @@ def display_children(parent)
   end.join(", ") 
 end 
 :endinlinecode
-</td>
-<td>
+
+h1. Acts As List: Accessing the List
+
 :inlinecode
 display_children(parent) #=> One, Two, Three, Four 
 puts parent.children[0].first? #=> true 
@@ -394,9 +405,6 @@ display_children(parent) #=> Three, Two, One, Four
 parent.children[2].destroy 
 display_children(parent) #=> Three, Two, Four
 :endinlinecode
-</td>
-</tr>
-</table>
 
 h1. Acts As Tree
 
@@ -411,11 +419,8 @@ class Category < ActiveRecord::Base
 end
 :endinlinecode
 
-h1. Acts As Tree: Usage
+h1. Acts As Tree: Creating the Tree
 
-<table>
-  <tr>
-    <td>
 :inlinecode
 root = Category.create(:name =>"Books") 
 fiction = root.children.create(:name =>"Fiction") 
@@ -429,8 +434,9 @@ fiction.children.create(:name =>"Mystery")
 fiction.children.create(:name =>"Romance") 
 fiction.children.create(:name =>"ScienceFiction") 
 :endinlinecode
-</td>
-<td>
+
+h1. Acts As Tree: Accessing the Tree
+
 :inlinecode
 display_children(root) # Fiction, Non Fiction 
 
@@ -442,9 +448,6 @@ non_fiction = root.children.find(:first, :conditions => "name = 'Non Fiction'")
 display_children(non_fiction) #=> Art History, Computers, Science 
 puts non_fiction.parent.name #=> Books 
 :endinlinecode
-</td>
-</tr>
-</table>
 
 h1. Eager Loading: From N+1 to 1 Query
 

@@ -63,7 +63,7 @@
 
 
 	<ul>
-	<li>Generic, interpreted, <a href="http://en.wikipedia.org/wiki/Reflection_(computer_science)" title="reflection is the process by which a computer program can observe and modify its own structure" target="_reflective">reflective</a>, with garbage collection</li>
+	<li>Generic, interpreted, reflective, with garbage collection</li>
 		<li>Optimized for people rather than computers</li>
 		<li>More powerful than Perl, more object oriented than Python</li>
 		<li>Everything is an object. There are no primitive types.</li>
@@ -129,7 +129,7 @@ andreas.say_hi
 
 <div class="code-tiny">
 
-<pre name="code" class="ruby:nogutter:nocontrols">require 'person'
+<pre name="code" class="ruby:nogutter:nocontrols">require 'person_class'
 
 class Programmer &lt; Person
   def initialize(name, favorite_ide)
@@ -160,11 +160,9 @@ peter.say_hi
   def initialize(name)
     self.name = name
   end
-    
   def name
     @name
   end
-    
   def name=(name)
     @name = name
   end
@@ -387,7 +385,6 @@ class Person
   include HasAge
 end
 peter = Person.new("Peter"); peter.age = 33; puts peter.age
-
 module MyApp
   class Person
     attr_accessor :hometown
@@ -837,8 +834,10 @@ m, who, verb, what = *line.match(/^(\w+)\s+(\w+)\s+(\w+)$/)
 <div class="code-tiny">
 
 <pre name="code" class="ruby:nogutter:nocontrols">system("ls -l")
+# $? is a predefined variable with the exit status
 puts $?.exitstatus if !$?.success?
-puts `ls -l`
+# The back ticks "`" return the output of the external program
+standard_out = `ls -l`
 </pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/external.rb">code/ruby/external.rb</a></div>
 
 </div>
@@ -856,9 +855,7 @@ puts `ls -l`
 #
 # == Usage
 #
-# Copy config file publish-photos.yml.template to publish-photos.yml
-# and edit as appropriate.
-#
+# Copy config file publish-photos.yml.template to publish-photos.yml and edit as appropriate.
 # ruby publish-photos [ -h | --help ] &lt;photo_dir1&gt; ... &lt;photo_dirN&gt;
 
 # Load the Rails environment

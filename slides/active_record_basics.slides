@@ -497,6 +497,9 @@ person.save # Serializes the hash in YAML format in the db
 
 h1. Defining Composite Attributes
 
+<table>
+  <tr>
+    <td>
 :inlinecode
 class Name 
   attr_reader :first, :initials, :last 
@@ -509,7 +512,10 @@ class Name
     [ @first, @initials, @last ].compact.join(" ") 
   end 
 end 
-
+:endinlinecode
+</td>
+<td>
+:inlinecode
 class Customer < ActiveRecord::Base 
   composed_of :name, 
     :class_name => Name, 
@@ -520,6 +526,9 @@ class Customer < ActiveRecord::Base
       [:last_name,  :last] 
 end 
 :endinlinecode
+</td>
+</tr>
+</table>
 
 h1. Using Composite Attributes
 

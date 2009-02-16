@@ -9,7 +9,7 @@ h1. Ruby
 
 h1. The Ruby Language
 
-* Generic, interpreted, <a href="http://en.wikipedia.org/wiki/Reflection_(computer_science)" title="reflection is the process by which a computer program can observe and modify its own structure" target="_reflective">reflective</a>, with garbage collection
+* Generic, interpreted, reflective, with garbage collection
 * Optimized for people rather than computers
 * More powerful than Perl, more object oriented than Python
 * Everything is an object. There are no primitive types.

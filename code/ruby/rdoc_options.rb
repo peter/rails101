@@ -5,9 +5,7 @@
 #
 # == Usage
 #
-# Copy config file publish-photos.yml.template to publish-photos.yml
-# and edit as appropriate.
-#
+# Copy config file publish-photos.yml.template to publish-photos.yml and edit as appropriate.
 # ruby publish-photos [ -h | --help ] <photo_dir1> ... <photo_dirN>
 
 # Load the Rails environment

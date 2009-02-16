@@ -139,21 +139,22 @@ Ruby on Rails is an open-source web framework that&#8217;s optimized for program
 	<h1>Building a Demo Application</h1>
 
 
-	<ul>
-	<li>Generating an application with the rails command</li>
-		<li>Hello world</li>
-		<li>Rails actions and templates</li>
-		<li>The <span class="caps">MVC</span> request cycle and routing: :controller/:action/:id</li>
-		<li>Database configuration in config/database.yml</li>
-		<li>Code generation with script/generate scaffold</li>
-		<li>Migrations</li>
-		<li>Naming conventions</li>
-		<li>The Rails command line &#8211; script/console</li>
-		<li>Rails environments</li>
-		<li>Configuration</li>
-		<li>The error log</li>
-	</ul>
-
+<div style="font-size: 70%">
+  <ul>
+    <li>Generating an application with the rails command</li>
+    <li>Hello world</li>
+    <li>Rails actions and templates</li>
+    <li>The <span class="caps">MVC</span> request cycle and routing: :controller/:action/:id</li>
+    <li>Database configuration in config/database.yml</li>
+    <li>Code generation with script/generate scaffold</li>
+    <li>Migrations</li>
+    <li>Naming conventions</li>
+    <li>The Rails command line &#8211; script/console</li>
+    <li>Rails environments</li>
+    <li>Configuration</li>
+    <li>The error log</li>
+  </ul>
+</div>
 
 </div>
 <div class="slide">
@@ -193,27 +194,11 @@ vendor
 
 	<ol>
 	<li>A request is made from the browser to the <span class="caps">URL</span>
-    http://localhost:3000/users/show/1.</li>
-	</ol>
-
-
-	<ol>
-	<li>A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the <span class="caps">URI</span> /users/show/1. The default route &#8217;:controller/:action/:id&#8217; matches the <span class="caps">URI</span> and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.</li>
-	</ol>
-
-
-	<ol>
-	<li>The show method in the users controller fetches the user model object from the database with id equal to 1.</li>
-	</ol>
-
-
-	<ol>
-	<li>The show method renders its view (the file show.rhtml) which generates an <span class="caps">HTML</span> page with the user info from the user model object.</li>
-	</ol>
-
-
-	<ol>
-	<li>Rails sends the generated <span class="caps">HTML</span> from the view back to the browser.</li>
+    http://localhost:3000/users/show/1. </li>
+		<li>A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the <span class="caps">URI</span> /users/show/1. The default route &#8217;:controller/:action/:id&#8217; matches the <span class="caps">URI</span> and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.</li>
+		<li>The show method in the users controller fetches the user model object from the database with id equal to 1.</li>
+		<li>The show method renders its view (the file show.rhtml) which generates an <span class="caps">HTML</span> page with the user info from the user model object.</li>
+		<li>Rails sends the generated <span class="caps">HTML</span> from the view back to the browser.</li>
 	</ol>
 
 
@@ -226,7 +211,7 @@ vendor
 	<ul>
 	<li>Rake lets you define a dependency tree of tasks to be executed.</li>
 		<li>Rake tasks are loaded from the file Rakefile</li>
-		<li>Rails rake tasks are under railties/lib/tasks</li>
+		<li>Rails rake tasks live under railties/lib/tasks</li>
 		<li>You can put your own tasks under lib/tasks</li>
 	</ul>
 

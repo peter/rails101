@@ -53,18 +53,22 @@ h1. MVC Request Cycle
 
 h1. Building a Demo Application
 
-* Generating an application with the rails command
-* Hello world
-* Rails actions and templates
-* The MVC request cycle and routing: :controller/:action/:id
-* Database configuration in config/database.yml
-* Code generation with script/generate scaffold
-* Migrations
-* Naming conventions
-* The Rails command line - script/console
-* Rails environments
-* Configuration
-* The error log
+<div style="font-size: 70%">
+  <ul>
+    <li>Generating an application with the rails command</li>
+    <li>Hello world</li>
+    <li>Rails actions and templates</li>
+    <li>The MVC request cycle and routing: :controller/:action/:id</li>
+    <li>Database configuration in config/database.yml</li>
+    <li>Code generation with script/generate scaffold</li>
+    <li>Migrations</li>
+    <li>Naming conventions</li>
+    <li>The Rails command line - script/console</li>
+    <li>Rails environments</li>
+    <li>Configuration</li>
+    <li>The error log</li>
+  </ul>
+</div>
 
 h1. Directory Structure
 
@@ -96,20 +100,16 @@ h1. MVC Request Cycle in Detail
 
 # A request is made from the browser to the URL
     http://localhost:3000/users/show/1. 
-
 # A Rails server running locally on port 3000 receives the request and the dispatcher is invoked. Rails tries to find a route (in the file config/routes.rb) to match the URI /users/show/1. The default route ':controller/:action/:id' matches the URI and the dispatcher instantiates the users controller and invokes its show method with the :id parameter set to 1.
-
 # The show method in the users controller fetches the user model object from the database with id equal to 1.
-
 # The show method renders its view (the file show.rhtml) which generates an HTML page with the user info from the user model object.
-
 # Rails sends the generated HTML from the view back to the browser.
 
 h1. Rake
 
 * Rake lets you define a dependency tree of tasks to be executed.
 * Rake tasks are loaded from the file Rakefile
-* Rails rake tasks are under railties/lib/tasks
+* Rails rake tasks live under railties/lib/tasks
 * You can put your own tasks under lib/tasks
 
 h1. Useful Rake Tasks

@@ -137,7 +137,7 @@ end
 
 # In app/views/statistics_mailer/monthly.rhtml
 Dear &lt;%= @user.name %&gt;,
-here is the statistics for &lt;%= @user.customer.name %&gt; for &lt;%= 1.month.ago.strftime("%B") %&gt;.
+here is the statistics for &lt;%= 1.month.ago.strftime("%B") %&gt;.
 
 &lt;%- for service in @user.customer.services -%&gt;
 *** Service &lt;%= service.name %&gt;
@@ -232,7 +232,6 @@ class BulkReceiver &lt; ActionMailer::Base
     # Process received email here
   end
 end
-
 # Configure your mail server to pipe incoming email to the program
 /path/to/app/script/runner 'BulkReceiver.receive(STDIN.read)'
 </pre></div>

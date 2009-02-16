@@ -55,9 +55,6 @@
 	<h1>Generating <span class="caps">HTML</span> Forms</h1>
 
 
-<table>
-  <tr>
-    <td>
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
@@ -66,25 +63,12 @@
 &lt;% form_tag({:action =&gt; 'update', :id =&gt; @user} do %&gt;
   &lt;%= text_field 'user', 'email'  %&gt;
 &lt;% end %&gt;
-</pre></div>
-
-</td>
-</tr>
-<tr>
-<td>
-<div class="code-normal">
-
-<pre name="code" class="ruby:nogutter:nocontrols">
 
 # The generated form HTML
 &lt;form action="/admin/users/update/1" method="post"&gt;
   &lt;input id="user_email" name="user[email]" /&gt;
 &lt;/form&gt;
 </pre></div>
-
-</td>
-</tr>
-</table>
 
 </div>
 <div class="slide">

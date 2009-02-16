@@ -6,7 +6,6 @@ class Person
   include HasAge
 end
 peter = Person.new("Peter"); peter.age = 33; puts peter.age
-
 module MyApp
   class Person
     attr_accessor :hometown
