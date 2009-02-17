@@ -215,7 +215,7 @@ h1. Table of Contents
 
 h1. Parting Words of Advice
 
-* Go with the flow. Stay on the golden path of Rails. Don’t break conventions unless you really have to.
+* Go with the flow. Stay on the golden path of Rails. Don't break conventions unless you really have to.
 * Familiarize yourself with the Rails source code and tests.
 * Write tests and give TDD and BDD a serious try
 * Learn Ruby and master it.

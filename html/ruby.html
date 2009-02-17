@@ -242,6 +242,32 @@ puts "paid=#{person.paid}"
 </div>
 <div class="slide">
 
+	<h1>Method Visibility</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class MyClass  
+  def method1 # Methods are public by default
+  end  
+  # Protected methods can be invoked by any instance of the same class or a
+  # subclass of MyClass
+  protected  
+  def method2
+  end
+  # Private methods can only be invoked within an instance of MyClass or a subclass
+  # of MyClass. The receiver of a private method is always self.
+  private  
+  def method3
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Class Methods</h1>
 
 
@@ -403,7 +429,7 @@ peter = MyApp::Person.new("Stockholm"); puts peter.hometown
 
 
 	<ul>
-	<li>Modules model characteristics or properties of entities or things. Modules can’t be instantiated. Module names tend to be adjectives (Comparable, Enumerable etc.). A class can mix in several modules.</li>
+	<li>Modules model characteristics or properties of entities or things. Modules can&#8217;t be instantiated. Module names tend to be adjectives (Comparable, Enumerable etc.). A class can mix in several modules.</li>
 	</ul>
 
 

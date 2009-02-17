@@ -59,6 +59,25 @@ h1. Methods
 * The last evaluated expression in a method is the return value
 * Arguments can have default values: def my_method(a, b = {})
 
+h1. Method Visibility
+
+:inlinecode
+class MyClass  
+  def method1 # Methods are public by default
+  end  
+  # Protected methods can be invoked by any instance of the same class or a
+  # subclass of MyClass
+  protected  
+  def method2
+  end
+  # Private methods can only be invoked within an instance of MyClass or a subclass
+  # of MyClass. The receiver of a private method is always self.
+  private  
+  def method3
+  end
+end
+:endinlinecode
+
 h1. Class Methods
 
 :code code/ruby/class_methods.rb[class=code-tiny]
@@ -108,7 +127,7 @@ h1. Modules
 
 h1. Modules vs Classes
 
-* Modules model characteristics or properties of entities or things. Modules can’t be instantiated. Module names tend to be adjectives (Comparable, Enumerable etc.). A class can mix in several modules.
+* Modules model characteristics or properties of entities or things. Modules can't be instantiated. Module names tend to be adjectives (Comparable, Enumerable etc.). A class can mix in several modules.
 
 * Classes model entities or things. Class names tend to be nouns. A class can only have one super class (Enumeration, Item etc.).
 
