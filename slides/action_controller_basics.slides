@@ -107,6 +107,19 @@ h1. Flash Messages
 * flash.keep(:notice)
 :endinlinecode
 
+h1. Rescuing from Exceptions
+
+:inlinecode
+class ArticlesController < ApplicationController
+  rescue_from User::NotAuthorized, :with => :deny_access  
+
+  private
+  def deny_access
+    ...
+  end
+end
+:endinlinecode
+
 h1. Best Practice
 
 * <b>Don't put SQL and too much code in your controllers/views - it's a code smell, and maybe the most common design mistake Rails developers make. Actions should be 3-4 lines that script business objects. The goal is to have fat models and skinny controllers.</b>

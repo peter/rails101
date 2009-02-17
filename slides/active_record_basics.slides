@@ -174,6 +174,17 @@ class User < ActiveRecord::Base
 end
 :endinlinecode
 
+h1. Attribute Query Methods
+
+:inlinecode
+user = User.new(:name => "David")
+# user.name? is equivalent to user.name.present?
+user.name? # => true
+
+anonymous = User.new(:name => "")
+anonymous.name? # => false
+:endinlinecode
+
 h1. Boolean Attributes
 
 * Everything except nil and false is true in Ruby
@@ -209,6 +220,16 @@ User.find(:all,
   :conditions => {:first_name => "Jamis", :last_name => "Buck"})
 
 User.find(:all, :conditions => [ "category IN (?)", categories])
+:endinlinecode
+
+h1. Merging Conditions
+
+:inlinecode
+Post.merge_conditions(
+  {:title => 'Lucky Star'},
+  ['rating IN (?)', 1..5]
+)
+=> "(`posts`.`title` = 'Lucky Star') AND (rating IN (1,2,3,4,5))"
 :endinlinecode
 
 h1. Everything is a find :all
@@ -493,6 +514,52 @@ person.params = {
   :eye_color => 'blue'
 }
 person.save # Serializes the hash in YAML format in the db
+:endinlinecode
+
+h1. Aliased Attributes
+
+:inlinecode
+class Aricle < ActiveRecord::Base
+  # Now the body attribute can be accessed with a text method too
+  alias_attribute :text, :body
+end
+
+a = Article.first
+a.body # => "the body"
+a.text # => "the body"
+a.text? # => true
+
+a.text = "new body"
+a.body # => "new body"
+:endinlinecode
+
+h1. Delegating Attributes
+
+:inlinecode
+class User < ActiveRecord::Base
+  delegate :street, :city, :to => :address
+end
+
+u = User.first
+u.address.street # => "Fifth Avenue"
+u.street # => "Fifth Avenue"
+:endinlinecode
+
+h1. Caching Attributes
+
+:inlinecode
+class Person < ActiveRecord::Base
+  def social_security
+    decrypt_social_security
+  end
+  # Memoize the result of the social_security method after its first evaluation.
+  # Must be placed after the target method definition.
+  memoize :social_security
+end
+
+@person = Person.new
+@person.social_security  # decrypt_social_security is invoked
+@person.social_security  # decrypt_social_security is NOT invoked
 :endinlinecode
 
 h1. Defining Composite Attributes

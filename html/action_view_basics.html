@@ -104,6 +104,30 @@
 </div>
 <div class="slide">
 
+	<h1>Serving Different Content Types</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# The respond_to method will use the HTTP Accept header or any extension in the URL.
+# So if the URL is /people/1.xml you will get XML back.
+
+# GET /posts/1
+# GET /posts/1.xml
+def show
+  @post = Post.find(params[:id])
+  respond_to do |format|
+    format.html # show.html.erb
+    format.xml  { render :xml =&gt; @post }
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Builder Template Example: <span class="caps">RSS</span></h1>
 
 
@@ -134,6 +158,32 @@ end
 </pre></div>
 
 </div>
+
+</div>
+<div class="slide">
+
+	<h1>Generating Atom Feeds</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# app/views/posts/index.atom.builder:
+atom_feed do |feed|
+   feed.title("My great blog!")
+   feed.updated((@posts.first.created_at))
+   for post in @posts
+     feed.entry(post) do |entry|
+       entry.title(post.title)
+       entry.content(post.body, :type =&gt; 'html')
+       entry.author do |author|
+         author.name("DHH")
+       end
+      end
+   end
+end
+</pre></div>
 
 </div>
 <div class="slide">
@@ -290,6 +340,27 @@ end
 </div>
 <div class="slide">
 
+	<h1>Partial Layouts</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# in posts/_boxed.html.erb
+&lt;div class='box'&gt;
+  &lt;div id='post_header_&lt;%= post.id %&gt;'&gt;&lt;%= yield %&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+# in posts/show.html.erb
+&lt;% render(:layout =&gt; 'boxed', :locals =&gt; {:post =&gt; @post}) do %&gt;
+  &lt;%= post.title %&gt; published on &lt;%= post.published_at %&gt;
+&lt;% end %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Passing Data to Layouts</h1>
 
 
@@ -362,12 +433,34 @@ url_for({:controller =&gt; ‘blog’}, :only_path =&gt; false)
 link_to "Other Site", "http://www.rubyonrails.org/", :confirm =&gt; "Sure?" 
 link_to "Image", { :action =&gt; "view" }, :popup =&gt; ['new_window','height=300,width=600']
 link_to "Delete Image", { :action =&gt; "delete", :id =&gt; @image.id }, :method =&gt; :delete
+&lt;% link_to("Image", {:action =&gt; "view"}) do %&gt;&lt;%= image_tag("/icons/icon.gif") %&gt;&lt;% end %&gt;
 button_to "New", :action =&gt; "new" 
 link_to_unless_current("Home", { :action =&gt; "index" })
 mail_to "me@domain.com", "My email", :encode =&gt; "javascript" 
 # =&gt; &lt;script type="text/javascript"&gt;eval(unescape('%64%6f%63...%6d%65%6e'))&lt;/script&gt;
 mail_to "me@domain.com", "My email", :encode =&gt; "hex" 
 # =&gt; &lt;a href="mailto:%6d%65@%64%6f%6d%61%69%6e.%63%6f%6d"&gt;My email&lt;/a&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Stylesheets and JavaScript</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# In app/views/layouts/application.html.erb
+&lt;html&gt;
+  &lt;head&gt;
+    # Includes all stylesheets and javascripts and merges them into
+    # a single file in production for better performance
+    &lt;%= stylesheet_link_tag :all, :cache =&gt; true %&gt;
+    &lt;%= javascript_link_tag :all, :cache =&gt; true %&gt;
+  &lt;/head&gt;
+  ...
 </pre></div>
 
 </div>

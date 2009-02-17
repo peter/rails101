@@ -77,6 +77,7 @@
 caches_page :public_action
 expire_page :action =&gt; 'public_action'
 caches_action :premium_content
+caches_action :premium_content, :layout =&gt; false # don't cache the layout
 expire_action :action =&gt; 'premium_content', :id =&gt; 2
 cache 'recent_products'
 expire_fragment 'recent_products'
@@ -165,6 +166,31 @@ ActionController::Base.cache_store = :file_store, "/path/to/cache/directory"
 ActionController::Base.cache_store = :drb_store, "druby://localhost:9192" 
 ActionController::Base.cache_store = :mem_cache_store, "localhost" 
 ActionController::Base.cache_store = MyOwnStore.new("parameter")
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Conditional Gets &#8211; ETags</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+def show
+  @article = Article.find(params[:id])
+  response.last_modified = @article.published_at.utc
+  response.etag = @article
+
+  if request.fresh?(response)
+    head :not_modified
+  else
+    respond_to do |wants|
+      # normal response processing
+    end
+  end
+end
 </pre></div>
 
 </div>

@@ -229,6 +229,26 @@ ActionController::Base.session = {
 </div>
 <div class="slide">
 
+	<h1>Rescuing from Exceptions</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class ArticlesController &lt; ApplicationController
+  rescue_from User::NotAuthorized, :with =&gt; :deny_access  
+
+  private
+  def deny_access
+    ...
+  end
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Best Practice</h1>
 
 

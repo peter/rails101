@@ -14,6 +14,7 @@ h1. Cache Methods and Configuration
 caches_page :public_action
 expire_page :action => 'public_action'
 caches_action :premium_content
+caches_action :premium_content, :layout => false # don't cache the layout
 expire_action :action => 'premium_content', :id => 2
 cache 'recent_products'
 expire_fragment 'recent_products'
@@ -67,4 +68,22 @@ ActionController::Base.cache_store = :file_store, "/path/to/cache/directory"
 ActionController::Base.cache_store = :drb_store, "druby://localhost:9192"
 ActionController::Base.cache_store = :mem_cache_store, "localhost"
 ActionController::Base.cache_store = MyOwnStore.new("parameter")
+:endinlinecode
+
+h1. Conditional Gets - ETags
+
+:inlinecode
+def show
+  @article = Article.find(params[:id])
+  response.last_modified = @article.published_at.utc
+  response.etag = @article
+
+  if request.fresh?(response)
+    head :not_modified
+  else
+    respond_to do |wants|
+      # normal response processing
+    end
+  end
+end
 :endinlinecode

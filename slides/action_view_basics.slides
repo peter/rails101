@@ -24,6 +24,23 @@ h1. Three Common Template Types
 * xml.erb - Files with Ruby code using the Builder library to generate XML. Typically used to generate RSS/Atom feeds or web services.
 * js.rjs - Ruby code with a Rails specific API (RJS) that generate JavaScript. Used for AJAX functionality.
 
+h1. Serving Different Content Types
+
+:inlinecode
+# The respond_to method will use the HTTP Accept header or any extension in the URL.
+# So if the URL is /people/1.xml you will get XML back.
+
+# GET /posts/1
+# GET /posts/1.xml
+def show
+  @post = Post.find(params[:id])
+  respond_to do |format|
+    format.html # show.html.erb
+    format.xml  { render :xml => @post }
+  end
+end
+:endinlinecode
+
 h1. Builder Template Example: RSS
 
 <div class="code-tiny">
@@ -49,6 +66,25 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1/" do
 end
 :endinlinecode
 </div>
+
+h1. Generating Atom Feeds
+
+:inlinecode
+# app/views/posts/index.atom.builder:
+atom_feed do |feed|
+   feed.title("My great blog!")
+   feed.updated((@posts.first.created_at))
+   for post in @posts
+     feed.entry(post) do |entry|
+       entry.title(post.title)
+       entry.content(post.body, :type => 'html')
+       entry.author do |author|
+         author.name("DHH")
+       end
+      end
+   end
+end
+:endinlinecode
 
 h1. .html.erb Templates
 
@@ -146,6 +182,20 @@ class BlogController < ActionController::Base
 end
 :endinlinecode
 
+h1. Partial Layouts
+
+:inlinecode
+# in posts/_boxed.html.erb
+<div class='box'>
+  <div id='post_header_<%= post.id %>'><%= yield %></div>
+</div>
+
+# in posts/show.html.erb
+<% render(:layout => 'boxed', :locals => {:post => @post}) do %>
+  <%= post.title %> published on <%= post.published_at %>
+<% end %>
+:endinlinecode
+
 h1. Passing Data to Layouts
 
 :inlinecode
@@ -193,12 +243,27 @@ url_for({:controller => ‘blog’}, :only_path => false)
 link_to "Other Site", "http://www.rubyonrails.org/", :confirm => "Sure?"
 link_to "Image", { :action => "view" }, :popup => ['new_window','height=300,width=600']
 link_to "Delete Image", { :action => "delete", :id => @image.id }, :method => :delete
+<% link_to("Image", {:action => "view"}) do %><%= image_tag("/icons/icon.gif") %><% end %>
 button_to "New", :action => "new"
 link_to_unless_current("Home", { :action => "index" })
 mail_to "me@domain.com", "My email", :encode => "javascript"
 # => <script type="text/javascript">eval(unescape('%64%6f%63...%6d%65%6e'))</script>
 mail_to "me@domain.com", "My email", :encode => "hex"
 # => <a href="mailto:%6d%65@%64%6f%6d%61%69%6e.%63%6f%6d">My email</a>
+:endinlinecode
+
+h1. Stylesheets and JavaScript
+
+:inlinecode
+# In app/views/layouts/application.html.erb
+<html>
+  <head>
+    # Includes all stylesheets and javascripts and merges them into
+    # a single file in production for better performance
+    <%= stylesheet_link_tag :all, :cache => true %>
+    <%= javascript_link_tag :all, :cache => true %>
+  </head>
+  ...
 :endinlinecode
 
 h1. HAML - An Alternative Templating System

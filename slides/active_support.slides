@@ -34,6 +34,30 @@ puts user.to_json # Creates a JavaScript hash
 Hash.from_xml(xml_string) # => a Hash object
 :endinlinecode
 
+h1. Symbol#to_proc
+
+:inlinecode
+# Usually you write a map block like this
+post_ids = posts.map { |post| post.id }
+
+# But Rails implements Symbol#to_proc to provide this shortcut:
+post_ids = posts.map(&:id)
+:endinlinecode
+
+h1. Object#with_options
+
+:inlinecode
+map.connect "/shop/summary" , :controller => "store",
+  :action => "summary"
+map.connect "/titles/buy/:id" , :controller => "store",
+  :action => "add_to_cart"
+  
+map.with_options(:controller => "store") do |store_map|
+  store_map.connect "/shop/summary", :action => "summary"
+  store_map.connect "/titles/buy/:id", :action => "add_to_cart"
+end
+:endinlinecode
+
 h1. Enumerations
 
 :inlinecode

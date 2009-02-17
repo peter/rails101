@@ -397,7 +397,7 @@ end
 
 	<ul>
 	<li>When we write <span class="caps">AJAX</span> applications we rely heavily on <span class="caps">DOM</span> ids for referencing different parts of a page.</li>
-		<li>Rails provides the dom_id helper for this purpose: dom_id(Post.find(45)) # =&gt; &#8220;post_45&#8221; </li>
+		<li>Rails provides the dom_id helper for this purpose: dom_id(Post.find(45)) # =&gt; &#8220;post_45&#8221;. You can also use &lt;% div_for(@person) do <span>&gt;...&lt;</span> end %&gt; to produce a div with the dom id of a model object.</li>
 		<li>Alternatively you can use the Dashed <span class="caps">DOM ID</span> plugin which adds the dom_id method to your ActiveRecord models so you can say: Post.find(45).dom_id(&#8216;name&#8217;) # =&gt; &#8220;post-45-name&#8221;</li>
 	</ul>
 

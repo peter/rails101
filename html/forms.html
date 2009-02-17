@@ -177,6 +177,32 @@ end
 </div>
 <div class="slide">
 
+	<h1>Nested Forms</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Person &lt; ActiveRecord::Base
+  has_many :children, :class_name =&gt; 'Person'
+  accepts_nested_attributes_for :children # Available as of Rails 2.3
+end
+&lt;% form_for @person do |person_form| %&gt;
+  &lt;% person_form.fields_for :children do |child_form| %&gt;    
+    &lt;%= child_form.text_field :name %&gt;
+    &lt;% unless child_form.object.new_record? %&gt;
+      &lt;%= child_form.checkbox '_delete' %&gt;
+      &lt;%= child_form.label '_delete', 'Remove' %&gt;
+    &lt;% end %&gt;
+  &lt;% end %&gt;
+  &lt;%= submit_tag %&gt;
+&lt;% end %&gt;
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>form_helper.rb</h1>
 
 

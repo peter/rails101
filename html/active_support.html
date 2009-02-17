@@ -104,6 +104,44 @@ Hash.from_xml(xml_string) # =&gt; a Hash object
 </div>
 <div class="slide">
 
+	<h1>Symbol#to_proc</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+# Usually you write a map block like this
+post_ids = posts.map { |post| post.id }
+
+# But Rails implements Symbol#to_proc to provide this shortcut:
+post_ids = posts.map(&#38;:id)
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Object#with_options</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+map.connect "/shop/summary" , :controller =&gt; "store",
+  :action =&gt; "summary" 
+map.connect "/titles/buy/:id" , :controller =&gt; "store",
+  :action =&gt; "add_to_cart" 
+  
+map.with_options(:controller =&gt; "store") do |store_map|
+  store_map.connect "/shop/summary", :action =&gt; "summary" 
+  store_map.connect "/titles/buy/:id", :action =&gt; "add_to_cart" 
+end
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Enumerations</h1>
 
 

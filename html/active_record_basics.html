@@ -294,6 +294,24 @@ end
 </div>
 <div class="slide">
 
+	<h1>Attribute Query Methods</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+user = User.new(:name =&gt; "David")
+# user.name? is equivalent to user.name.present?
+user.name? # =&gt; true
+
+anonymous = User.new(:name =&gt; "")
+anonymous.name? # =&gt; false
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Boolean Attributes</h1>
 
 
@@ -347,6 +365,23 @@ User.find(:all,
   :conditions =&gt; {:first_name =&gt; "Jamis", :last_name =&gt; "Buck"})
 
 User.find(:all, :conditions =&gt; [ "category IN (?)", categories])
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Merging Conditions</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+Post.merge_conditions(
+  {:title =&gt; 'Lucky Star'},
+  ['rating IN (?)', 1..5]
+)
+=&gt; "(`posts`.`title` = 'Lucky Star') AND (rating IN (1,2,3,4,5))" 
 </pre></div>
 
 </div>
@@ -764,6 +799,73 @@ person.params = {
   :eye_color =&gt; 'blue'
 }
 person.save # Serializes the hash in YAML format in the db
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Aliased Attributes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Aricle &lt; ActiveRecord::Base
+  # Now the body attribute can be accessed with a text method too
+  alias_attribute :text, :body
+end
+
+a = Article.first
+a.body # =&gt; "the body" 
+a.text # =&gt; "the body" 
+a.text? # =&gt; true
+
+a.text = "new body" 
+a.body # =&gt; "new body" 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Delegating Attributes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class User &lt; ActiveRecord::Base
+  delegate :street, :city, :to =&gt; :address
+end
+
+u = User.first
+u.address.street # =&gt; "Fifth Avenue" 
+u.street # =&gt; "Fifth Avenue" 
+</pre></div>
+
+</div>
+<div class="slide">
+
+	<h1>Caching Attributes</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+class Person &lt; ActiveRecord::Base
+  def social_security
+    decrypt_social_security
+  end
+  # Memoize the result of the social_security method after its first evaluation.
+  # Must be placed after the target method definition.
+  memoize :social_security
+end
+
+@person = Person.new
+@person.social_security  # decrypt_social_security is invoked
+@person.social_security  # decrypt_social_security is NOT invoked
 </pre></div>
 
 </div>

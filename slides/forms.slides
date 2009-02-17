@@ -83,6 +83,25 @@ rescue ActiveRecord::RecordInvalid => e
 end
 :endinlinecode
 
+h1. Nested Forms
+
+:inlinecode
+class Person < ActiveRecord::Base
+  has_many :children, :class_name => 'Person'
+  accepts_nested_attributes_for :children # Available as of Rails 2.3
+end
+<% form_for @person do |person_form| %>
+  <% person_form.fields_for :children do |child_form| %>    
+    <%= child_form.text_field :name %>
+    <% unless child_form.object.new_record? %>
+      <%= child_form.checkbox '_delete' %>
+      <%= child_form.label '_delete', 'Remove' %>
+    <% end %>
+  <% end %>
+  <%= submit_tag %>
+<% end %>
+:endinlinecode
+
 h1. form_helper.rb
 
 :inlinecode

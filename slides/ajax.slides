@@ -217,7 +217,7 @@ h1. Observing Fields
 h1. Model Object DOM id
 
 * When we write AJAX applications we rely heavily on DOM ids for referencing different parts of a page.
-* Rails provides the dom_id helper for this purpose: dom_id(Post.find(45)) # => "post_45"
+* Rails provides the dom_id helper for this purpose: dom_id(Post.find(45)) # => "post_45". You can also use <% div_for(@person) do %>...<% end %> to produce a div with the dom id of a model object.
 * Alternatively you can use the Dashed DOM ID plugin which adds the dom_id method to your ActiveRecord models so you can say: Post.find(45).dom_id('name') # => "post-45-name"
 
 h1. The Spinner Icon

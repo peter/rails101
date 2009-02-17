@@ -89,23 +89,6 @@ link_to "Destroy", @article, :method => :delete
 form_for(@article)
 :endinlinecode
 
-h1. Serving Different Content Types
-
-:inlinecode
-# The respond_to method will use the HTTP Accept header or any extension in the URL.
-# So if the URL is /people/1.xml you will get XML back.
-
-# GET /posts/1
-# GET /posts/1.xml
-def show
-  @post = Post.find(params[:id])
-  respond_to do |format|
-    format.html # show.html.erb
-    format.xml  { render :xml => @post }
-  end
-end
-:endinlinecode
-
 h1. Custom Resource Routes
 
 :inlinecode
