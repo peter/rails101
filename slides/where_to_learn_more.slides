@@ -1,5 +1,11 @@
 h1. Where to Learn More
 
+h1. API Documentation and Guides
+
+* Online you can lookup API documentation at "apidock.com":http://apidock.com or "gotapi.com":http://www.gotapi.com
+* You can build the API doc locally with "rake doc:rails" and access them at doc/api/index.html
+* You can build the "Rails guides":http://guides.rubyonrails.org locally with "rake doc:guides" and access them at doc/guides/index.html
+
 h1. Recommended Books
 
 * "Agile Web Development with Rails, 3d edition":http://www.pragprog.com/titles/rails3/agile-web-development-with-rails-third-edition - available as PDF.

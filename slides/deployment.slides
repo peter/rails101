@@ -30,10 +30,10 @@ h1. Example Deployment Stack
 * MySQL 5 with MySQL C driver, or PostgreSQL 8
 * Ruby 1.8.6 or 1.8.7
 
-h1. Mongrel Alternative: mod_rails
+h1. Mongrel Alternative: Passenger (mod_rails)
 
-* mod_rails (Passenger) is an Apache module that encapsulates load balancing to a number Rails processes
-* Supposedly uses less memory when used in conjunction with Ruby Enterprise Edition (a patched version of Ruby 1.8.6)
+* Passenger (mod_rails) is an Apache module that encapsulates load balancing to a number of Rails processes
+* Passenger supposedly uses 33% less memory when used in conjunction with Ruby Enterprise Edition (a patched version of Ruby 1.8.6)
 * Easy installation, see below:
 
 :inlinecode
@@ -184,6 +184,7 @@ h1. Performance
 * Use find with the :include option to avoid the N+1 query problem
 * If you loop over objects with many attributes and you only need a few of them you can specify the ones you need with the :select option
 * Monitor your log file for slow or unnecessary queries. You can use the query_analyzer plugin to get queries analyzed in the log file. MySQL has a slow query log. 
+* You can use "FiveRuns Tuneup":http://www.fiveruns.com/products/tuneup to profile a request and see where time is spent
 * Setup master-slave replication for your database and load balance the connections from Rails. There is the Magic Multi Connections plugin for this.
 
 h1. Performance
@@ -203,4 +204,14 @@ Release early in the project and release often. Just like your application, your
 
 h1. JRuby
 
+* JRuby is a re-implementation of the Ruby language in pure Java
+* JRuby allows Ruby code to seamlessly invoke Java libraries and vice versa
+* With JRuby you can deploy your Rails application as a war file to a Java application server such as GlassFish
+* JRuby has been found to be faster and have less memory leaks than MRI (standard Ruby) 1.8.6
+
 h1. Ruby 1.9
+
+* Ruby 1.9.1 is the first production release in the 1.9 series
+* Performs better than 1.8, has better Unicode support, and better memory management
+* There are backwards incompatible changes over Ruby 1.8
+* Rails 2.2 and later is compatible with Ruby 1.9 but many popular Ruby gems are not

@@ -117,12 +117,12 @@
 </div>
 <div class="slide">
 
-	<h1>Mongrel Alternative: mod_rails</h1>
+	<h1>Mongrel Alternative: Passenger (mod_rails)</h1>
 
 
 	<ul>
-	<li>mod_rails (Passenger) is an Apache module that encapsulates load balancing to a number Rails processes</li>
-		<li>Supposedly uses less memory when used in conjunction with Ruby Enterprise Edition (a patched version of Ruby 1.8.6)</li>
+	<li>Passenger (mod_rails) is an Apache module that encapsulates load balancing to a number of Rails processes</li>
+		<li>Passenger supposedly uses 33% less memory when used in conjunction with Ruby Enterprise Edition (a patched version of Ruby 1.8.6)</li>
 		<li>Easy installation, see below:</li>
 	</ul>
 
@@ -360,6 +360,7 @@ end
 	<li>Use find with the :include option to avoid the N+1 query problem</li>
 		<li>If you loop over objects with many attributes and you only need a few of them you can specify the ones you need with the :select option</li>
 		<li>Monitor your log file for slow or unnecessary queries. You can use the query_analyzer plugin to get queries analyzed in the log file. MySQL has a slow query log. </li>
+		<li>You can use <a href="http://www.fiveruns.com/products/tuneup">FiveRuns Tuneup</a> to profile a request and see where time is spent</li>
 		<li>Setup master-slave replication for your database and load balance the connections from Rails. There is the Magic Multi Connections plugin for this.</li>
 	</ul>
 
@@ -398,10 +399,26 @@ end
 	<h1>JRuby</h1>
 
 
+	<ul>
+	<li>JRuby is a re-implementation of the Ruby language in pure Java</li>
+		<li>JRuby allows Ruby code to seamlessly invoke Java libraries and vice versa</li>
+		<li>With JRuby you can deploy your Rails application as a war file to a Java application server such as GlassFish</li>
+		<li>JRuby has been found to be faster and have less memory leaks than <span class="caps">MRI</span> (standard Ruby) 1.8.6</li>
+	</ul>
+
+
 </div>
 <div class="slide">
 
-	<h1>Ruby 1.9</div></h1>
+	<h1>Ruby 1.9</h1>
+
+
+	<ul>
+	<li>Ruby 1.9.1 is the first production release in the 1.9 series</li>
+		<li>Performs better than 1.8, has better Unicode support, and better memory management</li>
+		<li>There are backwards incompatible changes over Ruby 1.8</li>
+		<li>Rails 2.2 and later is compatible with Ruby 1.9 but many popular Ruby gems are not</div></li>
+	</ul>
 
   <!-- Syntax Highlighter -->
   <script language="javascript" src="../dp.SyntaxHighlighter/Scripts/shCore.js"></script>
