@@ -162,6 +162,24 @@ total_orders = Order.find(:all).sum(&#38;:value)
 </div>
 <div class="slide">
 
+	<h1>Enumerable#each_with_object</h1>
+
+
+<div class="code-normal">
+
+<pre name="code" class="ruby:nogutter:nocontrols">
+
+%w(foo bar).inject({}) { |str, hsh| hsh[str] = str.upcase; hsh } #=&gt; {'foo' =&gt; 'FOO', 'bar' =&gt; 'BAR'}
+%w(foo bar).each_with_object({}) { |str, hsh| hsh[str] = str.upcase } #=&gt; {'foo' =&gt; 'FOO', 'bar' =&gt; 'BAR'}
+
+# NOTE: does not work with immutable objects such as numbers
+(1..5).each_with_object(1) { |value, memo| memo *= value } # =&gt; 1
+(1..5).inject(1) { |value, memo| memo *= value; memo } # =&gt; 120
+</pre></div>
+
+</div>
+<div class="slide">
+
 	<h1>Strings</h1>
 
 

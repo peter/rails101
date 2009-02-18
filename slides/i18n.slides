@@ -1,0 +1,132 @@
+h1. I18n
+
+h1. Introduction
+
+* As of of version 2.2 Rails has internationalization (I18n) support built in
+* Internationalizing a Rails application means making sure texts, dates, times, currencies etc. can be localized to different locales.
+* A locale is typically just a language, such as 'en' (for english), but it can also be both a language and a country, such as 'en-US'
+
+h1. Configuration
+
+:inlinecode
+# In config/environment.rb
+# The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
+# config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
+# config.i18n.default_locale = :de
+:endinlinecode
+
+h1. Getting and Setting Locale
+
+:inlinecode
+# Getting and setting the current locale
+I18n.locale # => :en
+I18n.locale = :sv
+I18n.locale # => :sv
+:endinlinecode
+
+h1. Translation files
+
+* By default each locale has a YAML file with translations stored under config/locales, i.e. config/locales/sv.yml
+* You can download a translation file for your locale from "Github":http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale
+* The translations are stored in a nested hash. Each translation has a corresponding key that is used for lookups.
+* If a translation is stored in {:home => {:page_title => "Welcome"}}, then the key for that translation would be "home.page_title"
+
+h1. I18n.translate
+
+:inlinecode
+I18n.translate :'home.page_title' # => Welcome
+# You can use just t as a shorthand for translate
+I18n.t :'home.page_title' # => Welcome
+
+# Defaults
+I18n.t :'home.foobar', :default => 'my default text' # => my default text
+
+# Pluralization
+I18n.t :'home.articles' # =>  {:one=>"Article", :other=>"Articles"}
+I18n.t :'home.articles', :count => 1 # => Article
+I18n.t :'home.articles', :count => 2 # => Articles
+:endinlinecode
+
+h1. Variable Interpolation
+
+:inlinecode
+# In config/locales/en.yml
+en:
+  home:
+    page_title: Welcome {{user_name}}
+
+I18n.t 'home.page_title' # => raises I18n::MissingInterpolationArgument
+I18n.t 'home.page_title', :user_name => 'Peter' # => 'Welcome Peter'
+:endinlinecode
+
+h1. I18n.localize
+
+:inlinecode
+I18n.localize Time.now # => "Wed, 18 Feb 2009 14:38:07 +0100"
+I18n.locale = :sv
+I18n.localize Time.now # => "Onsdag, 18. Februari 2009, 14:37 Uhr"
+:endinlinecode
+
+h1. The translate helper
+
+:inlinecode
+# In views and controllers you can use the t helper method instead of I18n.t
+<%=h t(:'home.page_title') %
+:endinlinecode
+
+h1. Error Messages
+
+:inlinecode
+# In config/locales/sv.yml
+  activerecord:
+    errors:
+      # The values :model, :attribute and :value are always available for interpolation
+      # The value :count is available when applicable. Can be used for pluralization.
+      messages:
+        exclusion: "är reserverad"
+        invalid: "har ett ogiltigt värde"
+        ...
+    attributes:
+      pressrelease: # The ActiveRecord model
+        body: "Brödtexten" # The model attribute translation  
+:endinlinecode
+
+h1. Timezones
+
+:inlinecode
+# Rails has Time Zone support as of version 2.1
+# In config/environment.rb
+config.time_zone = 'Central Time (US & Canada)' # UTC -6
+
+Time.now # => Wed Feb 18 14:58:54 +0100 2009
+Time.zone.now # => Wed, 18 Feb 2009 07:59:16 CST -06:00
+
+# ActiveRecord attributes are in the current timezone
+Article.first.created_at # => Wed, 18 Feb 2009 07:59:41 CST -06:00
+# Dates in the database are stored in UTC:
+Article.first.created_at_before_type_cast # => "2009-02-18 13:59:41"
+
+:endinlinecode
+
+h1. Setting Current Timezone
+
+:inlinecode
+# You can use a before filter to set the time zone of the current user like this:
+before_filter :set_timezone
+
+def set_timezone
+  # current_user.time_zone #=> 'London'
+  Time.zone = current_user.time_zone
+end
+:endinlinecode
+
+h1. Converting Texts to I18n Lookups
+
+If you have an application with a lot of hard coded texts that need to be converted to I18n.translate lookups,
+then you can use Sven Fuch's "Rails I18n TextMate Bundle":http://github.com/svenfuchs/rails-i18n/tree/master.
+Mark the text you want to translate, hit command-shift-E or alt-shift-E and the text will be converted to an I18n translate
+lookup and the text moved to a YAML file at log/translations.yml. This can speed up internationalization of your application quite a bit.
+
+h1. Translation UI
+
+"The Translate plugin":http://developer.newsdesk.se/2009/01/21/translate-new-rails-i18n-plugin-with-a-nice-web-ui allows you to do your translations via a web UI instead of directly in YAML files. The plugin will read from and write to the YAML files for you in the background. You can choose locale to translate from and to, search translations by key or by text, list missing translations etc.

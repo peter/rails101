@@ -71,6 +71,17 @@ total_orders = Order.find(:all).sum {|order| order.value }
 total_orders = Order.find(:all).sum(&:value)
 :endinlinecode
 
+h1. Enumerable#each_with_object
+
+:inlinecode
+%w(foo bar).inject({}) { |str, hsh| hsh[str] = str.upcase; hsh } #=> {'foo' => 'FOO', 'bar' => 'BAR'}
+%w(foo bar).each_with_object({}) { |str, hsh| hsh[str] = str.upcase } #=> {'foo' => 'FOO', 'bar' => 'BAR'}
+
+# NOTE: does not work with immutable objects such as numbers
+(1..5).each_with_object(1) { |value, memo| memo *= value } # => 1
+(1..5).inject(1) { |value, memo| memo *= value; memo } # => 120
+:endinlinecode
+
 h1. Strings
 
 :inlinecode

@@ -66,6 +66,14 @@ Regards
 Peter Marklund
 :endinlinecode
 
+h1. Mailer Layouts
+
+:inlinecode
+# As of Rails 2.2 you can use layouts for your mailers just as you would for
+# controllers, so for the StatisticsMailer we can put our layout in:
+app/views/layouts/statistics_mailer.html.erb
+:endinlinecode
+
 h1. Sending Email
 
 :inlinecode

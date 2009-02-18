@@ -150,6 +150,20 @@ h1. config/environment.rb and config/initializers
 * pluralization rules
 * Add your own initializers as needed
 
+h1. The Rails Configuration Object
+
+:inlinecode
+# Defined in railties/lib/initializer.rb
+Rails.root
+Rails.env
+Rails.version
+Rails.configuration.load_paths
+Rails.configuration.gems
+Rails.configuration.plugins
+Rails.configuration.time_zone
+Rails.configuration.i18n
+:endinlinecode
+
 h1. Debugging
 
 * raise @object.inspect

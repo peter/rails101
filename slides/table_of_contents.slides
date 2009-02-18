@@ -204,7 +204,7 @@ h1. Table of Contents
 <li>"Routing":routing.html</li>
 <li>"REST":rest.html</li>
 <li>"Action Mailer":action_mailer.html</li>
-<li>"Internationalization":internationalization.html</li>
+<li>"Internationalization":i18n.html</li>
 <li>"Plugins and Gems":plugins_and_gems.html</li>
 <li>"Deployment":deployment.html</li>
 <li>"Where to Learn More":where_to_learn_more.html</li>
