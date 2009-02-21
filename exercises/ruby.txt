@@ -1,0 +1,271 @@
+************************************************
+* Exercises - Ruby
+************************************************
+
+Note that the exercises generally tend to get more difficult with higher numbers and with
+higher letters. If you find yourself stuck on say a c) or d) exercise, you can
+always move on to the next number.
+
+1. a) 
+   Create a new script exercies/hello.rb that outputs Hello World!
+   Execute your script with ruby exercies/hello.rb
+
+   b)
+   If you are on Windows you can skip this step.
+   If you are on Unix you can make your script executable and execute it
+   without invoking the ruby interpreter direcly. Add the line
+
+     #!/usr/bin/env ruby
+
+   at the top of your script and then do:
+   
+     chmod +x exercises/hello.rb
+     exercises/hello.rb
+
+   Note: you can also execute your code like this:
+  
+    ruby -e "code here..."
+    # and on Unix:
+    cat hello.rb | ruby 
+
+   c)
+   Modify the hello.rb script to take a name on the command line so that you can do:
+
+     ruby hello.rb Peter 
+     # => "Hello Peter"
+   
+   Remember that the command line arguments are stored in the Array called ARGV. 
+   
+   Try invoking your script without a name. What happens? Depending on how you solved
+   this exercise you might get an exception or not. Let's experiment with irb on
+   the command line:
+   
+     irb
+   
+   Inside irb, type the following commands (except the comments):
+   
+     my_array = ['a', 'b', 'c']
+     puts my_array[0]
+     puts my_array[-1]
+
+     # When we try to get an Array element with a too high index we get the nil object
+     puts my_array[999]
+
+     # This works
+     puts "Hello #{my_array[999]}"
+
+     # But this doesn't because the String#+ method needs a String as an argument.
+     puts "Hello " + my_array[999]
+
+     # The method puts will invoke the method to_s on the object that it receives
+     nil.to_s
+
+   d)   
+   Modify your hello.rb script so that it will accept any number of names and greet
+   them all like this:
+   
+     ruby hello.rb Peter Andreas Thomas
+     # => "Hello Peter, Andreas, Thomas"
+   
+   Tip: take a look at the Array#join method, see http://www.ruby-doc.org/core/classes/Array.html
+
+   e)
+   Make sure all the names that you print out are capitalized, so that you can do:
+   
+     ruby hello.rb peter andreas thomas
+     # => "Hello Peter, Andreas, Thomas"
+
+   Tip: use the Array#map method and the String#capitalize method.
+   
+   f) 
+   Improve the script so that it is always only the first letter that is upper case. Also
+   remove any empty names and sort the names in the output:
+    
+     ruby hello.rb "Peter  " ANDREAS "" thomas
+     # => "Hello Andreas, Peter, Thomas"
+      
+2.
+   Create a script strings.rb with two variables holding your first and last name
+   in lowercase letters:
+   
+     first_name = "peter"
+     last_name = "marklund"
+     full_name = ...
+   
+     - Print the full name to the screen, i.e. the concatenation of first and last name.
+       Try to come up with three ways of doing this.
+     - What is the output of the following code:
+     
+       full_name2 = full_name
+       full_name2.upcase!
+       puts full_name
+       
+       The lesson here is that variables are references to objects and that full_name and
+       full_name2 point to and thus update the same object.
+     - Use the String#capitalize method to make the first letter in each name uppercase.
+     - Print out the length of your full name
+     - Use the String#scan method to print out each character in your name, one character per line
+     - Using the full_name variable as a starting point, use the String#split, 
+       the Array#reverse, and the Array#join methods to print out your name like this:
+       
+       "Marklund, Peter" 
+   
+3.
+   Create a script numbers.rb where you assign the integer 9 to a variable called number
+   and then loop 7 times assigning the number to be itself multiplied with itself.
+   In the loop you should print out the class of the number variable and the number itself.
+   Note: you can use the *= operator here. Notice how the class of the number variable
+   is changed by Ruby automatically for us. Try to think of alternative ways of implementing
+   the loop.
+   
+4.
+   Create a script arrays.rb where you create an empty array and assign it to the
+   variable called array. Then loop from 1 to 100 (you can use the Range 1..100 for this) and
+   append each number to the Array.
+     - Create a new variable array2 that is the 1..100 array with each number multiplied
+       with itself. Hint: use one of the Array#map or Array#collect methods.
+     - Create an array in the variable array3 that is the elements in array2 that are even.
+       Hint: you can use Array#select and the % operator to extract the even numbers.
+     - Print out the sum of array3. Hint: use the inject method.
+     - Print out the number of digits in all integers in array3
+   
+5.
+   Create a script hashes.rb and create a Hash object with the following keys and values:
+   Key (City)            Value (Population)
+   :stockholm            1.3
+   :gothenburg           0.5
+   :malmo                0.23
+   
+   Print out the list of keys of the hash and the list of values. Then print out only the
+   population for Stockholm.
+     - Use the Hash#reject method to print out only those city names that have a population
+       greater than 0.3
+     - Print out the average population of the cities with two decimals precision
+     - Make the printout of Arrays more readable by redefining the Array#to_s method to join
+       with items with commas.
+   
+6. a)
+   Create a Person class in the file exercises/person.rb. Give the class three
+   attributes: first_name, last_name, and age. At the end of your script, create an
+   instance of the person and print out the first_name attribute.
+   
+   b)
+   Add a method Person#full_name that concatenates the first and last names. Print
+   out the full name.
+   
+   c)
+   Try printing the person object to the screen instead. Notice how the output is not very
+   readable. Make the output more informative by adding a Person#to_s method that returns
+   all the information about the person.
+
+   d)
+   Add a class method Person.related?(person1, person2) that will return true if the two
+   people have the same last name.
+
+   e)
+   Add a method Person#old? that returns true if the person is over 60 years old and false
+   otherwise. Add a Person#young? method which is the
+   logical opposite of the Person#old? method. Change the output of the program to reflect
+   whether the person is old:
+
+     ruby person.rb
+     # => "Andreas Kviby is young"
+
+   f)
+   Change all the age related methods to be private. After all age can be a touchy issue...
+   Try invoking a private method and make sure an exception is thrown. Try using the Object#send
+   method to invoke a private method.
+
+   g)
+   Create an Array with three Person objects in it. Now try to invoke the sort method on the list.
+   Notice how it complains that the <=> method is missing. Add the <=> method and make it use the <=>
+   method on the age. Now try to sort again. Notice how now the problem is that the age method is
+   private. Solve that problem by making the age method accessible for all objects of the Person
+   class. Note: if you include the Comparable module in the Person class, you gain access to methods
+   such as <, >, <=, >=, and between?
+   
+   h)
+   Move all age related methods out of the Person class and into a module called Age. Then include
+   the Age module in the Person class. Make sure everything works as before.
+   
+   i)
+   Change the Age module to have a single method age_methods(access = :protected) that
+   will create all the age-related methods that we want dynamically but with the right access level
+   (:public, :protected, or :private). You should now be able to generate public age methods like this:
+   
+     class Person
+       extend Age
+       age_methods :public
+       ...
+  
+7. a)
+   Below is a Java program that reads a number of words separated by newline from
+   standard input and then writes them to standard output in sorted order:
+    
+     import java.io.*; 
+     import java.util.*; 
+     
+     public class SortWords { 
+       public static void main(String[] args) 
+           throws IOException { 
+         BufferedReader br = 
+           new BufferedReader(new InputStreamReader(System.in)); 
+         List al = new ArrayList(); 
+         String line = null; 
+         while (null != (line = br.readLine())) { 
+           al.add(line); 
+         } 
+         Collections.sort(al); 
+         System.out.println("sorted:"); 
+         for (Iterator it = al.iterator(); it.hasNext();) { 
+           System.out.println(it.next()); 
+         } 
+       } 
+     }
+     
+   Rewrite the Java program in Ruby putting your script in sort_words.rb.
+   See if you can make the Ruby program be just one line and just a handful of
+   method invocations. Tip: you can use the method readlines
+   to read the words from standard input. The readlines method will return an Array
+   with the words. You can terminate input with control-D.
+  
+   b)
+   Try putting the words in a text file instead and invoke your script:
+  
+     ruby sort_words.rb words.txt
+  
+   See how that works equally well with readlines. It will even work if you provide
+   multiple files to the script. It turns out the file are available in the variable
+   ARGF but we don't need to use that here.
+  
+   c)
+   Change the script to count words instead of just sorting them. Make the output be
+   the words sorted along with the count of how many times each word occurs. Tip: use
+   a Hash object for the count. Don't count any empty words. Remove leading and trailing
+   white space.
+  
+   d)
+   Sort the output by the number of occurences of the words instead. We want the most common
+   word first.
+  
+8. a)
+   Write a method called time that takes a block of code and times how long it takes
+   to execute. Try invoking the method with a while loop that loops a million times (let's
+   figure out how fast your computer is...).
+   
+   b)
+   Put the time method in a Timing module and add a MaxTimeExceeded exception class in
+   that module. Make the exception class extend from RuntimeError. Change the time method
+   to take a max_time argument that defaults to 10. Now make the time
+   method raise that exception if the code took too long to execute. When is it a good idea
+   to create custom exception classes like this?
+  
+9.
+   Create a script calculator.rb that will do basic arithmetic on the command line. For example,
+   you should be able to do:
+   
+     ruby calculator.rb 14 * 11 + 4 / 2
+      
+   You don't have to support parentheses or precedence rules. The script should only allow the
+   operators +, -, *, /, integer numbers, and floats. If the input to the script is invalid
+   the script should exit with a helpful message and usage instructions.

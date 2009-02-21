@@ -1,0 +1,26 @@
+************************************************
+* Exercises - Rails Introduction
+************************************************
+
+These exercises assume that you have access to the Agile Web Development With Rails Book, Third Edition:
+
+http://www.pragprog.com/titles/rails3/agile-web-development-with-rails-third-edition
+
+Make sure you have the book in PDF and/or in print. Also make sure that you download the source code that
+comes with the book.
+
+*** Installation
+First, make sure that you have Rails installed and that you have an editor that you are comfortable with. Follow the instructions in chapter 3 of the book.
+
+*** Instant Gratification
+
+Now, to create your first Rails application, follow the instructions in chapter 4 of the book. This will teach you about:
+
+- The rails command
+- The Rails directory structure
+- Starting a server
+- Generating a controller
+- Creating an action
+- How Rails routes requests to a URL to a controller and an action
+- Writing ERB templates
+- Linking pages together with the link_to helper

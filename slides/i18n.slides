@@ -91,7 +91,7 @@ h1. Error Messages
         body: "Brödtexten" # The model attribute translation  
 :endinlinecode
 
-h1. Timezones
+h1. Time Zones
 
 :inlinecode
 # Rails has Time Zone support as of version 2.1
@@ -106,6 +106,18 @@ Article.first.created_at # => Wed, 18 Feb 2009 07:59:41 CST -06:00
 # Dates in the database are stored in UTC:
 Article.first.created_at_before_type_cast # => "2009-02-18 13:59:41"
 
+:endinlinecode
+
+h1. Time Zones and Conditions Gotcha
+
+:inlinecode
+# In ActiveRecord::Base.find conditions, the following expressions work:
+# Time.zone.now, 1.days.ago, or Time.parse("2008-12-23").utc,
+# The following don't work:
+# Time.now, Time.parse("2008-12-23")
+# Examples:
+Event.all(:conditions => ["start_time > ?", Time.zone.now])
+Event.all(:conditions => ["start_time > ?", Time.parse("2008-12-23").utc])
 :endinlinecode
 
 h1. Setting Current Timezone
