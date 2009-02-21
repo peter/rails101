@@ -2,9 +2,16 @@
 * Exercises - Ruby
 ************************************************
 
-Note that the exercises generally tend to get more difficult with higher numbers and with
-higher letters. If you find yourself stuck on say a c) or d) exercise, you can
+The exercises generally tend to get more difficult with higher numbers and with
+higher letters. If you find yourself stuck on for example the d) exercise, you can
 always move on to the next number.
+
+As an alternative or complement to those exercises, you might want to check out the
+"Ruby in 20 Minutes" tutorial:
+
+http://www.ruby-lang.org/en/documentation/quickstart/
+
+Also, note that there is a nice introduction to Ruby in Appendix A of the Rails book.
 
 1. a) 
    Create a new script exercies/hello.rb that outputs Hello World!

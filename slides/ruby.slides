@@ -59,6 +59,17 @@ h1. Methods
 * The last evaluated expression in a method is the return value
 * Arguments can have default values: def my_method(a, b = {})
 
+h1. Methods and Parenthesis
+
+:inlinecode
+def square(number)
+  number * number
+end
+
+square(2+2)*2 # => square(4)*2 = 32
+square (2+2)*2 # => square(4*2) = 64
+:endinlinecode
+
 h1. Method Visibility
 
 :inlinecode
