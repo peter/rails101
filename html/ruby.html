@@ -67,7 +67,7 @@
 		<li>Optimized for people rather than computers</li>
 		<li>More powerful than Perl, more object oriented than Python</li>
 		<li>Everything is an object. There are no primitive types.</li>
-		<li>Strong dymaic typing</li>
+		<li>Strong dynamic typing</li>
 	</ul>
 
 
@@ -533,7 +533,7 @@ Float.superclass == Numeric
 10000000000.class == Bignum
 Bignum.superclass == Integer
 
-2 + "3" # =&gt; TypeError: String can’t be coerced into Fixnum
+2 + "3" # =&gt; TypeError: String can't be coerced into Fixnum
 </pre></div>
 
 </div>
@@ -592,8 +592,9 @@ a &lt;&lt; "Rails"
 
 fruits = ['apple', 'banana']
 fruits += ['apple'] unless fruits.include?('apple')
-fruits | ['apple', 'banana', 'pear'] # =&gt; ['apple', 'banana', 'pear']
-fruits &#38; ['apple', 'banana', 'pear'] # =&gt; ['apple', 'banana']
+[1, 3, 5] &#38; [1, 2, 3] # (intersection) =&gt; [1, 3]
+[1, 3, 5] | [2, 4, 6] # (union) =&gt; [1, 3, 5, 2, 4, 6]
+[1, 2, 3] - [2, 3] # (difference) =&gt; [1]
 </pre></div><div class="codeurl"><a href="txmt://open?url=file:///Users/peter/data/projects/education/rails-101/codex/code/ruby/array.rb">code/ruby/array.rb</a></div>
 
 </div>

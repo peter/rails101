@@ -13,7 +13,7 @@ h1. The Ruby Language
 * Optimized for people rather than computers
 * More powerful than Perl, more object oriented than Python
 * Everything is an object. There are no primitive types.
-* Strong dymaic typing
+* Strong dynamic typing
 
 h1. Everything in Ruby is
 
@@ -191,7 +191,7 @@ Float.superclass == Numeric
 10000000000.class == Bignum
 Bignum.superclass == Integer
 
-2 + "3" # => TypeError: String can’t be coerced into Fixnum
+2 + "3" # => TypeError: String can't be coerced into Fixnum
 :endinlinecode
 </div>
 

@@ -13,5 +13,6 @@ a << "Rails"
 
 fruits = ['apple', 'banana']
 fruits += ['apple'] unless fruits.include?('apple')
-fruits | ['apple', 'banana', 'pear'] # => ['apple', 'banana', 'pear']
-fruits & ['apple', 'banana', 'pear'] # => ['apple', 'banana']
+[1, 3, 5] & [1, 2, 3] # (intersection) => [1, 3]
+[1, 3, 5] | [2, 4, 6] # (union) => [1, 3, 5, 2, 4, 6]
+[1, 2, 3] - [2, 3] # (difference) => [1]
