@@ -2,7 +2,7 @@ h1. Active Record Basics
 
 h1. Fundamentals
 
-* One database table maps to one Ruby class
+* One database table maps to one Ruby class. The Ruby class is called a model.
 * Ruby classes live under app/models and extend ActiveRecord::Base
 * Table names are plural and class names are singular
 * Database columns map to attributes, i.e. get and set methods, in the model class
@@ -29,7 +29,7 @@ h1. CRUD
   </tr>
   <tr>
     <td>Create</td>
-    <td>create, new</td>
+    <td>create, new, save</td>
   </tr>
   <tr>
     <td>Read</td>
@@ -148,9 +148,11 @@ h1. Column/Attribute Data Types
   </tr>
 </table>
 
-h1. Custom Attribute Accessors
+h1. Virtual Attributes
 
 :inlinecode
+ # Virtual attributes are attributes that do not correspond
+ # directly to database columns.
  class Song < ActiveRecord::Base
   def length=(minutes)
     # self[:length] = minutes*60
@@ -179,6 +181,7 @@ h1. Attribute Query Methods
 :inlinecode
 user = User.new(:name => "David")
 # user.name? is equivalent to user.name.present?
+# If it returns true then the name is not nil and not empty
 user.name? # => true
 
 anonymous = User.new(:name => "")
@@ -251,7 +254,7 @@ User.find(:all,
 
 # This doesn't work
 User.find(:all,
-  :conditions => ["name like ‘%?%’", params[:name])
+  :conditions => ["name like '%?%'", params[:name])
 :endinlinecode
 
 h1. Dynamic Finders
@@ -351,7 +354,7 @@ end
 h1. Partial Updates
 
 :inlinecode
-user = Users.find_by_name("Dave" )
+user = User.find_by_name("Dave" )
 user.changed? # => false
 
 user.name = "Dave Thomas"
@@ -404,10 +407,10 @@ User.count # => 4
     <td>
 :inlinecode
 # Class method User.destroy
+User.count # => 4
 User.destroy(2, 3)
 User.count # => 2
 User.exists?(2) # => false
-User.find(:all).map(&:id) # => [4, 5]
 :endinlinecode
     </td>
     <td>
@@ -481,23 +484,6 @@ ActiveRecord::Base.connection.select_one("select * from users where id = 1")
 ActiveRecord::Base.connection.select_all("select * from users")
 ActiveRecord::Base.connection.select_value("select name from users where id = 1")
 ActiveRecord::Base.connection.select_values("select name from users")
-:endinlinecode
-
-h1. Virtual Attributes
-
-:inlinecode
-# Virtual attributes are attributes that do not correspond
-# directly to database columns.
-class Person < ActiveRecord::Base
-  def full_name
-    first_name + " " + last_name
-  end
-
-  def full_name=(full_name)
-    self.first_name = full_name.split.first
-    self.last_name = full_name.split.last
-  end
-end
 :endinlinecode
 
 h1. Serializing Attributes

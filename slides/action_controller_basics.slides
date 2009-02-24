@@ -42,7 +42,7 @@ h1. Rendering a Response
 * All actions must render a response or issue a redirect
 * A response is rendered with the render command
 * An action can only render a response or redirect once
-* Rails invokes render automatically if you don’t
+* Rails invokes render automatically if you don't
 * Redirects are made with the redirect_to command
 * You may need to make sure you return from an action after an invocation of render or redirect_to
 

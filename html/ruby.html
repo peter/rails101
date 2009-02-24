@@ -640,13 +640,16 @@ my_hash = {:controller =&gt; "home", :action =&gt; "index"}
 	<h1>More About Methods</h1>
 
 
-	<ul>
-	<li>Arbitrary number of arguments: def my_methods(<strong>args)</li>
-		<li>Converting Array to arguments: my_method([a, b]</strong>)</li>
-		<li>Dynamic method invocation: object.send(:method_name)</li>
-		<li>Duck typing: object.respond_to?(:method_name)</li>
-		<li>If the last argument is a Hash, the braces can be omitted: link_to(&#8220;Home&#8221;, :controller =&gt; &#8220;home&#8221;)</li>
-	</ul>
+<strong>foobar</strong>
+
+
+<ul>
+  <li>Arbitrary number of arguments: def my_methods(*args)</li>
+  <li>Converting Array to arguments: my_method([a, b]*)</li>
+  <li>Dynamic method invocation: object.send(:method_name)</li>
+  <li>Duck typing: object.respond_to?(:method_name)</li>
+  <li>If the last argument is a Hash, the braces can be omitted: link_to("Home", :controller => "home")</li>
+</ul>
 
 
 </div>

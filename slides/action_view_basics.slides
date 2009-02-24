@@ -21,7 +21,7 @@ h1. Template Environment
 h1. Three Common Template Types
 
 * html.erb - The most common type of template used for HTML. They are HTML files with embedded Ruby and they use the ERb library.
-* xml.erb - Files with Ruby code using the Builder library to generate XML. Typically used to generate RSS/Atom feeds or web services.
+* xml.builder - Files with Ruby code using the Builder library to generate XML. Typically used to generate RSS/Atom feeds or web services.
 * js.rjs - Ruby code with a Rails specific API (RJS) that generate JavaScript. Used for AJAX functionality.
 
 h1. Serving Different Content Types

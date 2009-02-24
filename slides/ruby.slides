@@ -232,11 +232,17 @@ h1. Symbols
 
 h1. More About Methods
 
-* Arbitrary number of arguments: def my_methods(*args)
-* Converting Array to arguments: my_method([a, b]*)
-* Dynamic method invocation: object.send(:method_name)
-* Duck typing: object.respond_to?(:method_name)
-* If the last argument is a Hash, the braces can be omitted: link_to("Home", :controller => "home")
+==*foobar*==
+
+<notextile>
+<ul>
+  <li>Arbitrary number of arguments: def my_methods(*args)</li>
+  <li>Converting Array to arguments: my_method([a, b]*)</li>
+  <li>Dynamic method invocation: object.send(:method_name)</li>
+  <li>Duck typing: object.respond_to?(:method_name)</li>
+  <li>If the last argument is a Hash, the braces can be omitted: link_to("Home", :controller => "home")</li>
+</ul>
+</notextile>
 
 h1. Range Class
 

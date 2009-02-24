@@ -56,7 +56,7 @@
 
 
 	<ul>
-	<li>One database table maps to one Ruby class</li>
+	<li>One database table maps to one Ruby class. The Ruby class is called a model.</li>
 		<li>Ruby classes live under app/models and extend ActiveRecord::Base</li>
 		<li>Table names are plural and class names are singular</li>
 		<li>Database columns map to attributes, i.e. get and set methods, in the model class</li>
@@ -96,7 +96,7 @@ end
   </tr>
   <tr>
     <td>Create</td>
-    <td>create, new</td>
+    <td>create, new, save</td>
   </tr>
   <tr>
     <td>Read</td>
@@ -254,13 +254,15 @@ end
 </div>
 <div class="slide">
 
-	<h1>Custom Attribute Accessors</h1>
+	<h1>Virtual Attributes</h1>
 
 
 <div class="code-normal">
 
 <pre name="code" class="ruby:nogutter:nocontrols">
 
+ # Virtual attributes are attributes that do not correspond
+ # directly to database columns.
  class Song &lt; ActiveRecord::Base
   def length=(minutes)
     # self[:length] = minutes*60
@@ -303,6 +305,7 @@ end
 
 user = User.new(:name =&gt; "David")
 # user.name? is equivalent to user.name.present?
+# If it returns true then the name is not nil and not empty
 user.name? # =&gt; true
 
 anonymous = User.new(:name =&gt; "")
@@ -417,7 +420,7 @@ User.find(:all,
 
 # This doesn't work
 User.find(:all,
-  :conditions =&gt; ["name like ‘%?%’", params[:name])
+  :conditions =&gt; ["name like '%?%'", params[:name])
 </pre></div>
 
 </div>
@@ -571,7 +574,7 @@ end
 
 <pre name="code" class="ruby:nogutter:nocontrols">
 
-user = Users.find_by_name("Dave" )
+user = User.find_by_name("Dave" )
 user.changed? # =&gt; false
 
 user.name = "Dave Thomas" 
@@ -642,10 +645,10 @@ User.count # =&gt; 4
 <pre name="code" class="ruby:nogutter:nocontrols">
 
 # Class method User.destroy
+User.count # =&gt; 4
 User.destroy(2, 3)
 User.count # =&gt; 2
 User.exists?(2) # =&gt; false
-User.find(:all).map(&#38;:id) # =&gt; [4, 5]
 </pre></div>
 
     </td>
@@ -752,30 +755,6 @@ ActiveRecord::Base.connection.select_one("select * from users where id = 1")
 ActiveRecord::Base.connection.select_all("select * from users")
 ActiveRecord::Base.connection.select_value("select name from users where id = 1")
 ActiveRecord::Base.connection.select_values("select name from users")
-</pre></div>
-
-</div>
-<div class="slide">
-
-	<h1>Virtual Attributes</h1>
-
-
-<div class="code-normal">
-
-<pre name="code" class="ruby:nogutter:nocontrols">
-
-# Virtual attributes are attributes that do not correspond
-# directly to database columns.
-class Person &lt; ActiveRecord::Base
-  def full_name
-    first_name + " " + last_name
-  end
-
-  def full_name=(full_name)
-    self.first_name = full_name.split.first
-    self.last_name = full_name.split.last
-  end
-end
 </pre></div>
 
 </div>
