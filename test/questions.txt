@@ -1,0 +1,84 @@
+*** Ruby
+For these exercises, you may want to check out the API documentation for the Ruby Array class here:
+
+http://www.ruby-doc.org/core/classes/Array.html
+
+1. Create a Person class with two attributes: name and age.
+
+2. Create an Employee class that inherits from Person and that has the additional attribute company. The
+   Employee class should have a constructor that takes name, age and company, but company should be an 
+   optional argument.
+
+3. Create an employees Array object and add two Employee objects to it: Peter 35 years old working for Newsdesk,
+   Joe 35 years old working for Newsdesk, and Helena 27 years old working for Volvo.
+
+4. From your employee array, create a variable ages that is a Hash object with the ages of the people as keys
+   and a sorted array of names as values, i.e. the ages variable should contain:
+   
+   {27 => ["Helena"], 35 => ["Joe", "Peter"]}
+
+   Hint: you may use the Array#inject method like this:
+   
+   ages = employees.inject({}) do |hash, employee|
+     # initialize/append to hash[employee.age] here...
+     hash # you need to return the hash here in order for inject to work
+   end
+   
+   You can also use a while loop to solve this task, but you get extra points if you use inject instead :-)
+
+5. Using the Array#select, Array#map, Array#uniq, and Array#join methods, create a comma separated string containing
+   company names for people over 30 years old.
+
+6. Create a Ruby module "CanTalk" with a say_hi method. Make the say_hi method output (to standard output)
+   for example "Peter says hi", where "Peter" should be dynamic and come from the name instance variable.
+   Open up the Person class and include the CanTalk module. Invoked the say_hi method for the first
+   employee in the employees array.
+
+7. Give a Ruby example for each of the following and/or say something about the naming
+   conventions for each (uppercase, lowercase, mixed case, etc.):
+  a) Symbol objects
+  b) Instance variables
+  c) Class variables
+  d) Constants
+  e) Class names
+  f) Method names
+
+*** Rails
+
+8. Create a new Rails application called test. Create a database and make sure you can connect to it.
+
+10. Create a User model with a scaffold administration interface. Make the model have the following attributes:
+
+  name          (string)
+  password      (string)
+  department_id (integer)
+  admin         (boolean)
+
+   Create the users table in the database.
+   
+11. Create a Department model with a scaffold administration interface. Make the Department model have the following attributes:
+
+  name          (string)
+
+    Create the departments table in the database.
+    
+12. Create a one-to-many relationship between departments and users to that one department has one or more users.
+
+13. Make sure that the User model cannot be saved without a name and make sure that the name is less than 100 characters.
+
+14. Make the users/index page available at the URL '/user-listing'
+
+15. In the Rails console, create a department and a user for that department.
+
+16. Change the form for creating new users so that you can select department in a dropdown (select box).
+
+17. Add a login action to the users controller so that you can log in with a request like the following:
+
+    http://localhost:3000/users/login/name=peter&password=foobar
+
+18. Add a method current_user to the application controller that returns the currently logged in user. If no user
+    is logged in the method should return nil.
+
+19. Change the departments controller so that to use the departments administration interface
+    (any of the actions in the deparments controller) you need to be logged in as a user that
+    has the admin column set to true.

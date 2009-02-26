@@ -1,0 +1,79 @@
+# *** Ruby
+
+# 1. 
+
+class Person
+  attr_accessor :name, :age
+  
+  def initialize(name, age)
+    self.name = name
+    self.age = age
+  end
+end
+
+# 2. 
+
+class Employee < Person
+  attr_accessor :company
+  
+  def initialize(name, age, company = nil)
+    super(name, age)
+    self.company = company
+  end
+end
+
+# 3.
+
+employees = [
+  Employee.new("Peter", 35, "Newsdesk"),
+  Employee.new("Joe", 35, "Google"),
+  Employee.new("Helena", 27, "Volvo")
+]
+
+# 4.
+
+ages = employees.inject({}) do |hash, employee|
+  hash[employee.age] ||= []
+  hash[employee.age] << employee.name
+  hash
+end
+
+puts ages.inspect
+
+# 5.
+
+puts employees.select { |e| e.age > 30 }.map { |e| e.company }.uniq.join(", ")
+
+# 6.
+
+module CanTalk
+  def say_hi
+    puts "#{name} says hi"
+  end
+end
+
+class Person
+  include CanTalk
+end
+
+employees.first.say_hi
+
+# 7.
+  # a) Symbol objects
+  :my_symbol # Symbols start with a colon ":" and are lowercase with words separated by underscore
+
+  # b) Instance variables
+  @my_instance_variable # Instance variables start with the @ sign
+
+  # c) Class variables
+  @@my_class_variable = 5 # Class variables start with the double @ sign
+
+  # d) Constants
+  MY_CONSTANT = 3.15 # Constants start with uppercase and are all uppercase by convention  
+
+  # e) Classes
+  class MyClass; end # Classes start with uppercase letter and are mixed case by convention
+
+  # f) Method names
+  def my_method; end # Method names are lowercase with words separated by underscore
+
