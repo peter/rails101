@@ -211,7 +211,7 @@ end
 class User &lt; ActiveRecord::Base
   validates_inclusion_of :role,
     :in =&gt; %w(super admin user),
-    :message =&gt; “must be super, admin, or user”,
+    :message =&gt; "must be super, admin, or user",
     :allow_nil =&gt; true
   validates_presence_of :customer_id,
     :if =&gt; Proc.new { |u| %w(admin user).include?(u.role) }

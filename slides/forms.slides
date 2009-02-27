@@ -4,7 +4,7 @@ h1. Generating HTML Forms
 
 :inlinecode
 # 1. Form helper is used to generate form in view
-<% form_tag({:action => 'update', :id => @user} do %>
+<% form_tag({:action => 'update', :id => @user}) do %>
   <%= text_field 'user', 'email'  %>
 <% end %>
 

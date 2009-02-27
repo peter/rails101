@@ -232,8 +232,6 @@ h1. Symbols
 
 h1. More About Methods
 
-==*foobar*==
-
 <notextile>
 <ul>
   <li>Arbitrary number of arguments: def my_methods(*args)</li>

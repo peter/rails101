@@ -106,7 +106,7 @@ h1. Validation Macros: More Usage
 class User < ActiveRecord::Base
   validates_inclusion_of :role,
     :in => %w(super admin user),
-    :message => “must be super, admin, or user”,
+    :message => "must be super, admin, or user",
     :allow_nil => true
   validates_presence_of :customer_id,
     :if => Proc.new { |u| %w(admin user).include?(u.role) }

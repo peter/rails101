@@ -60,7 +60,7 @@
 <pre name="code" class="ruby:nogutter:nocontrols">
 
 # 1. Form helper is used to generate form in view
-&lt;% form_tag({:action =&gt; 'update', :id =&gt; @user} do %&gt;
+&lt;% form_tag({:action =&gt; 'update', :id =&gt; @user}) do %&gt;
   &lt;%= text_field 'user', 'email'  %&gt;
 &lt;% end %&gt;
 

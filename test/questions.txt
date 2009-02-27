@@ -10,7 +10,7 @@ http://www.ruby-doc.org/core/classes/Array.html
    optional argument.
 
 3. Create an employees Array object and add two Employee objects to it: Peter 35 years old working for Newsdesk,
-   Joe 35 years old working for Newsdesk, and Helena 27 years old working for Volvo.
+   Joe 35 years old working for Google, and Helena 27 years old working for Volvo.
 
 4. From your employee array, create a variable ages that is a Hash object with the ages of the people as keys
    and a sorted array of names as values, i.e. the ages variable should contain:
@@ -24,9 +24,9 @@ http://www.ruby-doc.org/core/classes/Array.html
      hash # you need to return the hash here in order for inject to work
    end
    
-   You can also use a while loop to solve this task, but you get extra points if you use inject instead :-)
+   You can also use a while loop to solve this task, but you get extra points if you use inject :-)
 
-5. Using the Array#select, Array#map, Array#uniq, and Array#join methods, create a comma separated string containing
+5. Using the Array#select, Array#map and Array#join methods to create a comma separated string containing
    company names for people over 30 years old.
 
 6. Create a Ruby module "CanTalk" with a say_hi method. Make the say_hi method output (to standard output)
@@ -62,23 +62,40 @@ http://www.ruby-doc.org/core/classes/Array.html
 
     Create the departments table in the database.
     
-12. Create a one-to-many relationship between departments and users to that one department has one or more users.
+12. Create a one-to-many relationship between departments and users so that one department has one or more users.
 
-13. Make sure that the User model cannot be saved without a name and make sure that the name is less than 100 characters.
+13. Make sure that the User model cannot be saved without a name and a password.
+    Also make sure that the name is less than 100 characters.
 
-14. Make the users/index page available at the URL '/user-listing'
+14. In the Rails console, create a department and a user for that department. Save your objects to the database.
 
-15. In the Rails console, create a department and a user for that department.
+15. Change the sorting of users on the users/index page to be by name. You should do the sorting in the database
+    (via ActiveRecord) and not in Ruby. Change it so that administrator users are not listed on that page.
 
-16. Change the form for creating new users so that you can select department in a dropdown (select box).
+16. Change ther users/index page so that it shows department names rather than department id:s.
 
-17. Add a login action to the users controller so that you can log in with a request like the following:
+17. Make the users/index action available at the URL '/user-listing'
+
+18. Change the form for creating new users so that you can select department in a dropdown (select box).
+
+19. Add a login action to the users controller so that you can log in with a request like the following:
 
     http://localhost:3000/users/login/name=peter&password=foobar
 
-18. Add a method current_user to the application controller that returns the currently logged in user. If no user
-    is logged in the method should return nil.
+20. Add a method current_user to the application controller that returns the currently logged in user. If no user
+    is logged in the method should return nil. 
 
-19. Change the departments controller so that to use the departments administration interface
-    (any of the actions in the deparments controller) you need to be logged in as a user that
-    has the admin column set to true.
+21. Change the departments controller so that to use the departments administration interface
+    (any of the actions in the departments controller) you must be logged in as a user that
+    has the admin column set to true. If you are not logged in as an admin user you should be redirected
+    to the homepage with a flash[:notice] message.
+
+22. Add a logout page at /logout where you can log yourself out.
+
+23. Show the log in status in the upper right corner of all pages. If you are logged then your name should
+    be displayed and there should be a logout link. If you are not logged in there should be a login link.
+
+24. If possible, make the users/index page only issue one database query.
+
+25. Put the form fields (text_field etc.) and labels for creating/editing users in a partial so that you
+    can reuse them in the users/new and users/edit forms.

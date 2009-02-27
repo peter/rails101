@@ -305,8 +305,8 @@ end
 add_index :categories_posts, [:category_id, :post_id] 
 add_index :categories_posts, :post_id 
 
-product = Product.find_by_name “MacBook Pro”
-category = Category.find_by_name(“Laptops”)
+product = Product.find_by_name "MacBook Pro" 
+category = Category.find_by_name("Laptops")
 product.categories.count # =&gt; 0
 category.products.count # =&gt; 0
 product.categories &lt;&lt; category

@@ -239,7 +239,7 @@ strip_tags(html)
 h1. url_helper.rb
 
 :inlinecode
-url_for({:controller => ‘blog’}, :only_path => false)
+url_for({:controller => 'blog'}, :only_path => false)
 link_to "Other Site", "http://www.rubyonrails.org/", :confirm => "Sure?"
 link_to "Image", { :action => "view" }, :popup => ['new_window','height=300,width=600']
 link_to "Delete Image", { :action => "delete", :id => @image.id }, :method => :delete

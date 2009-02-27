@@ -42,7 +42,7 @@ puts ages.inspect
 
 # 5.
 
-puts employees.select { |e| e.age > 30 }.map { |e| e.company }.uniq.join(", ")
+puts employees.select { |e| e.age > 30 }.map { |e| e.company }.join(", ")
 
 # 6.
 
